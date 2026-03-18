@@ -1,0 +1,194 @@
+.payment-order {
+    padding: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.invoice-table th,
+.invoice-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.invoice-table th {
+    background-color: #f2f2f2;
+}
+
+.caret-icon {
+    color: rgb(12, 167, 115);
+}
+
+.detail-table-wrapper {
+    overflow-x: auto; /* Cho phép cuộn ngang bảng chi tiết */
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.detail-table th,
+.detail-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.detail-table th {
+    background-color: #f9f9f9;
+}
+
+.loading,
+.error {
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.complete-button,
+.rate-button {
+    background-color: #156953;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.complete-button:hover {
+    background-color: #2ea786;
+}
+
+.rate-button:hover {
+    background-color: #2ea786;
+}
+
+.rating-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.rating-form h3 {
+    margin-bottom: 10px;
+}
+
+.rating-form textarea {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    resize: none;
+}
+
+.rating-form button {
+    background-color: #156953;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.rating-form button:hover {
+    background-color: #2ea786;
+}
+
+/* Responsive cho mobile (< 768px) */
+@media (max-width: 767px) {
+    .invoice-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap; /* Ngăn nội dung xuống dòng */
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+        font-size: 14px; /* Giảm cỡ chữ */
+        padding: 5px; /* Giảm padding */
+    }
+
+    /* Ẩn cột "Giảm Giá" (3), "Tổng Tiền" (4), "Ngày Tạo" (6) */
+    .invoice-table th:nth-child(3),
+    .invoice-table td:nth-child(3),
+    .invoice-table th:nth-child(4),
+    .invoice-table td:nth-child(4),
+    .invoice-table th:nth-child(6),
+    .invoice-table td:nth-child(6) {
+        display: none;
+    }
+
+    .detail-table th,
+    .detail-table td {
+        font-size: 14px;
+        padding: 5px;
+    }
+
+    .rating-form {
+        width: 90%; /* Chiếm 90% chiều rộng màn hình trên mobile */
+        padding: 15px;
+    }
+
+    .rating-form textarea {
+        height: 80px; /* Giảm chiều cao textarea */
+    }
+}
+
+/* Responsive cho tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .invoice-table th,
+    .invoice-table td {
+        font-size: 16px;
+        padding: 6px;
+    }
+
+    .detail-table th,
+    .detail-table td {
+        font-size: 16px;
+        padding: 6px;
+    }
+
+    .rating-form {
+        width: 30%;
+    }
+}
+
+/* Responsive cho desktop (>= 1024px) */
+@media (min-width: 1024px) {
+    .invoice-table th,
+    .invoice-table td {
+        font-size: 18px;
+        padding: 8px;
+    }
+
+    .detail-table th,
+    .detail-table td {
+        font-size: 18px;
+        padding: 8px;
+    }
+
+    .rating-form {
+        width: 30%;
+    }
+}

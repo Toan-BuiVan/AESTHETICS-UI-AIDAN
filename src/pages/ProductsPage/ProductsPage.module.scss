@@ -1,0 +1,228 @@
+.wrapper {
+    display: flex;
+    gap: 0;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+.section {
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sectionTitle {
+    margin: 0 0 10px 0;
+    color: #1ca07d;
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 8px;
+}
+
+.scrollableList {
+    max-height: 200px; // Điều chỉnh mức độ này để hiển thị thanh cuộn khi vượt quá (ví dụ: 200px cho khoảng 8-10 items)
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.scrollableList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollableList::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+.menuList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contentProducts {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+}
+
+.content {
+    background-color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    flex-grow: 1;
+    max-width: 1000px;
+}
+
+.pagination {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #1ca07d;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+.pagination button.activePage {
+    background-color: #fff;
+    color: black;
+    font-weight: bold;
+}
+
+.menu-type {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.type-title,
+.type-price,
+.type-supplier {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #1ca07d;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 5px;
+}
+
+.type-price,
+.type-supplier {
+    margin-top: 20px;
+}
+
+.menuItem {
+    list-style: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.menuItem:hover {
+    background-color: #e9ecef;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox {
+    margin-right: 10px;
+}
+
+.text {
+    font-size: 16px;
+    color: #333;
+}
+
+.ellipsis {
+    margin: 0 5px;
+    padding: 10px 15px;
+    color: #333;
+    font-size: 16px;
+    cursor: default;
+}
+
+/* Màn hình nhỏ hơn 768px (tablet và mobile) */
+
+// @media (min-width: 1440px) {
+//     .content {
+//         // min-width: 1000px;
+//         // max-width: 1000px;
+//     }
+// }
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-height: none;
+        overflow-y: visible;
+        border-right: none;
+        padding: 10px;
+    }
+
+    .content {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        margin-left: 25px;
+    }
+
+    .pagination button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .sectionTitle {
+        font-size: 18px;
+    }
+
+    .text {
+        font-size: 14px;
+    }
+}
+
+/* Màn hình nhỏ hơn 480px (mobile nhỏ) */
+@media (max-width: 480px) {
+    .content {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .pagination button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .sectionTitle {
+        font-size: 16px;
+    }
+
+    .text {
+        font-size: 12px;
+    }
+
+    .menuItem {
+        padding: 5px;
+    }
+
+    .checkbox {
+        margin-right: 5px;
+    }
+}

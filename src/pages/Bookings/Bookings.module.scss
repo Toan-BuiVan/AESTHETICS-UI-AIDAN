@@ -1,0 +1,176 @@
+.wrapper {
+    padding: 40px;
+    background: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+.content-Bookings {
+    width: 100%;
+}
+
+.booking-list {
+    flex: 2;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #156953;
+    margin: 10px 5px;
+    text-align: left;
+}
+
+.header-content {
+    // display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.75);
+    padding: 5px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.status-tabs {
+    display: flex;
+    justify-content: start;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tab {
+    cursor: pointer;
+    padding: 10px 20px;
+    color: #333;
+}
+
+.tab:hover {
+    color: #156953;
+}
+
+.tab.active {
+    color: #156953;
+    font-weight: bold;
+}
+
+.date-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+.date-filter label {
+    font-size: 1.2rem;
+    color: #4a5568;
+}
+
+.date-filter input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.date-filter button {
+    background-color: #156953;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.date-filter button:hover {
+    background-color: #30a787;
+}
+
+/* Responsive Styles */
+@media (max-width: 767px) {
+    .wrapper {
+        padding: 20px;
+    }
+    .booking-list {
+        grid-template-columns: 1fr;
+    }
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .status-tabs {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    .tab {
+        width: 100%;
+        text-align: left;
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    .date-filter {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .date-filter label,
+    .date-filter input,
+    .date-filter button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .date-filter input,
+    .date-filter button {
+        padding: 10px; 
+    }
+
+    .booking-details {
+        padding: 10px;
+    }
+    .service-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .service-item img {
+        width: 100%;
+        height: auto;
+    }
+    .quantity-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .quantity-controls button {
+        width: 100%;
+        margin-bottom: 5px;
+        padding: 10px;
+    }
+    .search-input {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+    .search-results {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .booking-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .booking-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

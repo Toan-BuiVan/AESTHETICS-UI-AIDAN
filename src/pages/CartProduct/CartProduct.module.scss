@@ -1,0 +1,402 @@
+.wrapper {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    min-height: 100vh;
+    background-color: #fff;
+    margin: 0;
+    // max-height: 80vh;
+    overflow-y: auto;
+}
+
+.wrapper h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    color: #156953;
+}
+
+.content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-Products {
+    margin-top: 30px;
+    width: 100%;
+    padding: 20px 0;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+}
+
+.container {
+    display: flex;
+}
+
+.contentProducts {
+    flex: 1.8;
+    margin-right: 10px;
+}
+
+.contentInvoice {
+    flex: 1.2;
+}
+
+.invoiceDetail {
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.invoiceTitle {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #156953;
+}
+
+.invoice-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.invoice-item {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.invoice-item-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+
+.invoice-item-details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.invoice-item-name {
+    font-size: 10px;
+    font-weight: 500;
+    color: #333;
+    margin-right: 20px;
+    margin-bottom: 0;
+}
+
+.invoice-item-price {
+    font-size: 10px;
+    color: #e91e63;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.invoice-item-quantity {
+    font-size: 10px;
+    color: #555;
+    margin-right: 20px;
+}
+
+.invoice-delete-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: background-color 0.3s;
+}
+
+.invoice-delete-button:hover {
+    background-color: #d32f2f;
+}
+
+.invoice-checkout-button {
+    background-color: #156953;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: background-color 0.3s;
+}
+
+.invoice-checkout-button:hover {
+    background-color: #329c80;
+}
+
+.vouchersDetail {
+    padding: 20px;
+    background-color: #fff;
+}
+
+.voucher-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.voucher-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.voucher-item:hover {
+    background-color: #f0f0f0;
+}
+
+.voucher-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.voucher-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-left: 10px;
+}
+
+.voucher-details {
+    flex: 1;
+}
+
+.voucher-details h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.voucher-details p {
+    font-size: 10px;
+    margin: 3px 0;
+}
+
+.selected-voucher {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e6f7e6;
+    border-radius: 8px;
+}
+
+.selected-voucher h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.selected-voucher p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.vouchersTital {
+    font-size: 15px;
+    margin-bottom: 0;
+    color: #1b8e6f;
+}
+
+.creatInvoice {
+    margin: 10px 0px 0px 20px;
+}
+
+.btnPayment {
+    margin-left: auto;
+    padding: 10px 20px;
+    background-color: #156953;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.totalmoney {
+    font-size: 20px;
+    color: #329c80;
+    margin-bottom: 10px;
+}
+
+.payment-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #f6f9fc, #e9f1f7);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    gap: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.payment-form h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #2c3e50;
+    text-align: center;
+    font-weight: 600;
+}
+
+.payment-form button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 0px 8px;
+}
+
+.payment-form button:first-of-type {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: white;
+}
+
+.payment-form button:first-of-type:hover {
+    background: linear-gradient(135deg, #16a085, #1abc9c);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.payment-form button:last-of-type {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.payment-form button:last-of-type:hover {
+    background: linear-gradient(135deg, #c0392b, #e74c3c);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.totalmoney-original {
+    font-size: 16px;
+    color: red;
+    text-decoration: line-through;
+    margin-right: 10px;
+}
+
+.totalmoney-discounted {
+    font-size: 20px;
+    color: green;
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Media Query cho Tablet và Thiết bị nhỏ hơn (max-width: 768px) */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .contentProducts,
+    .contentInvoice {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+}
+
+/* Media Query cho Thiết bị di động (max-width: 600px) */
+@media (max-width: 600px) {
+    .wrapper {
+        padding: 10px;
+    }
+    .wrapper h1 {
+        font-size: 24px;
+    }
+    .invoiceTitle {
+        font-size: 20px;
+    }
+    .invoice-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .invoice-item-image {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    .invoice-item-details {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .invoice-item-name,
+    .invoice-item-price,
+    .invoice-item-quantity {
+        margin-right: 0;
+        margin-bottom: 5px;
+        font-size: 12px;
+    }
+    .invoice-delete-button {
+        align-self: flex-end;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    .invoice-checkout-button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    .totalmoney {
+        font-size: 18px;
+    }
+    .btnPayment {
+        width: 100%;
+        padding: 15px;
+    }
+    .vouchersTital {
+        font-size: 14px;
+    }
+}
+
+/* Media Query cho Màn hình lớn hơn (min-width: 1200px) */
+@media (min-width: 1200px) {
+    .invoice-item {
+        padding: 20px;
+    }
+    .invoice-item-name,
+    .invoice-item-price,
+    .invoice-item-quantity {
+        font-size: 12px;
+    }
+    .invoice-delete-button,
+    .invoice-checkout-button {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+}

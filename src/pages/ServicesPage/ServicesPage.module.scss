@@ -1,0 +1,379 @@
+.wrapper {
+    display: flex;
+    gap: 0;
+}
+
+.sideBar {
+    width: 350px;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    max-height: 600px;
+}
+
+.contentSevices {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.khoangGia {
+    margin-top: 20px;
+    color: #1ca07d;
+}
+
+.menuItem {
+    margin-bottom: 10px;
+    list-style: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.menuItem:hover {
+    background-color: #e9ecef;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox {
+    margin-right: 10px;
+}
+
+.text {
+    font-size: 16px;
+    color: #333;
+}
+
+.services-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.services-table th,
+.services-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.services-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.service-image {
+    width: 100px;
+    height: auto;
+    object-fit: cover;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #1ca07d;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+.pagination button.activePage {
+    background-color: #fff;
+    color: black;
+    font-weight: bold;
+}
+
+.ellipsis {
+    margin: 0 5px;
+    padding: 10px 15px;
+    color: #333;
+    font-size: 16px;
+    cursor: default;
+}
+
+/* Date Picker Wrapper and Container */
+.date-picker-wrapper {
+    position: relative;
+    display: inline-block;
+    min-width: 400px; /* Đảm bảo container cha cho phép date picker mở rộng */
+}
+
+.react-datepicker__month-container {
+    float: left;
+    min-width: 400px;
+}
+
+.date-picker-container {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    z-index: 1000;
+    background-color: #fff;
+    border-radius: 16px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Animation for Date Picker */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Date Picker Styling */
+.react-datepicker {
+    font-family: 'Inter', sans-serif;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    padding: 16px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    width: 400px; /* Đặt chiều rộng lớn hơn cho date picker */
+}
+
+/* Header of DatePicker */
+.react-datepicker__header {
+    background: linear-gradient(135deg, #2ab7a0 0%, #156953 100%);
+    color: #fff;
+    border-bottom: none;
+    padding: 20px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    position: relative;
+}
+
+.react-datepicker__current-month {
+    font-size: 22px; /* Tăng kích thước font cho tháng */
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Days and Day Names */
+.react-datepicker__day-name,
+.react-datepicker__day {
+    width: 56px; /* Ô ngày lớn hơn */
+    height: 56px;
+    line-height: 56px;
+    margin: 6px; /* Khoảng cách giữa các ô lớn hơn */
+    font-size: 16px; /* Font ngày lớn hơn */
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.react-datepicker__day-name {
+    color: #888;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+    background-color: #2ab7a0;
+    color: #fff;
+    border-radius: 50%;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(42, 183, 160, 0.3);
+}
+
+.react-datepicker__day:hover {
+    background-color: #e6ecef;
+    border-radius: 50%;
+    color: #2ab7a0;
+}
+
+.react-datepicker__day--outside-month {
+    color: #b0b0b0;
+}
+
+/* Navigation Arrows */
+.react-datepicker__navigation {
+    top: 20px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+.react-datepicker__navigation:hover {
+    transform: scale(1.2);
+}
+
+.react-datepicker__navigation--previous {
+    left: 20px;
+}
+
+.react-datepicker__navigation--next {
+    right: 20px;
+}
+
+.react-datepicker__triangle {
+    display: none; /* Ẩn tam giác mặc định cho giao diện gọn gàng */
+}
+
+/* Days Section */
+.react-datepicker__month {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px;
+    margin: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.headers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.headers button {
+    padding: 10px 20px;
+    border: 1px solid #156953;
+    border-radius: 999px;
+    background-color: #fff;
+    color: #156953;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.headers button:hover {
+    background-color: #e0e0e0;
+}
+
+@media (max-width: 767px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sideBar {
+        width: 100%;
+        max-height: none;
+        padding: 10px;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .contentSevices {
+        padding: 10px;
+    }
+
+    .services-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .services-table th,
+    .services-table td {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .pagination button {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    .text {
+        font-size: 14px;
+    }
+
+    .date-picker-wrapper {
+        min-width: 100%;
+    }
+
+    .react-datepicker {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .react-datepicker__month-container {
+        min-width: 100%;
+    }
+
+    .react-datepicker__day-name,
+    .react-datepicker__day {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        margin: 4px;
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .sideBar {
+        width: 250px;
+    }
+
+    .contentSevices {
+        padding: 15px;
+    }
+
+    .services-table th,
+    .services-table td {
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .pagination button {
+        padding: 10px 12px;
+        font-size: 15px;
+    }
+
+    .date-picker-wrapper {
+        min-width: 300px;
+    }
+
+    .react-datepicker {
+        width: 300px;
+    }
+
+    .react-datepicker__month-container {
+        min-width: 300px;
+    }
+
+    .react-datepicker__day-name,
+    .react-datepicker__day {
+        width: 48px;
+        height: 48px;
+        line-height: 48px;
+        margin: 5px;
+    }
+}

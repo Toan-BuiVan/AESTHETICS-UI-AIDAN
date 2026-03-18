@@ -1,0 +1,190 @@
+.menu-Item {
+    background-color: #156953;
+    width: 100%;
+    padding: 8px 20px;
+    border-radius: 5px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.list-Div {
+    color: #fff;
+    position: absolute;
+    top: 8px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.menu-items-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: 40px;
+}
+
+.menu-Item.show .menu-items-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.menu-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.respone-item a {
+    color: #156953;
+    text-decoration: none;
+}
+
+.respone-item:hover a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.menu-home-item {
+    color: #fff;
+    padding: 8px 18px;
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 1.4rem;
+    transition: background-color 0.2s;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    cursor: pointer; /* Thêm cursor: pointer cho tất cả .menu-home-item */
+}
+
+.menu-home-item:hover .ul-item {
+    display: block;
+}
+
+.ul-item {
+    display: none;
+    top: 100%;
+    position: absolute;
+    color: #156953;
+    border: 1px solid #156953;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: transparent;
+    z-index: 1000;
+}
+
+.ul-item.specific-service {
+    cursor: pointer;
+}
+
+.columns {
+    display: flex;
+    justify-content: space-between;
+}
+
+.column {
+    flex: 1;
+    list-style: none;
+}
+
+.respone-item {
+    padding: 8px 10px;
+    width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 400;
+    box-sizing: border-box;
+}
+
+.respone-item.specific-service {
+    cursor: pointer;
+}
+
+.respone-item:hover {
+    background-color: #156953;
+    color: #fff;
+}
+
+.ul-item:empty {
+    display: none; /* Ẩn <ul> nếu trống */
+}
+
+@media (max-width: 1440px) {
+    .menu-items-container {
+        margin-top: 40px;
+    }
+
+    .menu-home-item {
+        display: none;
+    }
+
+    .menu-Item.show .menu-items-container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .menu-Item.show .menu-home-item {
+        display: block;
+    }
+
+    .list-Div {
+        margin-left: auto;
+        position: absolute;
+        top: 8px;
+        right: 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .list-Div {
+        display: none;
+    }
+
+    .menu-items-container {
+        margin-top: 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .menu-column {
+        display: contents;
+    }
+
+    .menu-home-item {
+        display: block;
+        width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .menu-Item {
+        padding: 0;
+    }
+
+    .columns {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .column {
+        flex: none;
+        width: 180px;
+    }
+
+    .respone-item {
+        width: 100%;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ul-item {
+        background-color: #fff;
+    }
+}

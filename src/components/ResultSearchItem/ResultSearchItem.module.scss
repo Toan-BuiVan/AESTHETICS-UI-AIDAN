@@ -1,0 +1,33 @@
+.wrapper {
+    display: flex;
+    padding: 5px;
+    gap: 5px;
+}
+
+.result-info {
+    display: flex;
+    flex-direction: column; /* xếp thành cột: tên + giá */
+    justify-content: center; /* căn giữa theo chiều dọc */
+    align-items: center;
+}
+
+.result-price {
+    align-self: flex-start;
+    color: red;
+    font-weight: 500;
+}
+
+.result-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 3px;
+}
+
+.result-name {
+    max-width: 350px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    font-weight: 400;
+}

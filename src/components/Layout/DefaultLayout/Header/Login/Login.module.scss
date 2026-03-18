@@ -1,0 +1,495 @@
+:root {
+    --primary-color: #156953; /* Giữ nguyên */
+    --secondary-color: #535354;
+    --background-color: #fff; /* Trắng cho input */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --white-color: #fff;
+    --black-color: #000;
+    --input-border-color: #e3e4e6;
+    --transition-3s: 0.3s;
+    --accent-color: #2a8b6e; /* Sáng hơn */
+    --dark-accent: #0d4a3e; /* Tối hơn */
+    --gradient-bg: linear-gradient(
+        135deg,
+        var(--primary-color) 0%,
+        var(--dark-accent) 70%
+    ); /* Thêm: Gradient cho nền xịn */
+    --glow-color: rgba(42, 138, 110, 0.5); /* Thêm: Glow xanh cho focus */
+    --font-bold: 600; /* Thêm: Bold cho text */
+}
+
+.wrapper {
+    position: absolute;
+    width: 430px;
+    height: auto;
+    min-height: 530px;
+    background: var(--gradient-bg); /* Sửa: Gradient để đẹp, chiều sâu */
+    border-radius: 20px; /* Tăng radius cho mượt */
+    padding: 90px 40px 70px; /* Tăng padding cho cân đối */
+    border: none; /* Xóa border, dùng shadow thay */
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 0 100px rgba(21, 105, 83, 0.15); /* Shadow vực sâu hơn cho xịn */
+    transition: all var(--transition-3s) ease-in-out;
+    overflow: hidden; /* Ẩn overflow cho clean */
+    margin-left: auto;
+    z-index: 999;
+    top: 0;
+    right: 0;
+    transform: translate(-8%, 40%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.close-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    color: var(--white-color);
+    cursor: pointer;
+    transition: all var(--transition-3s) ease;
+    z-index: 3; /* Trên các element khác */
+}
+
+.close-icon:hover {
+    color: var(--accent-color); /* Hover sáng hơn */
+    transform: rotate(90deg) scale(1.2); /* Rotate và scale cho xịn sò */
+}
+
+.form-header {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px; /* Tăng width cho cân đối */
+    height: 80px; /* Tăng height */
+    background: var(--gradient-bg); /* Sửa: Gradient như wrapper */
+    border-radius: 0 0 30px 30px; /* Radius lớn hơn */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Thêm shadow */
+}
+.form-header::before,
+.form-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 40px; /* Tăng size */
+    height: 40px;
+}
+.form-header::before {
+    left: -40px;
+    border-top-right-radius: 50%;
+    box-shadow: 20px 0 0 var(--primary-color);
+}
+.form-header::after {
+    right: -40px;
+    border-top-left-radius: 50%;
+    box-shadow: -20px 0 0 var(--primary-color);
+}
+/* TITLES */
+.titles {
+    position: relative;
+}
+.title-login,
+.title-register {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--white-color); /* Sửa: Trắng để nổi trên gradient */
+    font-size: 26px; /* Tăng size */
+    font-weight: var(--font-bold); /* Bold hơn */
+    transition: all var(--transition-3s) ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Thêm shadow cho text xịn */
+}
+.title-register {
+    top: 50px;
+}
+
+/* FORMS */
+.login-form,
+.register-form {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* Tăng width cho đầy hơn */
+    transition: all var(--transition-3s) ease-in-out;
+    opacity: 0;
+    z-index: 1;
+    scale: 0.95; /* Thêm scale nhỏ để animation zoom khi active */
+}
+
+.register-form.active,
+.login-form.active {
+    opacity: 1;
+    z-index: 2;
+    scale: 1; /* Zoom in khi active */
+}
+
+/* INPUT FIELDS */
+.input-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 25px 0; /* Tăng margin cho spacing cân đối */
+}
+.input-field {
+    width: 100%;
+    height: 60px; /* Tăng height cho xịn */
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--black-color);
+    padding: 0 50px 0 20px; /* Tăng padding right cho icon */
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px; /* Radius nhỏ hơn cho input */
+    outline: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) inset; /* Inner shadow cho depth */
+    transition: all var(--transition-3s) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.input-field:focus {
+    border-color: #99cc00;
+    box-shadow:
+        0 0 0 4px rgba(153, 204, 0, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.08) inset; /* Sửa: Glow vàng khi focus, xịn sò */
+    background: white;
+    transform: translateY(-2px);
+}
+.label {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: var(--secondary-color); /* Xám cho label default */
+    transition: all 0.2s ease;
+    cursor: text;
+    font-weight: var(--font-bold); /* Bold */
+}
+.input-field:focus ~ .label,
+.input-field:valid ~ .label {
+    top: -10px; /* Float cao hơn */
+    font-size: 14px; /* Lớn hơn chút */
+    background-color: var(--white-color); /* Bg trắng cho label float */
+    color: var(--primary-color);
+    padding: 2px 10px;
+    border-radius: 8px; /* Radius mượt */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Shadow nhẹ */
+}
+.input-field:valid ~ .label {
+    color: var(--accent-color); /* Shade sáng khi valid */
+}
+.icon {
+    position: absolute;
+    top: 50%;
+    right: 20px; /* Adjust right cho center */
+    transform: translateY(-50%);
+    font-size: 22px; /* Tăng size */
+    color: var(--secondary-color);
+    transition: color var(--transition-3s); /* Transition color */
+}
+
+/* Chỉ áp dụng cho icon trong input form */
+.input-box .fa-solid {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    font-size: 22px;
+    color: var(--secondary-color);
+}
+
+/* FORGOT PASSWORD & TERMS AND CONDITIONS */
+.form-cols {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px; /* Tăng size */
+    color: var(--white-color);
+    margin-bottom: 15px; /* Spacing */
+}
+.col-1 {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Tăng gap */
+    color: var(--white-color);
+    font-weight: var(--font-bold);
+}
+/* SUBMIT BUTTON */
+.btn-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 55px; /* Tăng height */
+    background: linear-gradient(135deg, #99cc00 0%, #7ab300 100%); /* Gradient vàng xanh cho button xịn */
+    color: #000;
+    font-size: 18px; /* Lớn hơn */
+    font-weight: var(--font-bold);
+    border: none;
+    border-radius: 15px; /* Radius khớp input */
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px rgba(153, 204, 0, 0.3); /* Shadow cho depth */
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-submit:hover::before {
+    left: 100%;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #7ab300 0%, #99cc00 100%); /* Hover gradient đảo */
+    gap: 15px;
+    transform: translateY(-2px); /* Lift up khi hover */
+    box-shadow: 0 12px 32px rgba(153, 204, 0, 0.4);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(153, 204, 0, 0.3);
+}
+
+.btn-submit i {
+    font-size: 22px;
+    color: #000;
+    transition: transform var(--transition-3s) ease; /* Rotate icon hover */
+}
+.btn-submit:hover i {
+    transform: rotate(360deg); /* Rotate icon cho fun */
+}
+/* SWITCH FORM */
+.switch-form {
+    position: relative;
+    text-align: center;
+    margin-top: 25px;
+    z-index: 3;
+    color: var(--white-color);
+    font-size: 16px; /* Tăng size */
+}
+.switch-form a {
+    font-weight: var(--font-bold);
+    color: var(--white-color); /* Trắng cho link */
+    text-decoration: underline;
+    transition: color var(--transition-3s);
+}
+.switch-form a:hover {
+    color: var(--accent-color); /* Hover sáng hơn */
+}
+
+.role-selection {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px; /* Tăng gap */
+    margin-bottom: 25px;
+    color: var(--white-color);
+}
+
+.role-selection label {
+    cursor: pointer;
+}
+
+.role-selection input[type='radio'] {
+    display: none;
+}
+
+.role-selection span {
+    display: inline-block;
+    padding: 10px 15px; /* Tăng padding */
+    border-radius: 25px; /* Radius lớn hơn */
+    border: 2px solid var(--accent-color); /* Border dày hơn */
+    font-size: 15px;
+    font-weight: var(--font-bold);
+    transition: all var(--transition-3s) ease;
+    background-color: transparent; /* Transparent để hiện gradient wrapper */
+    color: var(--white-color);
+}
+.role-selection span:hover {
+    background-color: var(--accent-color); /* Hover bg sáng */
+}
+
+.success-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--gradient-bg); /* Gradient cho notification */
+    color: var(--white-color);
+    padding: 15px 25px; /* Tăng padding */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    z-index: 10000;
+    font-weight: var(--font-bold);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.success-notification i {
+    margin-left: 10px;
+    color: var(--white-color);
+    font-size: 20px;
+}
+
+.google-icon {
+    margin-left: 10px;
+    font-size: 22px;
+    color: #4285f4;
+    transition: all var(--transition-3s);
+}
+
+.google-icon:hover {
+    color: #db4437;
+    transform: rotate(360deg); /* Rotate như button icon */
+}
+
+.btn-google {
+    background: linear-gradient(135deg, #4285f4 0%, #db4437 100%); /* Gradient Google color cho xịn */
+    box-shadow: 0 8px 20px rgba(66, 133, 244, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    &:hover::before {
+        left: 100%;
+    }
+
+    &:hover {
+        background: linear-gradient(135deg, #db4437 0%, #4285f4 100%);
+        gap: 15px;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(66, 133, 244, 0.4);
+    }
+    .google-icon {
+        margin-left: 10px;
+        font-size: 22px;
+        color: var(--white-color);
+    }
+}
+
+/* Responsive for max-width: 1024px */
+@media (max-width: 1024px) {
+    .wrapper {
+        width: 320px;
+        padding: 70px 30px 60px; /* Adjust cho cân đối */
+        transform: translate(-15%, 15%);
+    }
+    .close-icon {
+        top: 15px;
+        right: 15px;
+        font-size: 22px;
+    }
+}
+
+/* Responsive for max-width: 768px */
+@media (max-width: 768px) {
+    .wrapper {
+        width: 380px;
+        padding: 50px 20px 40px;
+        transform: translate(13%, 25%);
+        right: 50%;
+        margin-right: -140px;
+    }
+}
+
+/* Responsive for max-width: 480px */
+@media (max-width: 480px) {
+    .wrapper {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%);
+        width: 95%; /* Tăng width cho đầy màn */
+        max-width: 320px; /* Adjust */
+        padding: 40px 15px 30px;
+        margin: auto;
+        z-index: 1000;
+    }
+    .input-field {
+        height: 55px;
+        font-size: 15px;
+    }
+    .btn-submit {
+        height: 50px;
+        font-size: 16px;
+    }
+    .close-icon {
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+    }
+}
+
+/* Animation Keyframes */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes floatIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animations to form elements */
+.login-form.active,
+.register-form.active {
+    animation: slideUp 0.4s ease-out;
+}

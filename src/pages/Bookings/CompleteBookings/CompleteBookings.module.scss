@@ -1,0 +1,240 @@
+.content-Bookings {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.booking-list {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.booking-item {
+    background: linear-gradient(145deg, #ffffff, #f7fafc);
+    padding: 25px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.booking-item:hover {
+    transform: translateY(-5px);
+    border-color: #2f855a;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.booking-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.booking-info p {
+    margin: 5px 0;
+    font-size: 1.2rem;
+    color: #4a5568;
+}
+
+.booking-info p strong {
+    font-weight: 600;
+    color: #e65d5d;
+}
+
+.caret-icon {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #2f855a;
+    transition: all 0.3s ease;
+    padding: 5px;
+    border-radius: 50%;
+    background-color: #e6f4ea;
+}
+
+.caret-icon:hover {
+    color: #276749;
+    transform: scale(1.1);
+}
+
+.caret-icon.active {
+    transform: rotate(180deg);
+}
+
+.group-icon {
+    display: flex;
+    gap: 10px;
+}
+
+.booking-details {
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #edf2f7;
+    border-left: 4px solid #2f855a;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    animation: slideIn 0.3s ease-in-out;
+}
+
+.detail-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.3s ease;
+}
+
+.detail-card:hover {
+    background-color: #f7fafc;
+}
+
+.detail-card:last-child {
+    border-bottom: none;
+}
+
+.detail-item {
+    flex: 1;
+    font-size: 1.2rem;
+    color: #4a5568;
+    text-align: left;
+    padding: 0 15px;
+}
+
+.detail-item strong {
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.btnPayment {
+    background-color: #156953;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btnPayment:hover {
+    background-color: #30a787;
+    transform: scale(1.05);
+}
+
+.btnPayment:active {
+    transform: scale(0.98);
+}
+
+.invoicePayment {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.invoicePayment h1 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 15px;
+}
+
+.btnDeleteItem {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btnDeleteItem:hover {
+    background-color: #c53030;
+    transform: scale(1.05);
+}
+
+.btnDeleteItem:active {
+    transform: scale(0.98);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 767px) {
+    .content-Bookings {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .booking-list,
+    .invoicePayment {
+        flex: none;
+        width: 100%;
+    }
+
+    .booking-item {
+        padding: 15px;
+    }
+
+    .booking-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .booking-details {
+        padding: 15px;
+    }
+
+    .caret-icon {
+        padding: 6px;
+    }
+
+    .detail-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detail-item {
+        padding: 5px 0;
+    }
+
+    .btnPayment {
+        margin-top: 10px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .booking-item {
+        padding: 20px;
+    }
+
+    .booking-details {
+        padding: 20px;
+    }
+}

@@ -1,0 +1,213 @@
+// Styles chung
+.wrapper {
+    display: flex;
+    gap: 0;
+}
+
+.sideBar {
+    width: 200px;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    max-height: 300px;
+    gap: 10px;
+    transition: transform 0.3s ease;
+}
+
+.sideBar.show-sidebar {
+    transform: translateX(0); // Hiển thị sidebar khi có class này
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 10px;
+}
+
+.username {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+}
+
+.profileText {
+    font-size: 12px;
+    color: #666;
+}
+
+.notificationDot {
+    width: 8px;
+    height: 8px;
+    background-color: #ff5500;
+    border-radius: 50%;
+    margin-left: 5px;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+}
+
+.menuItem svg {
+    margin-right: 10px;
+}
+
+.menuItem.active {
+    background-color: #e0e0e0;
+    font-weight: 600;
+}
+
+.menuItem:hover {
+    background-color: #f0f0f0;
+}
+
+.account svg {
+    color: #5cccae;
+}
+
+.voucher svg {
+    color: #5cccae;
+}
+
+.deviceHistory svg {
+    color: #5cccae;
+}
+
+.changePassword svg {
+    color: #5cccae;
+}
+
+.content {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.username,
+.profileText {
+    display: block;
+}
+
+.header-content {
+    box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.75);
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.status-tabs {
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tab {
+    cursor: pointer;
+    padding: 10px 20px;
+    color: #333;
+}
+
+.tab:hover {
+    color: #156953;
+}
+
+.tab.active {
+    color: #156953;
+    font-weight: bold;
+}
+
+// Styles cho mobile (< 768px)
+@media (max-width: 767px) {
+    .sideBar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        z-index: 1000;
+    }
+
+    .content {
+        width: 100%;
+    }
+
+    .menuButton {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        background-color: #156953;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .status-tabs {
+        overflow-x: auto; // Cho phép cuộn ngang các tab
+        white-space: nowrap; // Đảm bảo tab không xuống dòng
+    }
+
+    .tab {
+        padding: 10px 15px; // Giảm padding trên mobile
+        font-size: 14px;
+    }
+
+    .avatar {
+        width: 24px; // Giảm kích thước avatar
+        height: 24px;
+    }
+
+    .username {
+        font-size: 12px; // Giảm cỡ chữ username
+    }
+
+    .profileText {
+        font-size: 10px; // Giảm cỡ chữ profileText
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .sideBar {
+        width: 150px;
+    }
+
+    .content {
+        width: calc(100% - 150px);
+    }
+}
+
+@media (min-width: 1024px) {
+    .sideBar {
+        width: 200px;
+    }
+
+    .content {
+        width: calc(100% - 200px); // Sử dụng chiều rộng linh hoạt thay vì 993px
+    }
+}

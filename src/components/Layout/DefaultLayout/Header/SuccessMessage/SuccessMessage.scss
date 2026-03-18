@@ -1,0 +1,31 @@
+.success {
+    position: fixed;
+    top: 195px;
+    right: 1px;
+    background-color: black;
+    height: 50px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.content-success {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #fff;
+    padding: 8px 16px;
+}
+
+.content h4 {
+    font-weight: 400;
+    font-size: 16px;
+    padding: 8px 16px;
+}
+
+.succes-icon {
+    font-size: 20px;
+    color: #36a5ea;
+}

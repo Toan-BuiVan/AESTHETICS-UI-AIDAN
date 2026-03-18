@@ -1,0 +1,125 @@
+.payment-result {
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    background-color: #fff;
+    border-radius: 8px;
+    min-width: 400px;
+    max-width: 400px;
+    margin: 20px auto;
+    min-height: 300px;
+}
+
+.payment-result p {
+    color: #000;
+    margin: 10px 0;
+}
+
+.payment-result.failure {
+    background-color: #fff5f5;
+}
+
+.payment-result.success {
+    background-color: #f0fff0;
+}
+
+.success-title {
+    color: #28a745;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.failure-title {
+    color: #ff0000;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.error-title {
+    color: #ffc107;
+    font-size: 24px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #156953;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.back-link:hover {
+    background-color: #239c7c;
+}
+
+.failure-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #ff4500, #ff6347);
+    position: relative;
+    margin: 0 auto 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.failure-icon::before {
+    content: '!';
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.success-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #28a745, #34d058);
+    position: relative;
+    margin: 0 auto 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon::before {
+    content: '✓';
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.transaction-details {
+    display: flex;
+    margin: 20px 0;
+}
+
+.transaction-details div {
+    background-color: #f0f0f0;
+    padding: 10px;
+    width: 48%;
+    text-align: left;
+}
+
+.transaction-details span {
+    display: block;
+    color: #666;
+    font-size: 14px;
+}
+
+.transaction-details p {
+    margin: 5px 0 0;
+    font-size: 16px;
+    color: #000;
+}
