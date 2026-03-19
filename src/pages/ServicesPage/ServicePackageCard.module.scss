@@ -1,0 +1,141 @@
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid #e0e0e0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(28, 160, 125, 0.15);
+        border-color: #1ca07d;
+    }
+
+    &.selected {
+        border-color: #1ca07d;
+        background: linear-gradient(135deg, #f0faf8 0%, #e8f7f3 100%);
+        box-shadow: 0 4px 20px rgba(28, 160, 125, 0.2);
+    }
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.iconContainer {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #e8f7f3 0%, #d4f1eb 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+
+    &.package {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    }
+}
+
+.checkmark {
+    color: #1ca07d;
+    font-size: 24px;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.serviceName {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.priceSection {
+    margin-bottom: 12px;
+}
+
+.price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1ca07d;
+    display: inline-block;
+}
+
+.packageInfo {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.infoItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+
+    svg {
+        color: #1ca07d;
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+    flex: 1;
+}
+
+.selectBtn {
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(28, 160, 125, 0.3);
+    }
+
+    &.active {
+        background: linear-gradient(135deg, #169d72 0%, #128c68 100%);
+    }
+}

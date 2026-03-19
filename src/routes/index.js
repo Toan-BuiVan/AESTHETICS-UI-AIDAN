@@ -6,6 +6,8 @@ import PaymentResult from '~/pages/PaymentResult';
 import CartProduct from '~/pages/CartProduct';
 import ServicesPage from '~/pages/ServicesPage';
 import Bookings from '~/pages/Bookings';
+import ServicesListPage from '~/pages/ServicesListPage';
+import ServiceDetailsPage from '~/pages/ServiceDetailsPage';
 
 const publicRoutes = [
     { path: '/', component: HomePage },
@@ -15,6 +17,8 @@ const publicRoutes = [
     { path: '/payment-result', component: PaymentResult },
     { path: '/cartProduct', component: CartProduct },
     { path: '/bookings', component: Bookings },
+    { path: '/services-list', component: ServicesListPage },
+    { path: '/services/:serviceId', component: ServiceDetailsPage },
 ];
 
 const privateRoutes = [];
