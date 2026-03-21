@@ -53,7 +53,7 @@ function Header() {
             const token = localStorage.getItem('token');
 
             // Gửi yêu cầu POST với payload { accessToken: token }
-            const response = await axios.post('http://localhost:5262/api/Authentication/LogOut_Account', {
+            const response = await axios.post('http://localhost:5122/api/Authentication/logout', {
                 accessToken: token,
             });
 
@@ -92,7 +92,7 @@ function Header() {
                 throw new Error('Không tìm thấy accessToken');
             }
 
-            const response = await axios.post('http://localhost:5262/api/Authentication/LogOutAll_Account', {
+            const response = await axios.post('http://localhost:5122/api/Authentication/logout', {
                 accessToken,
             });
 
@@ -174,13 +174,6 @@ function Header() {
         search();
     }, [debounce]);
 
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         setIsContactVisible(true);
-    //     }, 5000);
-    //     return () => clearTimeout(timer);
-    // }, []);
-
     const handleConsultClick = () => {
         setIsContactVisible(!isContactVisible);
     };
@@ -201,17 +194,7 @@ function Header() {
     };
 
     const handleBookingsClick = () => {
-        const requiredFields = ['deviceName', 'refreshToken', 'token', 'typePerson', 'userID', 'userName'];
-        const missingFields = requiredFields.filter((field) => !localStorage.getItem(field));
-
-        if (missingFields.length > 0) {
-            setSuccessMessage('Vui lòng đăng nhập để xem lịch đặt trước.');
-            setTimeout(() => {
-                setSuccessMessage(null);
-            }, 2000);
-        } else {
-            window.location.href = '/bookings';
-        }
+        window.location.href = '/servicesPage';
     };
 
     return (
@@ -269,8 +252,8 @@ function Header() {
                     <div className={cx('icons-right')}>
                         <FontAwesomeIcon icon={faCalendarDays} onClick={handleBookingsClick} />
                         <div className={cx('user-icon')}>
-                            <FontAwesomeIcon
-                                icon={faUser}
+                            <button
+                                className={cx('user-icon-btn', isMenuVisible && isLoggedIn() ? 'active' : '')}
                                 onClick={() => {
                                     if (isLoggedIn()) {
                                         setIsMenuVisible(!isMenuVisible);
@@ -278,13 +261,32 @@ function Header() {
                                         setIsLoginVisible(!isLoginVisible);
                                     }
                                 }}
-                            />
+                                title="Tài khoản"
+                            >
+                                <FontAwesomeIcon icon={faUser} />
+                            </button>
                             {isMenuVisible && isLoggedIn() && (
-                                <ul className={cx('user-menu')}>
-                                    <li onClick={handleProfileClick}>Trang cá nhân</li>
-                                    <li onClick={handleLogoutDevice}>Đăng xuất 1 thiết bị</li>
-                                    <li onClick={handleLogoutAllDevices}>Đăng xuất tất cả thiết bị</li>
-                                </ul>
+                                <>
+                                    <div 
+                                        className={cx('menu-backdrop')} 
+                                        onClick={() => setIsMenuVisible(false)}
+                                    ></div>
+                                    <ul className={cx('user-menu')}>
+                                        <li className={cx('menu-item')} onClick={handleProfileClick}>
+                                            <FontAwesomeIcon icon={faUser} />
+                                            Trang cá nhân
+                                        </li>
+                                        <li className={cx('menu-divider')}></li>
+                                        <li className={cx('menu-item')} onClick={handleLogoutDevice}>
+                                            <FontAwesomeIcon icon={faUser} />
+                                            Đăng xuất 1 thiết bị
+                                        </li>
+                                        <li className={cx('menu-item')} onClick={handleLogoutAllDevices}>
+                                            <FontAwesomeIcon icon={faUser} />
+                                            Đăng xuất tất cả thiết bị
+                                        </li>
+                                    </ul>
+                                </>
                             )}
                         </div>
                         <FontAwesomeIcon icon={faCartShopping} onClick={handleCartClick} />

@@ -265,6 +265,130 @@
     position: relative;
 }
 
+.user-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #156953;
+    padding: 8px 12px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    z-index: 1001;
+
+    &:hover {
+        background: rgba(21, 105, 83, 0.1);
+        transform: scale(1.1);
+        color: #0f4a35;
+    }
+
+    &.active {
+        background: linear-gradient(135deg, rgba(21, 105, 83, 0.15) 0%, rgba(41, 196, 154, 0.1) 100%);
+        color: #0f4a35;
+    }
+
+    svg {
+        transition: transform 0.3s ease;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.menu-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    z-index: 999;
+    cursor: pointer;
+}
+
+.user-menu {
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
+    border: 1px solid rgba(21, 105, 83, 0.15);
+    border-radius: 12px;
+    box-shadow:
+        0 12px 32px rgba(21, 105, 83, 0.15),
+        0 0 1px rgba(0, 0, 0, 0.08);
+    min-width: 240px;
+    list-style: none;
+    padding: 8px 0;
+    margin: 0;
+    z-index: 1000;
+    animation: slideDownMenu 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+
+    @media (max-width: 480px) {
+        min-width: 200px;
+        top: 40px;
+    }
+}
+
+@keyframes slideDownMenu {
+    from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.menu-item {
+    padding: 12px 18px;
+    color: #2d3748;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    // position: relative;
+
+    svg {
+        color: #667eea;
+        width: 16px;
+        height: 16px;
+        transition: all 0.2s ease;
+    }
+
+    &:hover {
+        background: linear-gradient(135deg, rgba(21, 105, 83, 0.08) 0%, rgba(41, 196, 154, 0.05) 100%);
+        color: #156953;
+        padding-left: 22px;
+
+        svg {
+            color: #156953;
+            transform: scale(1.2);
+        }
+    }
+
+    &:active {
+        background: linear-gradient(135deg, rgba(21, 105, 83, 0.12) 0%, rgba(41, 196, 154, 0.08) 100%);
+    }
+}
+
+.menu-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(21, 105, 83, 0.1) 50%, transparent 100%);
+    margin: 4px 0;
+    padding: 0;
+    list-style: none;
+}
+
 .search-results {
     width: 100%;
     max-width: 500px;

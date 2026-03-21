@@ -1666,31 +1666,54 @@ input[type='email']:focus {
     }
 
     /* Title Section */
+    .title {
+        padding: 40px 15px;
+    }
+
     .title h2 {
         font-size: 2rem;
+        letter-spacing: 1px;
     }
+
     .title p {
-        font-size: 1.4rem;
+        font-size: 0.95rem;
         padding: 0 15px;
     }
 
+    .titlerts-container p {
+        font-size: 1.5rem;
+        padding: 20px 15px 0;
+    }
+
     /* Features Section */
+    .feature-row {
+        gap: 2rem;
+    }
+
     .feature-item {
         max-width: 280px;
+        padding: 25px 15px;
     }
+
     .feature-icon {
         width: 150px;
         height: 150px;
+        margin-bottom: 1.2rem;
     }
+
     .feature-icon img {
         width: 120px;
         height: 120px;
+        border: 3px solid #156953;
     }
+
     .feature-title {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
     }
+
     .feature-description {
-        font-size: 1.3rem;
+        font-size: 0.9rem;
     }
 
     /* Banner Image Section */
@@ -1700,540 +1723,949 @@ input[type='email']:focus {
     }
 
     /* Technology Cards Section */
-    .section-title {
-        font-size: 24px;
+    .section-content {
+        padding: 60px 15px;
     }
+
+    .section-title {
+        font-size: 2.2rem;
+        margin-bottom: 40px;
+    }
+
+    .tech-cards {
+        gap: 20px;
+        padding: 20px 0 0 0;
+    }
+
     .tech-card {
-        flex: 1 1 calc(33.33% - 15px); /* 3 items per row */
-        min-width: 200px;
+        flex: 1 1 calc(33.33% - 15px);
+        min-width: 180px;
+        padding: 20px;
+    }
+
+    .tech-card h3 {
+        font-size: 15px;
+    }
+
+    .tech-card p {
+        font-size: 13px;
+        min-height: 60px;
     }
 
     /* Beauty Stories Section */
+    .section-relative {
+        padding: 50px 15px;
+    }
+
     .section-title-relative {
         font-size: 1.8rem;
+        margin-bottom: 30px;
     }
+
     .beauty-story {
         height: 400px;
     }
+
     .story-content p {
-        font-size: 14px;
-    }
-    .read-more {
-        font-size: 12px;
-        padding: 6px 12px;
+        font-size: 13px;
     }
 
     /* Sales Section */
+    .section-sales {
+        padding: 40px 15px;
+    }
+
     .section-sales .block-title h2 {
         font-size: 1.8rem;
     }
+
     .sales-item {
-        max-width: 450px;
+        max-width: 420px;
+        padding: 20px;
     }
 
     /* Articles/News Section */
+    .block-tintuc {
+        padding: 40px 15px;
+    }
+
     .block-tintuc h2 {
         font-size: 1.8rem;
+        margin-bottom: 30px;
     }
+
     .left-article h3 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
     }
+
     .left-article p {
-        font-size: 1.4rem;
-        line-height: 2;
+        font-size: 1.2rem;
+        line-height: 1.8;
     }
+
     .right-article h4 {
-        font-size: 1.1em;
+        font-size: 1rem;
     }
 
     /* Video Section */
+    .section-video {
+        padding: 40px 15px;
+    }
+
     .section-video h2 {
         font-size: 1.8rem;
+        margin-bottom: 30px;
     }
+
     .video-item {
-        width: 250px;
-        flex: 0 0 250px;
+        width: 230px;
+        flex: 0 0 230px;
     }
 
     /* Review Section */
+    .customer-review {
+        padding: 40px 15px;
+    }
+
     .customer-review h2 {
-        font-size: 22px;
+        font-size: 1.8rem;
+        margin-bottom: 30px;
     }
+
     .review-image img {
-        width: 150px;
-        height: 150px;
+        width: 140px;
+        height: 140px;
     }
+
     .reviewer-name {
-        font-size: 18px;
-    }
-    .review-text {
         font-size: 16px;
+    }
+
+    .review-text {
+        font-size: 14px;
     }
 
     /* Message Section */
     .section-nhan-tin {
-        padding: 30px;
+        padding: 30px 15px;
     }
+
     .section-titlee {
         font-size: 18px;
     }
+
     .description {
         font-size: 14px;
     }
 
     /* FAQ Section */
-    .cauhoi-title {
-        font-size: 24px;
+    .section-cau-hoi {
+        padding: 30px 15px;
     }
+
+    .cauhoi-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
     .cauhoi-question-title {
+        font-size: 14px;
+    }
+
+    .cauhoi-content {
         font-size: 15px;
     }
-    .cauhoi-content {
-        font-size: 16px;
-    }
+
     .cauhoi-feature-content h3 {
-        font-size: 22px;
+        font-size: 1.6rem;
     }
+
     .cauhoi-feature-content p {
-        font-size: 14px;
+        font-size: 13px;
     }
 }
 
 /* Màn hình dưới 768px */
 @media (max-width: 768px) {
+    /* Header Section */
+    .heder {
+        width: 100%;
+    }
+
+    .heder img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
     /* Title Section */
     .title {
-        padding: 20px 10px;
+        padding: 30px 12px;
     }
+
+    .title::before {
+        width: 200px;
+        height: 200px;
+        top: -30%;
+        right: -20%;
+    }
+
+    .title::after {
+        width: 180px;
+        height: 180px;
+        bottom: -30%;
+        left: -15%;
+    }
+
     .title h2 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        margin-bottom: 0.8rem;
+        letter-spacing: 1px;
     }
+
     .title p {
-        font-size: 1.2rem;
+        font-size: 0.95rem;
         padding: 0 10px;
+        line-height: 1.6;
+    }
+
+    .titlerts-container p {
+        padding-top: 15px;
+        font-size: 1.3rem;
+        line-height: 1.5;
     }
 
     /* Features Section */
     .features-container {
         padding: 0 10px;
+        margin: 2rem auto;
     }
+
     .feature-row {
         flex-direction: column;
         align-items: center;
+        gap: 1.5rem;
     }
+
     .feature-item {
+        width: 100%;
         max-width: 100%;
-        min-width: 100%;
-        padding: 0 10px;
+        min-width: auto;
+        padding: 20px 12px;
+        margin-bottom: 1rem;
     }
+
     .feature-icon {
         width: 120px;
         height: 120px;
+        margin-bottom: 1rem;
     }
+
     .feature-icon img {
         width: 100px;
         height: 100px;
+        border: 3px solid #156953;
     }
+
     .feature-title {
-        font-size: 1.2rem;
-    }
-    .feature-description {
         font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    .feature-description {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    /* Banner Image Section */
+    .img-inner {
+        width: 100%;
+    }
+
+    .img-inner img {
+        width: 100%;
+        height: auto;
     }
 
     /* Technology Cards Section */
     .section-content {
-        padding: 40px 0;
+        padding: 40px 12px;
     }
+
+    .section-content::before {
+        width: 250px;
+        height: 250px;
+        top: -10%;
+        right: -15%;
+    }
+
     .section-title {
-        font-size: 20px;
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+        letter-spacing: 0.5px;
     }
+
     .tech-cards {
-        padding: 20px 0 0 0;
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 0 0 0;
     }
+
     .tech-card {
-        flex: 1 1 100%; /* 1 item per row */
+        flex: 1 1 100%;
         min-width: 100%;
         padding: 15px;
+        max-width: 100%;
     }
+
     .tech-card h3 {
-        font-size: 16px;
+        font-size: 15px;
+        min-height: 40px;
     }
+
     .tech-card p {
-        font-size: 14px;
+        font-size: 13px;
         min-height: 50px;
     }
+
     .btn-detail {
         font-size: 12px;
-        padding: 5px 10px;
+        padding: 6px 12px;
     }
 
     /* Beauty Stories Section */
     .section-relative {
         height: auto;
-        padding: 60px 10px;
+        padding: 40px 12px;
     }
+
     .section-title-relative {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
     }
+
     .beauty-story {
         flex-direction: column;
         height: auto;
     }
+
     .story-image {
         flex: none;
         max-width: 100%;
-        height: 250px;
+        height: 220px;
+        border-radius: 12px 12px 0 0;
     }
+
     .story-content {
         flex: none;
         height: auto;
         padding: 15px;
+        border-radius: 0 0 12px 12px;
     }
+
     .story-content p {
         font-size: 13px;
+        line-height: 1.5;
     }
+
     .read-more {
-        font-size: 11px;
-        padding: 5px 10px;
+        font-size: 12px;
+        padding: 6px 12px;
         margin-left: 0;
-        width: auto;
-    }
-    .slider-left,
-    .slider-right {
-        font-size: 20px;
     }
 
     /* Sales Section */
     .section-sales {
-        padding-bottom: 10px;
+        padding: 30px 12px;
     }
-    .section-sales .block-title h2 {
-        font-size: 1.6rem;
-        margin: 30px 0;
-    }
-    .sales-container {
-        padding: 0 10px;
-    }
-    .sales-item {
-        flex-direction: column;
-        height: auto;
-        max-width: 100%;
-    }
-    .sales-image {
-        max-width: 100%;
-        height: 250px;
-    }
-    .sales-content {
-        padding: 15px;
+
+    .section-sales .block-title {
         text-align: center;
     }
-    .sales-title {
+
+    .section-sales .block-title h2 {
         font-size: 1.6rem;
+        margin-bottom: 15px;
     }
+
+    .sales-item {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .sales-title {
+        font-size: 1.2rem;
+    }
+
     .sales-description {
-        font-size: 1.3rem;
+        font-size: 0.9rem;
     }
+
     .btn-detail-seales {
-        align-self: center;
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-    .navigation-buttons {
-        top: 40%;
-    }
-    .prev-button,
-    .next-button {
-        width: 35px;
-        height: 35px;
+        font-size: 12px;
+        padding: 8px 16px;
     }
 
     /* Articles/News Section */
-    .setion-tintuc {
-        padding: 15px;
+    .block-tintuc {
+        padding: 30px 12px;
     }
+
     .block-tintuc h2 {
         font-size: 1.6rem;
+        margin-bottom: 20px;
     }
-    .articles-container {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .left-article {
-        padding: 10px;
-    }
-    .left-article img {
-        margin-bottom: 15px;
-    }
-    .left-article h3 {
-        font-size: 1.4rem;
-    }
-    .left-article p {
-        font-size: 1.2rem;
-        line-height: 1.8;
-    }
-    .right-articles {
+
+    .articles-grid {
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 20px;
     }
-    .right-article {
-        padding: 10px;
+
+    .left-article {
+        order: 1;
     }
+
+    .left-article h3 {
+        font-size: 1.3rem;
+    }
+
+    .left-article p {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .right-articles {
+        order: 2;
+    }
+
     .right-article h4 {
-        font-size: 1em;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .right-article p {
+        font-size: 0.85rem;
     }
 
     /* Video Section */
     .section-video {
-        padding: 30px 10px;
+        padding: 30px 12px;
     }
+
     .section-video h2 {
         font-size: 1.6rem;
-    }
-    .video-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    .video-item {
-        width: 100%;
-        max-width: 300px;
-        flex: 0 0 100%;
-        margin-right: 0;
         margin-bottom: 20px;
+    }
+
+    .video-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .video-item {
+        width: 200px;
+        flex: 0 0 200px;
+        margin-right: 15px;
+    }
+
+    .video-item p {
+        font-size: 12px;
     }
 
     /* Review Section */
     .customer-review {
-        padding: 15px;
+        padding: 30px 12px;
     }
+
     .customer-review h2 {
-        font-size: 20px;
+        font-size: 1.6rem;
+        margin-bottom: 20px;
     }
-    .review-wrapper {
-        flex-direction: column;
-        max-width: 100%;
-    }
+
     .review-image img {
         width: 120px;
         height: 120px;
     }
+
     .reviewer-name {
-        font-size: 16px;
+        font-size: 15px;
     }
+
     .review-text {
-        font-size: 14px;
-    }
-    .arrow-left,
-    .arrow-right {
-        width: 35px;
-        height: 35px;
-    }
-    .arrow-left {
-        left: 10px;
-    }
-    .arrow-right {
-        right: 10px;
+        font-size: 13px;
+        line-height: 1.5;
     }
 
     /* Message Section */
     .section-nhan-tin {
-        padding: 20px;
+        padding: 25px 12px;
+        border-radius: 12px;
+        margin: 30px 12px;
     }
-    .content-wrapper {
+
+    .section-titlee {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+
+    .description {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .input-group {
+        gap: 10px;
         flex-direction: column;
-        align-items: center;
-        gap: 20px;
     }
-    .form-content {
-        text-align: center;
+
+    .input-group input {
         width: 100%;
     }
-    .input-group {
-        justify-content: center;
+
+    .btn-submit {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 14px;
     }
 
     /* FAQ Section */
     .section-cau-hoi {
-        padding: 30px 10px;
+        padding: 30px 12px;
     }
+
     .cauhoi-container {
         flex-direction: column;
         align-items: center;
+        gap: 20px;
     }
+
     .cauhoi-left-section,
     .cauhoi-right-section {
         width: 100%;
         text-align: center;
     }
+
     .cauhoi-title {
-        text-align: center;
-        font-size: 22px;
+        font-size: 1.6rem;
+        margin-bottom: 15px;
     }
+
     .cauhoi-question-title {
-        font-size: 16px;
+        font-size: 15px;
     }
+
     .cauhoi-content {
         font-size: 14px;
+        line-height: 1.5;
     }
+
     .cauhoi-features {
         flex-direction: column;
+        gap: 15px;
     }
+
     .cauhoi-feature {
+        width: 100%;
         max-width: 100%;
     }
-    .cauhoi-feature-content h3 {
-        font-size: 20px;
+
+    .cauhoi-feature-image img {
+        max-width: 100px;
     }
+
+    .cauhoi-feature-content h3 {
+        font-size: 1.3rem;
+    }
+
     .cauhoi-feature-content p {
-        font-size: 13px;
+        font-size: 12px;
     }
 }
 
 /* Màn hình dưới 480px */
 @media (max-width: 480px) {
-    /* Title Section */
-    .title h2 {
-        font-size: 1.5rem;
+    /* Header Section */
+    .heder img {
+        width: 100%;
+        height: auto;
     }
+
+    /* Title Section */
+    .title {
+        padding: 20px 10px;
+    }
+
+    .title::before,
+    .title::after {
+        width: 150px;
+        height: 150px;
+    }
+
+    .title h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.6rem;
+        letter-spacing: 0.5px;
+    }
+
     .title p {
-        font-size: 1rem;
-        padding: 0 5px;
+        font-size: 0.85rem;
+        padding: 0 8px;
+        line-height: 1.5;
+    }
+
+    .titlerts-container p {
+        padding-top: 12px;
+        font-size: 1.1rem;
+        line-height: 1.4;
     }
 
     /* Features Section */
+    .features-container {
+        padding: 0 8px;
+        margin: 1.5rem auto;
+    }
+
+    .feature-row {
+        gap: 1rem;
+    }
+
+    .feature-item {
+        width: 100%;
+        padding: 15px 10px;
+        margin-bottom: 0.8rem;
+        border-radius: 16px;
+    }
+
     .feature-icon {
         width: 100px;
         height: 100px;
+        margin-bottom: 0.8rem;
     }
+
     .feature-icon img {
         width: 80px;
         height: 80px;
+        border: 2px solid #156953;
     }
+
     .feature-title {
         font-size: 1rem;
+        margin-bottom: 6px;
     }
+
     .feature-description {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        line-height: 1.4;
     }
 
     /* Technology Cards Section */
+    .section-content {
+        padding: 25px 10px;
+    }
+
+    .section-content::before {
+        width: 180px;
+        height: 180px;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+        letter-spacing: 0px;
+    }
+
+    .tech-cards {
+        gap: 12px;
+        padding: 10px 0 0 0;
+    }
+
     .tech-card {
-        padding: 10px;
+        padding: 12px;
+        border-radius: 12px;
     }
+
     .tech-card h3 {
-        font-size: 14px;
+        font-size: 13px;
+        min-height: 30px;
     }
+
     .tech-card p {
-        font-size: 12px;
-        min-height: 40px;
+        font-size: 11px;
+        min-height: 35px;
+        line-height: 1.4;
     }
+
     .btn-detail {
         font-size: 10px;
-        padding: 4px 8px;
+        padding: 5px 10px;
+        border-radius: 6px;
     }
 
     /* Beauty Stories Section */
+    .section-relative {
+        height: auto;
+        padding: 25px 10px;
+    }
+
     .section-title-relative {
         font-size: 1.4rem;
+        margin-bottom: 15px;
     }
+
+    .beauty-story {
+        flex-direction: column;
+        height: auto;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .story-image {
+        flex: none;
+        width: 100%;
+        height: 180px;
+    }
+
+    .story-content {
+        flex: none;
+        padding: 12px;
+        height: auto;
+    }
+
     .story-content p {
         font-size: 12px;
+        line-height: 1.4;
     }
+
     .read-more {
         font-size: 10px;
-        padding: 4px 8px;
+        padding: 5px 10px;
+        margin-top: 8px;
     }
 
     /* Sales Section */
+    .section-sales {
+        padding: 20px 10px;
+    }
+
     .section-sales .block-title h2 {
         font-size: 1.4rem;
+        margin-bottom: 15px;
     }
+
+    .sales-item {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+
     .sales-title {
-        font-size: 1.4rem;
-    }
-    .sales-description {
         font-size: 1.1rem;
     }
+
+    .sales-description {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
     .btn-detail-seales {
-        font-size: 12px;
-        padding: 8px 16px;
+        font-size: 11px;
+        padding: 6px 12px;
     }
 
     /* Articles/News Section */
+    .block-tintuc {
+        padding: 20px 10px;
+    }
+
     .block-tintuc h2 {
         font-size: 1.4rem;
+        margin-bottom: 15px;
     }
+
+    .articles-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .left-article {
+        padding: 12px 0;
+    }
+
     .left-article h3 {
         font-size: 1.2rem;
     }
+
     .left-article p {
-        font-size: 1rem;
+        font-size: 0.85rem;
+        line-height: 1.5;
     }
+
+    .right-article {
+        padding: 10px 0;
+        margin-bottom: 10px;
+    }
+
     .right-article h4 {
-        font-size: 0.9em;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+
+    .right-article p {
+        font-size: 0.75rem;
+        line-height: 1.3;
     }
 
     /* Video Section */
+    .section-video {
+        padding: 20px 10px;
+    }
+
     .section-video h2 {
         font-size: 1.4rem;
+        margin-bottom: 15px;
     }
+
+    .video-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 -10px;
+    }
+
     .video-item {
-        max-width: 250px;
+        width: 160px;
+        flex: 0 0 160px;
+        margin-right: 10px;
+        border-radius: 10px;
     }
+
     .video-item p {
-        font-size: 0.9rem;
+        font-size: 11px;
     }
 
     /* Review Section */
-    .customer-review h2 {
-        font-size: 18px;
+    .customer-review {
+        padding: 20px 10px;
     }
+
+    .customer-review h2 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+    }
+
+    .review-container {
+        flex-direction: column;
+    }
+
     .review-image img {
         width: 100px;
         height: 100px;
     }
-    .reviewer-name {
-        font-size: 14px;
+
+    .review-content {
+        flex: 1;
+        margin-top: 10px;
     }
+
+    .reviewer-name {
+        font-size: 13px;
+    }
+
     .review-text {
-        font-size: 12px;
+        font-size: 11px;
+        line-height: 1.4;
     }
 
     /* Message Section */
     .section-nhan-tin {
-        padding: 15px;
+        padding: 20px 10px;
+        margin: 20px 10px;
+        border-radius: 10px;
     }
+
     .section-titlee {
-        font-size: 16px;
+        font-size: 1.2rem;
+        margin-bottom: 8px;
     }
+
     .description {
         font-size: 12px;
+        line-height: 1.4;
     }
+
+    .input-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        font-size: 13px;
+    }
+
     .btn-submit {
-        padding: 8px 16px;
-        font-size: 14px;
+        width: 100%;
+        padding: 10px 16px;
+        font-size: 13px;
     }
 
     /* FAQ Section */
     .section-cau-hoi {
-        padding: 20px 5px;
+        padding: 20px 10px;
     }
+
+    .cauhoi-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cauhoi-left-section,
+    .cauhoi-right-section {
+        width: 100%;
+    }
+
     .cauhoi-title {
-        font-size: 18px;
+        font-size: 1.3rem;
+        margin-bottom: 12px;
     }
+
     .cauhoi-question-title {
-        font-size: 14px;
+        font-size: 13px;
     }
+
     .cauhoi-content {
-        font-size: 12px;
+        font-size: 11px;
+        line-height: 1.4;
     }
+
+    .cauhoi-features {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .cauhoi-feature {
+        width: 100%;
+    }
+
+    .cauhoi-feature-image {
+        width: 70px;
+        height: 70px;
+    }
+
     .cauhoi-feature-image img {
-        max-width: 80px;
+        max-width: 60px;
     }
+
     .cauhoi-feature-content h3 {
-        font-size: 18px;
+        font-size: 1.1rem;
     }
+
     .cauhoi-feature-content p {
-        font-size: 12px;
+        font-size: 11px;
+    }
+
+    .cauhoi-feature:hover {
+        transform: scale(1.02);
     }
 }

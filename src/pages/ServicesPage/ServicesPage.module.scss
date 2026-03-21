@@ -2,32 +2,72 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f7 100%);
 }
 
 .hero {
     background: linear-gradient(135deg, #1ca07d 0%, #16875a 100%);
     color: white;
-    padding: 60px 40px;
+    padding: 80px 40px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
 }
 
 .heroContent {
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 
     h1 {
-        font-size: 48px;
-        font-weight: 700;
-        margin: 0 0 12px 0;
-        letter-spacing: -0.5px;
+        font-size: 56px;
+        font-weight: 800;
+        margin: 0 0 16px 0;
+        letter-spacing: -1px;
+        animation: slideDown 0.6s ease-out;
     }
 
     p {
-        font-size: 18px;
+        font-size: 20px;
         margin: 0;
         opacity: 0.95;
-        font-weight: 300;
+        font-weight: 400;
+        animation: slideUp 0.6s ease-out 0.1s both;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -35,35 +75,53 @@
     max-width: 1400px;
     margin: 0 auto;
     width: 100%;
-    padding: 40px 30px;
+    padding: 50px 30px;
     display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 30px;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
 }
 
 .mainContent {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 40px;
+    animation: fadeIn 0.6s ease-out 0.2s both;
 }
 
 .sidebar {
     flex-shrink: 0;
+    animation: fadeIn 0.6s ease-out 0.3s both;
 }
 
-// Filter Section
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+// Filter Section - Enhanced
 .filterSection {
     background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    animation: slideDown 0.6s ease-out;
+
+    &:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
 }
 
 .filterHeader {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     font-size: 16px;
     font-weight: 700;
     color: #1a1a1a;
@@ -72,6 +130,18 @@
         color: #1ca07d;
         width: 20px;
         height: 20px;
+        animation: rotate 0.6s ease-out;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(-90deg);
+        opacity: 0;
+    }
+    to {
+        transform: rotate(0);
+        opacity: 1;
     }
 }
 
@@ -82,10 +152,17 @@
     font-size: 20px;
     cursor: pointer;
     color: #999;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
 
     &:hover {
-        color: #666;
+        color: #1ca07d;
+        background: #f0faf8;
     }
 }
 
@@ -96,179 +173,323 @@
 }
 
 .filterBtn {
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: 2px solid #e0e0e0;
     background: white;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
     color: #666;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        z-index: -1;
+        transition: left 0.3s ease;
+    }
 
     &:hover {
         border-color: #1ca07d;
         color: #1ca07d;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(28, 160, 125, 0.15);
     }
 
     &.active {
-        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
-        border-color: #1ca07d;
         color: white;
+        border-color: #1ca07d;
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        box-shadow: 0 6px 20px rgba(28, 160, 125, 0.3);
     }
 }
 
-// Sections
+// Sections - Enhanced
 .section {
     background: white;
-    border-radius: 12px;
-    padding: 28px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    animation: slideUp 0.6s ease-out;
+
+    &:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
 }
 
 .sectionHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f5f5f5;
+    transition: all 0.3s ease;
 
     h2 {
-        font-size: 22px;
-        font-weight: 700;
+        font-size: 24px;
+        font-weight: 800;
         color: #1a1a1a;
         margin: 0;
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 }
 
 .count {
     font-size: 14px;
     color: #999;
-    font-weight: 500;
+    font-weight: 600;
+    background: #f5f5f5;
+    padding: 4px 12px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: #e8f7f3;
+        color: #1ca07d;
+    }
 }
 
-// Services Grid
+// Services Grid - Enhanced
 .servicesGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
 }
 
 .emptyState {
     grid-column: 1 / -1;
-    padding: 60px 20px;
+    padding: 80px 20px;
     text-align: center;
     color: #999;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.05) 0%, rgba(22, 135, 90, 0.05) 100%);
+    border-radius: 12px;
+    border: 2px dashed rgba(28, 160, 125, 0.2);
 
     p {
         font-size: 16px;
         margin: 0;
+        font-weight: 500;
     }
 }
 
-// Doctors Grid
+// Doctors Grid - Enhanced
 .doctorsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
 }
 
-// Date and Time Selection
+// Date and Time Selection - Enhanced
 .dateTimeContainer {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 28px;
 }
 
 .datePickerWrapper {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    animation: slideUp 0.6s ease-out;
 
     label {
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 15px;
+        font-weight: 700;
         color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &::before {
+            content: '📅';
+            font-size: 18px;
+        }
     }
 
     :global(.MuiOutlinedInput-root) {
-        border-radius: 8px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        font-size: 15px;
+        font-weight: 500;
 
         &:hover fieldset {
             border-color: #1ca07d;
+            box-shadow: 0 4px 12px rgba(28, 160, 125, 0.15);
         }
 
-        &.Mui-focused fieldset {
-            border-color: #1ca07d;
+        &.Mui-focused {
+            box-shadow: 0 8px 24px rgba(28, 160, 125, 0.2);
+
+            fieldset {
+                border-color: #1ca07d;
+                border-width: 2px;
+            }
         }
     }
 
     :global(.MuiOutlinedInput-input) {
+        padding: 14px 16px;
         font-size: 15px;
+    }
+
+    :global(.MuiIconButton-root) {
+        color: #1ca07d;
+
+        &:hover {
+            background: #f0faf8;
+        }
     }
 }
 
 .timeSlots {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+    animation: slideUp 0.6s ease-out 0.1s both;
 
     label {
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 15px;
+        font-weight: 700;
         color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &::before {
+            content: '🕐';
+            font-size: 18px;
+        }
     }
 }
 
 .slotsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
     gap: 12px;
 }
 
 .timeSlot {
-    padding: 12px;
-    border: 2px solid #e0e0e0;
+    padding: 14px 12px;
+    border: 2px solid #e8e8e8;
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     color: #666;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        z-index: -1;
+        transition: left 0.3s ease;
+    }
 
     &:hover {
         border-color: #1ca07d;
         color: #1ca07d;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(28, 160, 125, 0.2);
     }
 
     &.selected {
-        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
-        border-color: #1ca07d;
         color: white;
+        border-color: #1ca07d;
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        box-shadow: 0 8px 24px rgba(28, 160, 125, 0.3);
+        transform: translateY(-2px);
+
+        &::after {
+            content: '✓';
+            position: absolute;
+            right: 6px;
+            top: 2px;
+            font-size: 16px;
+        }
     }
 }
 
-// Responsive Design
+// Responsive Design - Enhanced
 @media (max-width: 1200px) {
     .container {
         grid-template-columns: 1fr;
-        padding: 20px;
+        padding: 30px 20px;
+        gap: 30px;
     }
 
     .sidebar {
         position: sticky;
         bottom: 0;
+        padding: 24px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: -24px;
+        margin-left: -24px;
+        margin-right: -24px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .hero {
+        padding: 50px 20px;
+    }
+
+    .heroContent {
+        h1 {
+            font-size: 42px;
+        }
+
+        p {
+            font-size: 18px;
+        }
+    }
+
+    .servicesGrid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+
+    .doctorsGrid {
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     }
 }
 
 @media (max-width: 768px) {
     .hero {
-        padding: 40px 20px;
+        padding: 40px 15px;
+    }
 
+    .heroContent {
         h1 {
             font-size: 32px;
+            margin: 0 0 12px 0;
         }
 
         p {
@@ -281,55 +502,286 @@
         gap: 20px;
     }
 
+    .mainContent {
+        gap: 24px;
+    }
+
     .section {
-        padding: 16px;
+        padding: 20px;
+        border-radius: 12px;
     }
 
     .sectionHeader {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
 
         h2 {
-            font-size: 18px;
+            font-size: 20px;
         }
     }
 
-    .servicesGrid {
-        grid-template-columns: 1fr;
+    .count {
+        font-size: 13px;
     }
 
-    .doctorsGrid {
-        grid-template-columns: repeat(2, 1fr);
+    .filterSection {
+        padding: 16px;
     }
 
-    .slotsGrid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
+    .filterHeader {
+        gap: 8px;
+        margin-bottom: 16px;
+        font-size: 15px;
 
-@media (max-width: 480px) {
-    .heroContent h1 {
-        font-size: 24px;
-    }
-
-    .servicesGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .doctorsGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .slotsGrid {
-        grid-template-columns: repeat(3, 1fr);
+        svg {
+            width: 18px;
+            height: 18px;
+        }
     }
 
     .filterButtons {
         flex-direction: column;
+        gap: 10px;
     }
 
     .filterBtn {
         width: 100%;
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+
+    .servicesGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .doctorsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .slotsGrid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .timeSlot {
+        padding: 12px 8px;
+        font-size: 12px;
+        border-radius: 10px;
+        min-height: 48px;
+    }
+
+    .datePickerWrapper {
+        gap: 10px;
+
+        label {
+            font-size: 13px;
+        }
+
+        :global(.MuiOutlinedInput-input) {
+            font-size: 13px;
+            padding: 12px 14px;
+        }
+    }
+
+    .timeSlots {
+        gap: 12px;
+
+        label {
+            font-size: 13px;
+        }
+    }
+
+    .emptyState {
+        padding: 50px 15px;
+
+        p {
+            font-size: 14px;
+        }
+    }
+
+    .sidebar {
+        position: static;
+        padding: 16px;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+        margin: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 30px 12px;
+    }
+
+    .heroContent {
+        h1 {
+            font-size: 26px;
+            margin: 0 0 8px 0;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    }
+
+    .container {
+        padding: 12px;
+        gap: 16px;
+    }
+
+    .mainContent {
+        gap: 16px;
+    
+            font-size: 14px;
+        }
+    }
+
+    .timeSlots {
+        gap: 10px;
+
+        label {
+            font-size: 13px;
+        }
+    }
+
+    .emptyState {
+        padding: 40px 15px;
+
+        p {
+            font-size: 14px;
+        }
+    }
+
+    .sidebar {
+        position: static;
+        padding: 15px;
+        background: transparent;
+        box-shadow: none;
+    }
+
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 20px 12px;
+    }
+
+    .heroContent h1 {
+        font-size: 22px;
+        margin: 0 0 6px 0;
+    }
+
+    .heroContent p {
+        font-size: 13px;
+    }
+
+    .container {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .mainContent {
+        gap: 15px;
+    }
+
+    .section {
+        padding: 12px;
+    }
+
+    .sectionHeader {
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+
+        h2 {
+            font-size: 16px;
+        }
+    }
+
+    .count {
+        font-size: 11px;
+    }
+
+    .filterSection {
+        padding: 12px;
+    }
+
+    .filterHeader {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .filterButtons {
+        gap: 6px;
+    }
+
+    .filterBtn {
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .closeBtn {
+        font-size: 18px;
+    }
+
+    .servicesGrid {
+        gap: 12px;
+    }
+
+    .doctorsGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .slotsGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .timeSlot {
+        padding: 8px 6px;
+        font-size: 11px;
+        border-radius: 5px;
+    }
+
+    .dateTimeContainer {
+        gap: 15px;
+    }
+
+    .datePickerWrapper {
+        gap: 5px;
+
+        label {
+            font-size: 12px;
+        }
+
+        :global(.MuiOutlinedInput-input) {
+            font-size: 13px;
+        }
+    }
+
+    .timeSlots {
+        gap: 8px;
+
+        label {
+            font-size: 12px;
+        }
+    }
+
+    .emptyState {
+        padding: 30px 12px;
+
+        p {
+            font-size: 13px;
+        }
+    }
+
+    .sidebar {
+        padding: 12px;
     }
 }

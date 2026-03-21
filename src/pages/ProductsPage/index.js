@@ -1,76 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './ProductsPage.module.scss';
-import ItemMenuType from './ItemMenuType';
-import ItemMenuSupplier from './ItemMenuSupplier';
 import ItemProduct from './ItemProduct';
 import ProductDetailsPage from '~/pages/ProductDetailsPage';
 import useDebounce from '~/hooks/useDebounce';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 function ProductsPage() {
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [selectedType, setSelectedType] = useState(null);
-    const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+    const [productName, setProductName] = useState('');
+    const [selectedServiceTypeId, setSelectedServiceTypeId] = useState(null);
+    const [selectedSupplierId, setSelectedSupplierId] = useState(null);
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [successMessage, setSuccessMessage] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [serviceTypes, setServiceTypes] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
     const pageSize = 12;
 
-    const debouncedSelectedSupplier = useDebounce(selectedSupplier, 300);
-    const debouncedSelectedType = useDebounce(selectedType, 300);
-    const debouncedSelectedPriceRanges = useDebounce(selectedPriceRanges, 300);
+    const debouncedProductName = useDebounce(productName, 300);
+    const debouncedSelectedServiceTypeId = useDebounce(selectedServiceTypeId, 300);
+    const debouncedSelectedSupplierId = useDebounce(selectedSupplierId, 300);
 
-    const priceRanges = [
-        { id: 1, label: '100k - 300k', min: 100000, max: 300000 },
-        { id: 2, label: '300k - 500k', min: 300000, max: 500000 },
-        { id: 3, label: '500k - 1tr', min: 500000, max: 1000000 },
-        { id: 4, label: 'Lớn hơn 1tr', min: 1000000, max: null },
-    ];
-
-    const handlePriceRangeChange = (rangeId) => {
-        setSelectedPriceRanges((prev) => {
-            if (prev.includes(rangeId)) {
-                return prev.filter((id) => id !== rangeId);
-            } else {
-                return [...prev, rangeId];
+    // Fetch service types and suppliers on component mount
+    useEffect(() => {
+        const fetchFilters = async () => {
+            try {
+                // Fetch service types
+                const typesResponse = await axios.post('http://localhost:5122/api/ServiceType/getservicetypelist', {
+                    pageNo: 1,
+                    pageSize: 1000,
+                    serviceCategory: 1,
+                });
+                if (typesResponse.data && typesResponse.data.baseDatas) {
+                    setServiceTypes(typesResponse.data.baseDatas);
+                }
+            } catch (error) {
+                console.error('Error fetching service types:', error);
             }
-        });
-    };
+
+            try {
+                // Fetch suppliers
+                const suppliersResponse = await axios.post('http://localhost:5122/api/Supplier/paging', {
+                    pageNo: 1,
+                    pageSize: 1000,
+                });
+                if (suppliersResponse.data && suppliersResponse.data.baseDatas) {
+                    setSuppliers(suppliersResponse.data.baseDatas);
+                }
+            } catch (error) {
+                console.error('Error fetching suppliers:', error);
+            }
+        };
+        fetchFilters();
+    }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                let minPriceToSend = null;
-                let maxPriceToSend = null;
-
-                if (debouncedSelectedPriceRanges.length > 0) {
-                    const selectedRanges = priceRanges.filter((range) =>
-                        debouncedSelectedPriceRanges.includes(range.id),
-                    );
-                    const minPrices = selectedRanges.map((range) => range.min);
-                    const maxPrices = selectedRanges.map((range) => range.max || Infinity);
-                    minPriceToSend = Math.min(...minPrices);
-                    maxPriceToSend = Math.max(...maxPrices);
-                    if (maxPriceToSend === Infinity) maxPriceToSend = null;
-                }
-
-                const supplierNameToSend = debouncedSelectedSupplier || null;
-                const productsOfServicesNameToSend = debouncedSelectedType || null;
-
-                const response = await axios.post('http://localhost:5262/api/Products/GetSortedPagedProducts', {
-                    pageIndex: currentPage,
+                const response = await axios.post('http://localhost:5122/api/Product/getproductlist', {
+                    pageNo: currentPage - 1,
                     pageSize: pageSize,
-                    minPrice: minPriceToSend,
-                    maxPrice: maxPriceToSend,
-                    supplierName: supplierNameToSend,
-                    productsOfServicesName: productsOfServicesNameToSend,
+                    id: null,
+                    productName: debouncedProductName || null,
+                    supplierName: null,
+                    serviceTypeName: null,
+                    productId: null,
+                    serviceTypeId: debouncedSelectedServiceTypeId || null,
+                    supplierId: debouncedSelectedSupplierId || null,
                 });
-                const { countProducts, data } = response.data;
-                setProducts(Array.isArray(data) ? data : []);
-                setTotalPages(Math.ceil(countProducts / pageSize));
+                const { baseDatas, totalRecordCount, pageCount } = response.data;
+                setProducts(Array.isArray(baseDatas) ? baseDatas : []);
+                setTotalPages(pageCount || Math.ceil(totalRecordCount / pageSize));
             } catch (error) {
                 console.error('Error fetching products:', error);
                 setProducts([]);
@@ -78,7 +82,7 @@ function ProductsPage() {
             }
         };
         fetchProducts();
-    }, [debouncedSelectedSupplier, debouncedSelectedType, debouncedSelectedPriceRanges, currentPage]);
+    }, [debouncedProductName, debouncedSelectedServiceTypeId, debouncedSelectedSupplierId, currentPage]);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) setCurrentPage(page);
@@ -127,55 +131,106 @@ function ProductsPage() {
                 />
             ) : (
                 <>
-                    <div className={styles.sidebar}>
-                        <div className={styles.section}>
-                            <h2 className={styles.sectionTitle}>Khoảng Giá</h2>
-                            <div className={styles.scrollableList}>
-                                <ul className={styles.menuList}>
-                                    {priceRanges.map((range) => (
-                                        <li key={range.id} className={styles.menuItem}>
-                                            <label className={styles.label}>
-                                                <input
-                                                    type="checkbox"
-                                                    className={styles.checkbox}
-                                                    checked={selectedPriceRanges.includes(range.id)}
-                                                    onChange={() => handlePriceRangeChange(range.id)}
-                                                />
-                                                <span className={styles.text}>{range.label}</span>
-                                            </label>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                        <div className={styles.section}>
-                            <h2 className={styles.sectionTitle}>Loại Sản Phẩm</h2>
-                            <div className={styles.scrollableList}>
-                                <ItemMenuType onSelectType={setSelectedType} selectedType={selectedType} />
-                            </div>
-                        </div>
-                        <div className={styles.section}>
-                            <h2 className={styles.sectionTitle}>Nhà Cung Cấp</h2>
-                            <div className={styles.scrollableList}>
-                                <ItemMenuSupplier
-                                    onSelectSupplier={setSelectedSupplier}
-                                    selectedSupplier={selectedSupplier}
+                    <div className={styles.pageContainer}>
+                        {/* Search and Filter Bar */}
+                        <div className={styles.searchFilterBar}>
+                            {/* Search Input */}
+                            <div className={styles.searchBox}>
+                                <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm sản phẩm..."
+                                    value={productName}
+                                    onChange={(e) => {
+                                        setProductName(e.target.value);
+                                        setCurrentPage(1);
+                                    }}
+                                    className={styles.searchInput}
                                 />
+                                {productName && (
+                                    <button
+                                        className={styles.clearBtn}
+                                        onClick={() => {
+                                            setProductName('');
+                                            setCurrentPage(1);
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faTimes} />
+                                    </button>
+                                )}
                             </div>
+
+                            {/* Filter Dropdowns */}
+                            <div className={styles.filterGroup}>
+                                {/* Service Type Filter */}
+                                <select
+                                    value={selectedServiceTypeId || ''}
+                                    onChange={(e) => {
+                                        setSelectedServiceTypeId(e.target.value ? parseInt(e.target.value) : null);
+                                        setCurrentPage(1);
+                                    }}
+                                    className={styles.filterSelect}
+                                >
+                                    <option value="">Tất cả loại dịch vụ</option>
+                                    {serviceTypes.map((type) => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.serviceTypeName || type.name}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                {/* Supplier Filter */}
+                                <select
+                                    value={selectedSupplierId || ''}
+                                    onChange={(e) => {
+                                        setSelectedSupplierId(e.target.value ? parseInt(e.target.value) : null);
+                                        setCurrentPage(1);
+                                    }}
+                                    className={styles.filterSelect}
+                                >
+                                    <option value="">Tất cả nhà cung cấp</option>
+                                    {suppliers.map((supplier) => (
+                                        <option key={supplier.id} value={supplier.id}>
+                                            {supplier.supplierName || supplier.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Reset Filters */}
+                            {(productName || selectedServiceTypeId || selectedSupplierId) && (
+                                <button
+                                    className={styles.resetBtn}
+                                    onClick={() => {
+                                        setProductName('');
+                                        setSelectedServiceTypeId(null);
+                                        setSelectedSupplierId(null);
+                                        setCurrentPage(1);
+                                    }}
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            )}
                         </div>
-                    </div>
-                    <div className={styles.contentProducts}>
-                        <div className={styles.content}>
+
+                        {/* Products Grid */}
+                        <div className={styles.productsGrid}>
                             {products.length > 0 ? (
                                 products.map((product) => (
-                                    <div key={product.productID} onClick={() => handleProductClick(product)}>
+                                    <div
+                                        key={product.id}
+                                        className={styles.productItem}
+                                        onClick={() => handleProductClick(product)}
+                                    >
                                         <ItemProduct product={product} onSuccess={handleSuccessMessage} />
                                     </div>
                                 ))
                             ) : (
-                                <p>Loading...</p>
+                                <div className={styles.noProducts}>Không tìm thấy sản phẩm</div>
                             )}
                         </div>
+
+                        {/* Pagination */}
                         <div className={styles.pagination}>
                             {getPaginationItems().map((page, index) =>
                                 page === '...' ? (

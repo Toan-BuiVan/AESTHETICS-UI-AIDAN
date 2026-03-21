@@ -5,16 +5,16 @@
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border-radius: 12px;
     background: transparent;
-    border-left: 3px solid transparent;
+    border-left: 4px solid transparent;
     position: relative;
     margin-bottom: 6px;
 }
 
 .menuItem:hover {
-    background: linear-gradient(135deg, rgba(21, 105, 83, 0.08) 0%, rgba(21, 105, 83, 0.04) 100%);
-    border-left-color: #156953;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-left-color: #667eea;
     transform: translateX(6px);
-    box-shadow: 0 4px 12px rgba(21, 105, 83, 0.1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
 .menuItem:active {
@@ -24,21 +24,30 @@
 .label {
     display: flex;
     align-items: center;
+    cursor: pointer;
+    gap: 10px;
 }
 
 .radio {
-    margin-right: 12px;
-    accent-color: #156953;
+    width: 18px;
+    height: 18px;
+    accent-color: #667eea;
+    cursor: pointer;
 }
 
 .text {
-    font-size: 15px;
-    color: #333;
+    font-size: 14px;
+    color: #2d3748;
     font-weight: 500;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .menuItem:hover .text {
-    color: #156953;
+    color: #667eea;
     font-weight: 600;
+}
+
+.menuItem input[type='radio']:checked + .text {
+    color: #667eea;
+    font-weight: 700;
 }

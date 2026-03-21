@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faLock, faCode, faUserPlus, faTimes } from '@fortawesome/free-solid-svg-icons'; // Thêm faTimes cho close icon
 import styles from './Login.module.scss';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { jwtDecode } from 'jwt-decode';
 
 const cx = classNames.bind(styles);
 
@@ -56,22 +57,66 @@ function Login({ onClose, setSuccessMessage }) {
         const password = document.getElementById('log-pass').value;
 
         try {
-            const response = await axios.post('http://localhost:5262/api/Authentication/Login_Account', {
+            const response = await axios.post('http://localhost:5122/api/Authentication/login', {
                 userName,
                 password,
             });
             const data = response.data;
 
-            if (data.responseCode === 1) {
+            // Check if login was successful - either by token presence or responseCode
+            if (data.token && data.refreshToken) {
+                const message = 'Đăng nhập thành công!';
+                setSuccessMessage(message);
+
+                try {
+                    // Decode JWT token to extract claims
+                    const decodedToken = jwtDecode(data.token);
+                    
+                    // Extract claims from token
+                    const userNameFromToken = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+                    const userIDFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid'];
+                    const roleFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+                    // Store token and refresh token
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+
+                    // Store user info extracted from token
+                    if (userNameFromToken) localStorage.setItem('userName', userNameFromToken);
+                    if (userIDFromToken) localStorage.setItem('userID', userIDFromToken);
+                    if (roleFromToken) localStorage.setItem('role', roleFromToken);
+
+                    // Clear unnecessary fields
+                    localStorage.removeItem('typePerson');
+                    localStorage.removeItem('deviceName');
+                } catch (decodeError) {
+                    console.error('Lỗi giải mã token:', decodeError);
+                    // If decode fails, still store the tokens
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                }
+
+                setTimeout(() => {
+                    setSuccessMessage(null);
+                    onClose();
+                }, 2500);
+            } else if (data.responseCode === 1) {
+                // Fallback for API responses with responseCode
                 const message = data.responseMessage || 'Đăng nhập thành công!';
                 setSuccessMessage(message);
 
+                // Store token and refresh token
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('refreshToken', data.refreshToken);
-                localStorage.setItem('userID', data.userID);
-                localStorage.setItem('typePerson', data.typePerson);
-                localStorage.setItem('deviceName', data.deviceName);
-                localStorage.setItem('userName', data.userName);
+
+                // Store user info if available
+                if (data.userID) localStorage.setItem('userID', data.userID);
+                if (data.userName) localStorage.setItem('userName', data.userName);
+                if (data.role) localStorage.setItem('role', data.role);
+
+                // Clear unnecessary fields
+                localStorage.removeItem('typePerson');
+                localStorage.removeItem('deviceName');
 
                 setTimeout(() => {
                     setSuccessMessage(null);
@@ -80,6 +125,16 @@ function Login({ onClose, setSuccessMessage }) {
             } else {
                 const message = data.responseMessage || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
                 setSuccessMessage(message);
+                
+                // Clear token and refreshToken on failed login
+                localStorage.setItem('token', null);
+                localStorage.setItem('refreshToken', null);
+                localStorage.removeItem('userID');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('role');
+                localStorage.removeItem('typePerson');
+                localStorage.removeItem('deviceName');
+                
                 setTimeout(() => {
                     setSuccessMessage(null);
                 }, 2000);
@@ -87,6 +142,16 @@ function Login({ onClose, setSuccessMessage }) {
         } catch (err) {
             console.error('Lỗi đăng nhập:', err);
             setSuccessMessage('Có lỗi xảy ra khi đăng nhập.');
+            
+            // Clear token and refreshToken on error
+            localStorage.setItem('token', null);
+            localStorage.setItem('refreshToken', null);
+            localStorage.removeItem('userID');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('role');
+            localStorage.removeItem('typePerson');
+            localStorage.removeItem('deviceName');
+            
             setTimeout(() => {
                 setSuccessMessage(null);
             }, 2000);

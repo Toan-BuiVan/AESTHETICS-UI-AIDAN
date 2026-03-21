@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames/bind';
 import styles from './DoctorCard.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faStar, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -23,36 +23,53 @@ function DoctorCard({ doctor, isSelected, onSelect }) {
                         <FontAwesomeIcon icon={faCheckCircle} />
                     </div>
                 )}
+                <div className={cx('ratingBadge')}>
+                    <FontAwesomeIcon icon={faStar} className={cx('starIcon')} />
+                    <span>{doctor.rating || 4}.0</span>
+                </div>
             </div>
 
             <div className={cx('content')}>
                 <h3 className={cx('doctorName')}>{doctor.doctorName || doctor.name}</h3>
                 
                 <p className={cx('specialty')}>
+                    <FontAwesomeIcon icon={faBriefcaseMedical} className={cx('specialtyIcon')} />
                     {doctor.specialty || 'Bác sĩ chuyên khoa'}
                 </p>
 
-                <div className={cx('rating')}>
-                    {[...Array(5)].map((_, i) => (
-                        <FontAwesomeIcon
-                            key={i}
-                            icon={faStar}
-                            className={cx('star', {
-                                filled: i < (doctor.rating || 4),
-                            })}
-                        />
-                    ))}
+                <div className={cx('ratingFull')}>
+                    <div className={cx('stars')}>
+                        {[...Array(5)].map((_, i) => (
+                            <FontAwesomeIcon
+                                key={i}
+                                icon={faStar}
+                                className={cx('star', {
+                                    filled: i < (doctor.rating || 4),
+                                })}
+                            />
+                        ))}
+                    </div>
                     <span className={cx('ratingText')}>
-                        {doctor.rating || 4}.0 ({doctor.reviews || 120} đánh giá)
+                        ({doctor.reviews || 120})
                     </span>
                 </div>
 
-                <p className={cx('experience')}>
-                    {doctor.experience || 10}+ năm kinh nghiệm
-                </p>
+                <div className={cx('experience')}>
+                    <span className={cx('experienceLabel')}>Kinh nghiệm:</span>
+                    <span className={cx('experienceValue')}>
+                        🎓 {doctor.experience || 10}+ năm
+                    </span>
+                </div>
 
                 <button className={cx('selectBtn', { active: isSelected })}>
-                    {isSelected ? '✓ Đã chọn' : 'Chọn bác sĩ'}
+                    {isSelected ? (
+                        <>
+                            <FontAwesomeIcon icon={faCheckCircle} />
+                            Đã chọn
+                        </>
+                    ) : (
+                        'Chọn bác sĩ'
+                    )}
                 </button>
             </div>
         </div>

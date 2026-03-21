@@ -180,14 +180,6 @@ function ServicesPage() {
     return (
         <div className={cx('wrapper')}>
             {successMessage && <SuccessMessage message={successMessage} />}
-
-            <div className={cx('hero')}>
-                <div className={cx('heroContent')}>
-                    <h1>Đặt Lịch Khám Chuyên Môn</h1>
-                    <p>Chọn dịch vụ, bác sĩ và thời gian phù hợp với bạn</p>
-                </div>
-            </div>
-
             <div className={cx('container')}>
                 {/* LEFT SIDE - Services and Doctors */}
                 <div className={cx('mainContent')}>

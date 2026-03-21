@@ -28,7 +28,8 @@ function MenuItem() {
             ],
         },
         // Các mục động từ API sẽ được thêm vào đây
-        { name: 'Bảng Giá', id: null, href: '/servicesPage' }, // Giữ cố định nếu không từ API
+        { name: 'Danh sách Dịch Vụ', id: null, href: '/services-list' },
+        { name: 'Đặt Lịch Khám', id: null, href: '/services' },
         { name: 'Sản Phẩm', id: null, href: '/productsPage' }, // Giữ cố định nếu không từ API
     ]);
 
@@ -61,12 +62,12 @@ function MenuItem() {
                     href: '/servicesPage',
                 }));
 
-                // Cập nhật menuItems: Trang Chủ + Giới Thiệu + động + Bảng Giá + Sản Phẩm
+                // Cập nhật menuItems: Trang Chủ + Giới Thiệu + động + Danh sách DV + Đặt Lịch + Bảng Giá + Sản Phẩm
                 const fixedItemsAfter = menuItems.slice(2);
                 const newMenuItems = [
                     ...menuItems.slice(0, 2), // Giữ Trang Chủ và Giới Thiệu
                     ...dynamicMenuItems, // Thêm động
-                    ...fixedItemsAfter, // Thêm Bảng Giá và Sản Phẩm ở cuối
+                    ...fixedItemsAfter, // Thêm Danh sách DV, Đặt lịch, Bảng Giá và Sản Phẩm ở cuối
                 ];
                 setMenuItems(newMenuItems);
 

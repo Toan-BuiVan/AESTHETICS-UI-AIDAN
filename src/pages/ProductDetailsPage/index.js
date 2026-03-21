@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './ProductDetailsPage.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTruck, faTag, faBox, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTruck, faTag, faBox, faUserCircle, faArrowLeft, faHeart, faShoppingCart, faStar, faCheck } from '@fortawesome/free-solid-svg-icons';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 
 const cx = classNames.bind(styles);
@@ -14,6 +14,10 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
     const [loadingProducts, setLoadingProducts] = useState(true);
     const [successMessage, setSuccessMessage] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [imageZoom, setImageZoom] = useState({ x: 0, y: 0 });
+    const [averageRating, setAverageRating] = useState(0);
+    const [totalComments, setTotalComments] = useState(0);
 
     const formatPrice = (price) => {
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -51,7 +55,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
 
         const requestData = {
             userID: userID,
-            productID: product.productID,
+            productID: product.id || product.productID,
             quantity: quantity,
         };
 
@@ -77,7 +81,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
             if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
 
             const data = await response.json();
-            setSuccessMessage(data.resposeMessage);
+            setSuccessMessage(data.resposeMessage || 'Thêm vào giỏ hàng thành công!');
             setTimeout(() => {
                 setSuccessMessage(null);
             }, 2000);
@@ -98,7 +102,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
 
         const requestData = {
             customerID: userID,
-            productIDs: [product.productID],
+            productIDs: [product.id || product.productID],
             quantityProduct: [quantity],
         };
 
@@ -140,24 +144,47 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await fetch('http://localhost:5262/api/Comment/GetList_SearchComment', {
+                const response = await fetch('http://localhost:5122/api/Comment/getcommentlist', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ productID: product.productID }),
+                    body: JSON.stringify({
+                        pageNo: 1,
+                        pageSize: 10,
+                        productId: product.id || product.productID || 0,
+                        serviceId: 0,
+                    }),
                 });
                 const data = await response.json();
-                setComments(data.data || []);
+                
+                if (data.baseDatas && Array.isArray(data.baseDatas)) {
+                    setComments(data.baseDatas);
+                    setTotalComments(data.totalRecordCount || 0);
+                    
+                    // Tính rating trung bình
+                    if (data.baseDatas.length > 0) {
+                        const avgRating = (data.baseDatas.reduce((sum, comment) => sum + (comment.rating || 0), 0) / data.baseDatas.length).toFixed(1);
+                        setAverageRating(parseFloat(avgRating));
+                    } else {
+                        setAverageRating(0);
+                    }
+                } else {
+                    setComments([]);
+                    setTotalComments(0);
+                    setAverageRating(0);
+                }
                 setLoadingComments(false);
             } catch (error) {
                 console.error('Error fetching comments:', error);
                 setComments([]);
+                setTotalComments(0);
+                setAverageRating(0);
                 setLoadingComments(false);
             }
         };
         fetchComments();
-    }, [product.productID]);
+    }, [product.id, product.productID]);
 
     useEffect(() => {
         const fetchRelatedProducts = async () => {
@@ -167,7 +194,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ productsOfServicesName: product.productsOfServicesName }),
+                    body: JSON.stringify({ productsOfServicesName: product.productsOfServicesName || product.serviceTypeName }),
                 });
                 const data = await response.json();
                 let productsData;
@@ -180,8 +207,8 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                     productsData = [];
                 }
 
-                const filteredProducts = productsData.filter((p) => p.productID !== product.productID);
-                setRelatedProducts(filteredProducts);
+                const filteredProducts = productsData.filter((p) => (p.id || p.productID) !== (product.id || product.productID));
+                setRelatedProducts(filteredProducts.slice(0, 4));
                 setLoadingProducts(false);
             } catch (error) {
                 console.error('Error fetching related products:', error);
@@ -190,118 +217,186 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
             }
         };
         fetchRelatedProducts();
-    }, [product.productsOfServicesName, product.productID]);
+    }, [product.productsOfServicesName, product.serviceTypeName, product.id, product.productID]);
 
     const handleViewDetails = (relatedProduct) => {
         if (typeof onSelectProduct === 'function') {
             onSelectProduct(relatedProduct);
-        } else {
-            console.error('onSelectProduct is not a function');
         }
+    };
+
+    const handleMouseMove = (e) => {
+        const img = e.currentTarget;
+        const { left, top, width, height } = img.getBoundingClientRect();
+        const x = ((e.clientX - left) / width) * 100;
+        const y = ((e.clientY - top) / height) * 100;
+        setImageZoom({ x, y });
     };
 
     return (
         <div className={cx('wrapper')}>
             {successMessage && <SuccessMessage message={successMessage} />}
-            <div className={cx('product-details')}>
-                <button onClick={onBack} className={cx('back-button')}>
-                    Quay lại
-                </button>
-                <div className={cx('product-image')}>
-                    <img
-                        src={`http://localhost:5262/Images/${product.productImages}`}
-                        alt={product.productName}
-                    />
+            
+            <button onClick={onBack} className={cx('back-button')}>
+                <FontAwesomeIcon icon={faArrowLeft} /> Quay lại
+            </button>
+
+            <div className={cx('container')}>
+                <div className={cx('product-gallery')}>
+                    <div className={cx('main-image')} onMouseMove={handleMouseMove}>
+                        <img
+                            src={`http://localhost:5122/Images/${product.productImages}`}
+                            alt={product.productName}
+                            style={{
+                                transformOrigin: `${imageZoom.x}% ${imageZoom.y}%`,
+                            }}
+                        />
+                        <div className={cx('quick-features')}>
+                            <span className={cx('feature')}>
+                                <FontAwesomeIcon icon={faTruck} /> Giao hàng nhanh
+                            </span>
+                            <span className={cx('feature')}>
+                                <FontAwesomeIcon icon={faCheck} /> Hàng chính hãng
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div className={cx('product-info')}>
-                    <h1 className={cx('product-name')}>{product.productName}</h1>
-                    <p className={cx('product-description')}>{product.productDescription}</p>
-                    <div className={cx('product-price')}>{formatPrice(product.sellingPrice)} VND</div>
-                    <div className={cx('product-supplier')}>
-                        <FontAwesomeIcon icon={faTruck} /> Nhà cung cấp: {product.supplierName}
-                    </div>
-                    <div className={cx('product-category')}>
-                        <FontAwesomeIcon icon={faTag} /> Danh mục: {product.productsOfServicesName}
-                    </div>
-                    <div className={cx('product-quantity')}>
-                        <FontAwesomeIcon icon={faBox} /> Còn hàng: {product.quantity}
-                        {product.quantity > 0 && (
-                            <div className={cx('quantity-selector')}>
-                                <button onClick={() => handleQuantityChange(-1)}>-</button>
-                                <input type="number" value={quantity} readOnly />
-                                <button onClick={() => handleQuantityChange(1)}>+</button>
+
+                <div className={cx('product-info-section')}>
+                    {/* Header */}
+                    <div className={cx('info-header')}>
+                        <div>
+                            <h1 className={cx('product-name')}>{product.productName}</h1>
+                            <div className={cx('rating-info')}>
+                                <div className={cx('stars')}>
+                                    {[...Array(5)].map((_, i) => (
+                                        <FontAwesomeIcon key={i} icon={faStar} className={cx('star-icon', i < Math.floor(averageRating) ? 'filled' : '')} />
+                                    ))}
+                                </div>
+                                <span className={cx('reviews')}>{averageRating.toFixed(1)} ({totalComments} đánh giá)</span>
                             </div>
-                        )}
+                        </div>
+                        <button className={cx('favorite-btn', isFavorite ? 'active' : '')} onClick={() => setIsFavorite(!isFavorite)}>
+                            <FontAwesomeIcon icon={faHeart} />
+                        </button>
                     </div>
+
+                    {/* Price Section */}
+                    <div className={cx('price-section')}>
+                        <div className={cx('current-price')}>
+                            {formatPrice(product.sellingPrice || 0)}₫
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    {product.description && (
+                        <p className={cx('product-description')}>{product.description}</p>
+                    )}
+
+                    {/* Product Details */}
+                    <div className={cx('product-details')}>
+                        <div className={cx('detail-item')}>
+                            <span className={cx('detail-label')}>
+                                <FontAwesomeIcon icon={faBox} /> Nhà cung cấp:
+                            </span>
+                            <span className={cx('detail-value')}>{product.supplierName || 'N/A'}</span>
+                        </div>
+                        <div className={cx('detail-item')}>
+                            <span className={cx('detail-label')}>
+                                <FontAwesomeIcon icon={faTag} /> Loại:
+                            </span>
+                            <span className={cx('detail-value')}>{product.serviceTypeName || product.productsOfServicesName || 'N/A'}</span>
+                        </div>
+                        <div className={cx('detail-item')}>
+                            <span className={cx('detail-label')}>
+                                <FontAwesomeIcon icon={faBox} /> Đơn vị:
+                            </span>
+                            <span className={cx('detail-value')}>{product.unit || 'N/A'}</span>
+                        </div>
+                    </div>
+
+                    {/* Stock Status */}
+                    <div className={cx('stock-status', product.quantity > 0 ? 'in-stock' : 'out-of-stock')}>
+                        <FontAwesomeIcon icon={faBox} />
+                        {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
+                    </div>
+
+                    {/* Quantity Selector */}
+                    {product.quantity > 0 && (
+                        <div className={cx('quantity-section')}>
+                            <label className={cx('quantity-label')}>Số lượng:</label>
+                            <div className={cx('quantity-selector')}>
+                                <button onClick={() => handleQuantityChange(-1)} className={cx('qty-btn')}>−</button>
+                                <input type="number" value={quantity} readOnly className={cx('qty-input')} />
+                                <button onClick={() => handleQuantityChange(1)} className={cx('qty-btn')}>+</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Action Buttons */}
                     {product.quantity > 0 ? (
                         <div className={cx('action-buttons')}>
                             <button className={cx('add-to-cart')} onClick={handleAddToCart}>
-                                Thêm vào giỏ
+                                <FontAwesomeIcon icon={faShoppingCart} /> Thêm vào giỏ
                             </button>
-                            <button className={cx('payment')} onClick={handlePayment}>
-                                Mua Ngay
+                            <button className={cx('buy-now')} onClick={handlePayment}>
+                                Mua ngay
                             </button>
                         </div>
                     ) : (
-                        <div className={cx('out-of-stock')}>Hết hàng</div>
+                        <div className={cx('out-of-stock-banner')}>Sản phẩm này hiện đã hết hàng</div>
                     )}
                 </div>
             </div>
-            <div className={cx('comment-details')}>
-                <h2 className={cx('comment-title')}>Đánh Giá Sản Phẩm: {product.productName}</h2>
-                {loadingComments ? (
-                    <p className={cx('loading')}>Đang tải bình luận...</p>
-                ) : comments.length > 0 ? (
+
+            {/* Comments Section */}
+            {!loadingComments && comments.length > 0 && (
+                <div className={cx('reviews-section')}>
+                    <h2 className={cx('section-title')}>Đánh giá từ khách hàng</h2>
                     <div className={cx('comment-list')}>
-                        {comments.map((comment) => (
-                            <div key={comment.commentID} className={cx('comment-item')}>
+                        {comments.slice(0, 3).map((comment, index) => (
+                            <div key={index} className={cx('comment-item')}>
                                 <div className={cx('comment-header')}>
                                     <FontAwesomeIcon icon={faUserCircle} className={cx('user-icon')} />
                                     <div className={cx('user-info')}>
-                                        <span className={cx('user-name')}>{comment.userName}</span>
+                                        <span className={cx('user-name')}>Khách hàng {comment.customerId}</span>
                                         <span className={cx('comment-date')}>{formatDate(comment.creationDate)}</span>
                                     </div>
                                 </div>
-                                <p className={cx('comment-content')}>{comment.comment_Content}</p>
+                                <div className={cx('comment-rating')}>
+                                    {[...Array(5)].map((_, i) => (
+                                        <FontAwesomeIcon key={i} icon={faStar} className={cx('star-icon', i < comment.rating ? 'filled' : '')} />
+                                    ))}
+                                </div>
+                                <p className={cx('comment-content')}>{comment.commentContent}</p>
                             </div>
                         ))}
                     </div>
-                ) : (
-                    <p className={cx('no-comments')}>Chưa có bình luận nào.</p>
-                )}
-            </div>
-            <div className={cx('products-details')}>
-                <h2 className={cx('products-title')}>Các sản phẩm khác</h2>
-                {loadingProducts ? (
-                    <p className={cx('loading')}>Đang tải sản phẩm...</p>
-                ) : relatedProducts.length > 0 ? (
-                    <div className={cx('related-product-list')}>
-                        {relatedProducts.map((relatedProduct) => (
-                            <div key={relatedProduct.productID} className={cx('related-product-item')}>
-                                <img
-                                    src={`http://localhost:5262/Images/${relatedProduct.productImages}`}
-                                    alt={relatedProduct.productName}
-                                    className={cx('related-product-image')}
-                                />
-                                <div className={cx('related-product-info')}>
-                                    <h3 className={cx('related-product-name')}>{relatedProduct.productName}</h3>
-                                    <p className={cx('related-product-price')}>
-                                        {formatPrice(relatedProduct.sellingPrice)} VND
-                                    </p>
-                                    <button
-                                        className={cx('related-view-details')}
-                                        onClick={() => handleViewDetails(relatedProduct)}
-                                    >
+                </div>
+            )}
+
+            {/* Related Products Section */}
+            {!loadingProducts && relatedProducts.length > 0 && (
+                <div className={cx('related-section')}>
+                    <h2 className={cx('section-title')}>Sản phẩm tương tự</h2>
+                    <div className={cx('related-products')}>
+                        {relatedProducts.map((rProduct, index) => (
+                            <div key={index} className={cx('related-item')}>
+                                <div className={cx('related-image')}>
+                                    <img src={`http://localhost:5122/Images/${rProduct.productImages}`} alt={rProduct.productName} />
+                                </div>
+                                <div className={cx('related-info')}>
+                                    <h4 className={cx('related-name')}>{rProduct.productName}</h4>
+                                    <p className={cx('related-price')}>{formatPrice(rProduct.sellingPrice || 0)}₫</p>
+                                    <button className={cx('view-btn')} onClick={() => handleViewDetails(rProduct)}>
                                         Xem chi tiết
                                     </button>
                                 </div>
                             </div>
                         ))}
                     </div>
-                ) : (
-                    <p className={cx('no-products')}>Không có sản phẩm nào khác.</p>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

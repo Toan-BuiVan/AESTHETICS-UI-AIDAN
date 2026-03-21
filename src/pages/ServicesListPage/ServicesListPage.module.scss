@@ -3,31 +3,7 @@
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-.hero {
-    background: linear-gradient(135deg, #1ca07d 0%, #16875a 100%);
-    color: white;
-    padding: 60px 40px;
-    text-align: center;
-}
 
-.heroContent {
-    max-width: 1200px;
-    margin: 0 auto;
-
-    h1 {
-        font-size: 48px;
-        font-weight: 700;
-        margin: 0 0 12px 0;
-        letter-spacing: -0.5px;
-    }
-
-    p {
-        font-size: 18px;
-        margin: 0;
-        opacity: 0.95;
-        font-weight: 300;
-    }
-}
 
 .container {
     max-width: 1400px;
@@ -361,18 +337,6 @@
 }
 
 @media (max-width: 768px) {
-    .hero {
-        padding: 40px 20px;
-
-        h1 {
-            font-size: 32px;
-        }
-
-        p {
-            font-size: 16px;
-        }
-    }
-
     .container {
         padding: 20px;
     }
@@ -408,18 +372,6 @@
 }
 
 @media (max-width: 480px) {
-    .hero {
-        padding: 30px 16px;
-
-        h1 {
-            font-size: 24px;
-        }
-
-        p {
-            font-size: 14px;
-        }
-    }
-
     .servicesGrid {
         grid-template-columns: 1fr;
     }
