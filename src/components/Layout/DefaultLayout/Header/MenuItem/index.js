@@ -28,85 +28,13 @@ function MenuItem() {
             ],
         },
         // Các mục động từ API sẽ được thêm vào đây
-        { name: 'Danh sách Dịch Vụ', id: null, href: '/services-list' },
-        { name: 'Đặt Lịch Khám', id: null, href: '/services' },
-        { name: 'Sản Phẩm', id: null, href: '/productsPage' }, // Giữ cố định nếu không từ API
+        { name: 'Dịch Vụ', id: null, href: '/services-list' },
+        { name: 'Sản Phẩm', id: null, href: '/productsPage' }, 
     ]);
 
     useEffect(() => {
-        const fetchAllServices = async () => {
-            try {
-                // Gọi API để lấy danh sách loại dịch vụ động (Servicess)
-                const headers = { 'Content-Type': 'application/json' }; // Thêm headers nếu cần token, v.v.
-                const servicesTypeResponse = await axios.post(
-                    'http://localhost:5262/api/TypeProductsServices/GetList_SreachProductsOfServices',
-                    {
-                        productsOfServicesID: null,
-                        productsOfServicesName: null,
-                        productsOfServicesType: 'Servicess',
-                    },
-                    { headers },
-                );
-                let dynamicTypesData = servicesTypeResponse.data;
-                let dynamicTypes = [];
-                if (Array.isArray(dynamicTypesData)) {
-                    dynamicTypes = dynamicTypesData;
-                } else if (dynamicTypesData && Array.isArray(dynamicTypesData.data)) {
-                    dynamicTypes = dynamicTypesData.data;
-                }
-
-                // Tạo menuItems động từ API
-                const dynamicMenuItems = dynamicTypes.map((type) => ({
-                    name: type.productsOfServicesName || 'Không tên',
-                    id: type.productsOfServicesID,
-                    href: '/servicesPage',
-                }));
-
-                // Cập nhật menuItems: Trang Chủ + Giới Thiệu + động + Danh sách DV + Đặt Lịch + Bảng Giá + Sản Phẩm
-                const fixedItemsAfter = menuItems.slice(2);
-                const newMenuItems = [
-                    ...menuItems.slice(0, 2), // Giữ Trang Chủ và Giới Thiệu
-                    ...dynamicMenuItems, // Thêm động
-                    ...fixedItemsAfter, // Thêm Danh sách DV, Đặt lịch, Bảng Giá và Sản Phẩm ở cuối
-                ];
-                setMenuItems(newMenuItems);
-
-                // Tiếp tục lấy allServices như cũ
-                const allServicesResponse = await axios.post(
-                    'http://localhost:5262/api/Servicess/GetList_SearchServicess',
-                    {
-                        serviceID: null,
-                        serviceName: null,
-                        productsOfServicesID: null,
-                    },
-                );
-                let allServicesData = allServicesResponse.data;
-                let allServices = [];
-                if (Array.isArray(allServicesData)) {
-                    allServices = allServicesData;
-                } else if (allServicesData && Array.isArray(allServicesData.data)) {
-                    allServices = allServicesData.data;
-                }
-
-                // Tạo servicesById từ allServices (dùng cho sub-items)
-                const servicesByIdTemp = {};
-                [...dynamicMenuItems, ...fixedItemsAfter].forEach((item) => {
-                    // Bao gồm cả động và cố định
-                    if (item.id !== null) {
-                        servicesByIdTemp[item.id] = allServices.filter(
-                            (service) => service.productsOfServicesID === item.id,
-                        );
-                    }
-                });
-
-                setServicesById(servicesByIdTemp);
-                setLoading(false);
-            } catch (err) {
-                setError('Không thể tải dịch vụ');
-                setLoading(false);
-            }
-        };
-        fetchAllServices();
+        setServicesById({});
+        setLoading(false);
     }, []);
 
     const toggleMenu = () => {

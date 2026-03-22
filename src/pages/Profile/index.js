@@ -1,7 +1,6 @@
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 import { useLocation } from 'react-router-dom';
 import ChangePasswordForm from './ChangePasswordForm';
-import AccountForm from './AccountForm';
 import VoucherSection from './VoucherSection';
 import DeviceHistory from './DeviceHistory';
 import AwaitingPayment from './AwaitingPayment';
@@ -9,11 +8,14 @@ import PaymentSuccessful from './PaymentSuccessful';
 import PaymentCanceled from './PaymentCanceled';
 import PaymentOrder from './PaymentOrder';
 import UseVoucher from './UseVoucher';
+import CustomerForm from './CustomerForm';
+import StaffForm from './StaffForm';
+import AdminForm from './AdminForm';
 
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faExchange, faGifts, faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faExchange, faGifts, faHistory, faShieldAlt, faStethoscope, faCrown } from '@fortawesome/free-solid-svg-icons';
 import styles from './Profile.module.scss';
 import images from '~/assets/images';
 
@@ -22,6 +24,7 @@ const cx = classNames.bind(styles);
 function Profile() {
     const [selectedMenu, setSelectedMenu] = useState('account');
     const [userName, setUserName] = useState('');
+    const [userRole, setUserRole] = useState(0); // 0: Customer, 1: Staff, 2: Admin
     const [awaitingPaymentCount, setAwaitingPaymentCount] = useState(0);
     const [paymentSuccessfulCount, setPaymentSuccessfulCount] = useState(0);
     const [paymentCanceledCount, setPaymentCanceledCount] = useState(0);
@@ -33,12 +36,19 @@ function Profile() {
             setSelectedMenu(location.state.section);
         }
     }, [location]);
+
     useEffect(() => {
         const storedUserName = localStorage.getItem('userName');
+        const role = localStorage.getItem('role');
+        
         if (storedUserName) {
             setUserName(storedUserName);
         } else {
             setUserName('Guest');
+        }
+
+        if (role) {
+            setUserRole(parseInt(role));
         }
     }, []);
 
@@ -69,12 +79,20 @@ function Profile() {
                         className={cx('menuItem', 'account', { active: selectedMenu === 'account' })}
                         onClick={() => setSelectedMenu('account')}
                     >
-                        <FontAwesomeIcon icon={faUser} />
-                        <span>Hồ Sơ Của Tôi</span>
+                        <FontAwesomeIcon icon={
+                            userRole === 2 ? faCrown : 
+                            userRole === 1 ? faStethoscope : 
+                            faUser
+                        } />
+                        <span>
+                            {userRole === 2 ? 'Hồ Sơ Quản Trị' : 
+                             userRole === 1 ? 'Hồ Sơ Nhân Viên' : 
+                             'Hồ Sơ Của Tôi'}
+                        </span>
                     </li>
                     <li
                         className={cx('menuItem', 'changePassword', { active: selectedMenu === 'changePassword' })}
-                        onClick={() => setSelectedMenu('changePassword')} // Corrected here
+                        onClick={() => setSelectedMenu('changePassword')}
                     >
                         <FontAwesomeIcon icon={faExchange} />
                         <span>Đổi Mật Khẩu</span>
@@ -86,60 +104,68 @@ function Profile() {
                         <FontAwesomeIcon icon={faHistory} />
                         <span>Lịch Sử Đăng Nhập</span>
                     </li>
-                    <li
-                        className={cx('menuItem', 'voucher', { active: selectedMenu === 'voucher' })}
-                        onClick={() => setSelectedMenu('voucher')}
-                    >
-                        <FontAwesomeIcon icon={faGifts} />
-                        <span>Kho Voucher</span>
-                    </li>
+                    {userRole === 0 && (
+                        <li
+                            className={cx('menuItem', 'voucher', { active: selectedMenu === 'voucher' })}
+                            onClick={() => setSelectedMenu('voucher')}
+                        >
+                            <FontAwesomeIcon icon={faGifts} />
+                            <span>Kho Voucher</span>
+                        </li>
+                    )}
                 </ul>
             </div>
             <div className={cx('content')}>
                 <div className={cx('header-content')}>
-                    <ul className={cx('status-tabs')}>
-                        <li
-                            className={cx('tab', { active: selectedMenu === 'voucher' })}
-                            onClick={() => setSelectedMenu('voucher')}
-                        >
-                            Tất cả
-                        </li>
-                        <li
-                            className={cx('tab', { active: selectedMenu === 'useVoucher' })}
-                            onClick={() => setSelectedMenu('useVoucher')}
-                        >
-                            Vouchers Của Tôi
-                        </li>
-                        <li
-                            className={cx('tab', { active: selectedMenu === 'awaitingPayment' })}
-                            onClick={() => setSelectedMenu('awaitingPayment')}
-                        >
-                            Chờ thanh toán {awaitingPaymentCount > 0 && `(${awaitingPaymentCount})`}
-                        </li>
-                        <li
-                            className={cx('tab', { active: selectedMenu === 'paymentSuccessful' })}
-                            onClick={() => setSelectedMenu('paymentSuccessful')}
-                        >
-                            Hoàn thành {paymentSuccessfulCount > 0 && `(${paymentSuccessfulCount})`}
-                        </li>
-                        <li
-                            className={cx('tab', { active: selectedMenu === 'paymentCanceled' })}
-                            onClick={() => setSelectedMenu('paymentCanceled')}
-                        >
-                            Đã hủy {paymentCanceledCount > 0 && `(${paymentCanceledCount})`}
-                        </li>
-                        <li
-                            className={cx('tab', { active: selectedMenu === 'paymentOrder' })}
-                            onClick={() => setSelectedMenu('paymentOrder')}
-                        >
-                            Trạng Thái Đơn Hàng
-                        </li>
-                    </ul>
+                    {userRole === 0 && (
+                        <ul className={cx('status-tabs')}>
+                            <li
+                                className={cx('tab', { active: selectedMenu === 'voucher' })}
+                                onClick={() => setSelectedMenu('voucher')}
+                            >
+                                Tất cả
+                            </li>
+                            <li
+                                className={cx('tab', { active: selectedMenu === 'useVoucher' })}
+                                onClick={() => setSelectedMenu('useVoucher')}
+                            >
+                                Vouchers Của Tôi
+                            </li>
+                            <li
+                                className={cx('tab', { active: selectedMenu === 'awaitingPayment' })}
+                                onClick={() => setSelectedMenu('awaitingPayment')}
+                            >
+                                Chờ thanh toán {awaitingPaymentCount > 0 && `(${awaitingPaymentCount})`}
+                            </li>
+                            <li
+                                className={cx('tab', { active: selectedMenu === 'paymentSuccessful' })}
+                                onClick={() => setSelectedMenu('paymentSuccessful')}
+                            >
+                                Hoàn thành {paymentSuccessfulCount > 0 && `(${paymentSuccessfulCount})`}
+                            </li>
+                            <li
+                                className={cx('tab', { active: selectedMenu === 'paymentCanceled' })}
+                                onClick={() => setSelectedMenu('paymentCanceled')}
+                            >
+                                Đã hủy {paymentCanceledCount > 0 && `(${paymentCanceledCount})`}
+                            </li>
+                            <li
+                                className={cx('tab', { active: selectedMenu === 'paymentOrder' })}
+                                onClick={() => setSelectedMenu('paymentOrder')}
+                            >
+                                Trạng Thái Đơn Hàng
+                            </li>
+                        </ul>
+                    )}
                 </div>
                 <div className={cx('content-content')}>
-                    {selectedMenu === 'account' && <AccountForm />}
+                    {selectedMenu === 'account' && (
+                        userRole === 2 ? <AdminForm /> :
+                        userRole === 1 ? <StaffForm /> :
+                        <CustomerForm />
+                    )}
                     {selectedMenu === 'changePassword' && <ChangePasswordForm />}
-                    {selectedMenu === 'voucher' && <VoucherSection />}
+                    {selectedMenu === 'voucher' && userRole === 0 && <VoucherSection />}
                     {selectedMenu === 'deviceHistory' && <DeviceHistory />}
                     {selectedMenu === 'awaitingPayment' && (
                         <AwaitingPayment onCountChange={handleAwaitingPaymentCount} />

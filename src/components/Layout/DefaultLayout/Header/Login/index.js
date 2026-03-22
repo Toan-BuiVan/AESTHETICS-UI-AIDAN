@@ -76,6 +76,7 @@ function Login({ onClose, setSuccessMessage }) {
                     const userNameFromToken = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
                     const userIDFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid'];
                     const roleFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+                    const customerIdFromToken = decodedToken['CustomerId'];
 
                     // Store token and refresh token
                     localStorage.setItem('token', data.token);
@@ -85,6 +86,7 @@ function Login({ onClose, setSuccessMessage }) {
                     if (userNameFromToken) localStorage.setItem('userName', userNameFromToken);
                     if (userIDFromToken) localStorage.setItem('userID', userIDFromToken);
                     if (roleFromToken) localStorage.setItem('role', roleFromToken);
+                    if (customerIdFromToken) localStorage.setItem('customerId', customerIdFromToken);
 
                     // Clear unnecessary fields
                     localStorage.removeItem('typePerson');

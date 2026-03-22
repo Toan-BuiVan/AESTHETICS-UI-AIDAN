@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './PaymentOrder.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faTruck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 
 const cx = classNames.bind(styles);
@@ -257,17 +257,30 @@ function PaymentOrder() {
     };
 
     if (loading) {
-        return <div className={cx('loading')}>Đang tải...</div>;
+        return (
+            <div className={cx('payment-order')}>
+                <div className={cx('loading')}>
+                    <FontAwesomeIcon icon={faSpinner} style={{ fontSize: '2.5rem', marginBottom: '16px', animation: 'spin 1s linear infinite', color: '#4299e1' }} />
+                    <p>Đang tải danh sách hóa đơn...</p>
+                </div>
+            </div>
+        );
     }
 
     if (error) {
-        return <div className={cx('error')}>Lỗi: {error}</div>;
+        return (
+            <div className={cx('payment-order')}>
+                <div className={cx('error')}>
+                    <p>Lỗi: {error}</p>
+                </div>
+            </div>
+        );
     }
 
     return (
         <div className={cx('payment-order')}>
             {successMessage && <SuccessMessage message={successMessage} />}
-            <h2>Hóa đơn đang chuẩn bị hoặc đang giao</h2>
+            <h2><FontAwesomeIcon icon={faTruck} style={{marginRight: '12px', color: '#ed8936'}} /> Hóa đơn đang chuẩn bị hoặc đang giao</h2>
             {invoices.length === 0 ? (
                 <p>Không có hóa đơn nào đang chuẩn bị hoặc đang giao.</p>
             ) : (

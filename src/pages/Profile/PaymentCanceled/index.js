@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './PaymentCanceled.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faTimesCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -112,16 +112,29 @@ function PaymentCanceled({ onCountChange }) {
     };
 
     if (loading) {
-        return <div className={cx('loading')}>Đang tải...</div>;
+        return (
+            <div className={cx('payment-canceled')}>
+                <div className={cx('loading')}>
+                    <FontAwesomeIcon icon={faSpinner} style={{ fontSize: '2.5rem', marginBottom: '16px', animation: 'spin 1s linear infinite', color: '#4299e1' }} />
+                    <p>Đang tải danh sách hóa đơn...</p>
+                </div>
+            </div>
+        );
     }
 
     if (error) {
-        return <div className={cx('error')}>Lỗi: {error}</div>;
+        return (
+            <div className={cx('payment-canceled')}>
+                <div className={cx('error')}>
+                    <p>Lỗi: {error}</p>
+                </div>
+            </div>
+        );
     }
 
     return (
         <div className={cx('payment-canceled')}>
-            <h2>Hóa đơn đã hủy thanh toán</h2>
+            <h2><FontAwesomeIcon icon={faTimesCircle} style={{marginRight: '12px', color: '#f56565'}} /> Hóa đơn đã hủy thanh toán</h2>
             {invoices.length === 0 ? (
                 <p>Không có hóa đơn nào đã hủy thanh toán.</p>
             ) : (

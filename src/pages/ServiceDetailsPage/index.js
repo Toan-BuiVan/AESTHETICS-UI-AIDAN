@@ -8,10 +8,18 @@ import {
     faClock,
     faDollarSign,
     faCheckCircle,
-    faStar,
     faBox,
     faCalendarAlt,
-    faUser,
+    faGem,
+    faFlask,
+    faCheck,
+    faGift,
+    faTrophy,
+    faArrowRight,
+    faCheckSquare,
+    faSquare,
+    faLightbulb,
+    faBolt
 } from '@fortawesome/free-solid-svg-icons';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -22,63 +30,102 @@ function ServiceDetailsPage() {
     const navigate = useNavigate();
     const [service, setService] = useState(null);
     const [treatmentPlans, setTreatmentPlans] = useState([]);
-    const [appointments, setAppointments] = useState([]);
     const [selectedPlan, setSelectedPlan] = useState(null);
     const [sessionDetails, setSessionDetails] = useState([]);
+    const [checkedSessions, setCheckedSessions] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview');
 
     useEffect(() => {
-        fetchServiceDetails();
+        fetchTreatmentPlans(serviceId);
     }, [serviceId]);
 
-    const fetchServiceDetails = async () => {
+    const fetchTreatmentPlans = async (svcId) => {
         setLoading(true);
         try {
-            // Fetch service details
-            const serviceResponse = await axios.get(
-                `http://localhost:5262/api/Services/${serviceId}`
-            );
-            setService(serviceResponse.data);
-
-            // If it's a course (package), fetch treatment plans
-            if (serviceResponse.data.isCourse) {
-                const plansResponse = await axios.get(
-                    `http://localhost:5262/api/TreatmentPlans/ByService/${serviceId}`
-                );
-                setTreatmentPlans(plansResponse.data || []);
-                if (plansResponse.data?.length > 0) {
-                    setSelectedPlan(plansResponse.data[0]);
-                    fetchSessionDetails(plansResponse.data[0].treatmentPlanID);
+            const response = await axios.post(
+                'http://localhost:5122/api/TreatmentPlan/gettreatmentplanlist',
+                {
+                    pageNo: 1,
+                    pageSize: 8,
+                    serviceId: parseInt(svcId)
                 }
-            } else {
-                // If it's a single service, fetch appointments
-                const appointmentsResponse = await axios.get(
-                    `http://localhost:5262/api/Appointments/ByService/${serviceId}`
-                );
-                setAppointments(appointmentsResponse.data || []);
+            );
+
+            let rawPlansData = [];
+            if (Array.isArray(response.data)) {
+                rawPlansData = response.data;
+            } else if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                rawPlansData = response.data.baseDatas;
+            }
+            
+            // Transform API response to match component expectations
+            const transformedPlans = rawPlansData.map(item => ({
+                id: item.treatmentPlanInfomation?.id,
+                planName: item.treatmentPlanInfomation?.planName,
+                totalSessions: item.treatmentPlanInfomation?.totalSessions,
+                price: item.treatmentPlanInfomation?.price,
+                sessionInterval: item.treatmentPlanInfomation?.sessionInterval,
+                description: item.treatmentPlanInfomation?.description,
+                serviceId: item.treatmentPlanInfomation?.serviceId,
+                // Add service information
+                serviceInfo: item.serviceInformation || {},
+                // Add treatment sessions
+                treatmentSessions: (item.treatmentSessionInformation || []).map(session => ({
+                    id: session.treatmentSessionId,
+                    sessionNumber: session.sessionNumber,
+                    sessionName: session.sessionName,
+                    description: session.description,
+                    duration: session.duration,
+                    treatmentSessionId: session.treatmentSessionId
+                })),
+                // Add session products
+                sessionProducts: item.sessionProductInformation || []
+            }));
+            
+            setTreatmentPlans(transformedPlans);
+            
+            // Set service data from first plan's service information
+            const firstPlan = transformedPlans[0];
+            if (firstPlan) {
+                setService({
+                    id: parseInt(svcId),
+                    isCourse: 1,
+                    serviceID: parseInt(svcId),
+                    priceService: firstPlan.price || 0,
+                    description: firstPlan.description || '',
+                    serviceName: firstPlan.serviceInfo?.serviceName || ''
+                });
+                
+                setSelectedPlan(firstPlan);
+                setSessionDetails(firstPlan.treatmentSessions || []);
             }
         } catch (error) {
-            console.error('Error fetching service details:', error);
+            console.error('Error fetching treatment plans:', error);
+            setTreatmentPlans([]);
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchSessionDetails = async (planId) => {
-        try {
-            const response = await axios.get(
-                `http://localhost:5262/api/TreatmentSessions/ByPlan/${planId}`
-            );
-            setSessionDetails(response.data || []);
-        } catch (error) {
-            console.error('Error fetching session details:', error);
-        }
-    };
-
     const handlePlanSelect = (plan) => {
         setSelectedPlan(plan);
-        fetchSessionDetails(plan.treatmentPlanID);
+        // Use treatmentSessions if available, otherwise fall back to sessionDetails
+        const sessions = plan.treatmentSessions && plan.treatmentSessions.length > 0 
+            ? plan.treatmentSessions 
+            : plan.treatmentSessions || [];
+        setSessionDetails(sessions);
+        setCheckedSessions(new Set());
+    };
+
+    const handleSessionCheck = (sessionId) => {
+        const newChecked = new Set(checkedSessions);
+        if (newChecked.has(sessionId)) {
+            newChecked.delete(sessionId);
+        } else {
+            newChecked.add(sessionId);
+        }
+        setCheckedSessions(newChecked);
     };
 
     if (loading) {
@@ -109,62 +156,171 @@ function ServiceDetailsPage() {
 
     return (
         <div className={cx('wrapper')}>
-            {/* Header */}
-            <div className={cx('header')}>
-                <button onClick={() => navigate(-1)} className={cx('backBtn')}>
-                    <FontAwesomeIcon icon={faArrowLeft} /> Quay lại
-                </button>
-                <div className={cx('headerContent')}>
-                    <h1>{service.serviceName}</h1>
-                    <span className={cx('badge', { package: isCourseService })}>
-                        {isCourseService ? '📦 Gói liệu trình' : '💄 Dịch vụ đơn lẻ'}
-                    </span>
+            {/* Hero Header with Social Proof & Benefits */}
+            <div className={cx('headerModern')}>
+                <div className={cx('headerBackdrop')}>
+                    <div className={cx('animationOrb', 'orb1')}></div>
+                    <div className={cx('animationOrb', 'orb2')}></div>
+                    <div className={cx('animationOrb', 'orb3')}></div>
+                </div>
+
+                <div className={cx('headerContainer')}>
+                    <button onClick={() => navigate(-1)} className={cx('headerBack')}>
+                        <FontAwesomeIcon icon={faArrowLeft} />
+                    </button>
+
+                    <div className={cx('headerContent')}>
+                        <div className={cx('headerBranding')}>
+                            <span className={cx('headerTag')}>
+                                {isCourseService ? '✨ Gói chuyên biệt' : '⭐ Dịch vụ cao cấp'}
+                            </span>
+                        </div>
+
+                        <h1 className={cx('heroTitle')}>
+                            {selectedPlan?.planName || 'Dịch vụ chăm sóc da cao cấp'}
+                        </h1>
+
+                        <div className={cx('heroStats')}>
+                            <div className={cx('heroStat')}>
+                                <span className={cx('statValue')}>4.9</span>
+                                <span className={cx('statLabel')}>Đánh giá</span>
+                                <div className={cx('stars')}>★★★★★</div>
+                            </div>
+                            <div className={cx('statDivider')}></div>
+                            <div className={cx('heroStat')}>
+                                <span className={cx('statValue')}>2.5K+</span>
+                                <span className={cx('statLabel')}>Khách hài lòng</span>
+                            </div>
+                            <div className={cx('statDivider')}></div>
+                            <div className={cx('heroStat')}>
+                                <span className={cx('statValue')}>10+</span>
+                                <span className={cx('statLabel')}>Năm kinh nghiệm</span>
+                            </div>
+                        </div>
+
+                        <div className={cx('heroBenefits')}>
+                            <div className={cx('benefitChip')}>
+                                <span>🎯</span>
+                                <span>Kết quả tối ưu</span>
+                            </div>
+                            <div className={cx('benefitChip')}>
+                                <span>💯</span>
+                                <span>Chất lượng đảm bảo</span>
+                            </div>
+                            <div className={cx('benefitChip')}>
+                                <span>🔒</span>
+                                <span>An toàn 100%</span>
+                            </div>
+                            <div className={cx('benefitChip')}>
+                                <span>🚀</span>
+                                <span>Kỹ thuật tiên tiến</span>
+                            </div>
+                        </div>
+
+                        <p className={cx('heroDescription')}>
+                            {service?.description || selectedPlan?.description || 'Liệu trình chắp chải đặc biệt được thiết kế riêng cho từng loại da, mang lại hiệu quả tối đa'}
+                        </p>
+
+                        <div className={cx('heroCta')}>
+                            <button className={cx('ctaPrimary')}>
+                                <FontAwesomeIcon icon={faGift} />
+                                Đặt lịch ngay
+                            </button>
+                            {/* <button className={cx('ctaSecondary')}>
+                                Xem chi tiết
+                                <FontAwesomeIcon icon={faArrowRight} />
+                            </button> */}
+                        </div>
+
+                        <div className={cx('heroTrust')}>
+                            <div className={cx('trustItem')}>
+                                <span className={cx('trustIcon')}>👥</span>
+                                <span>Được tin tưởng bởi hàng nghìn khách hàng</span>
+                            </div>
+                            <div className={cx('trustItem')}>
+                                <span className={cx('trustIcon')}>✓</span>
+                                <span>Hoàn tiền 100% nếu không hài lòng</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div className={cx('container')}>
-                {/* Service Info Card */}
-                <div className={cx('serviceInfo')}>
-                    <div className={cx('infoHeader')}>
-                        <h2>Thông tin dịch vụ</h2>
+                {/* Service Info Card - Modern Design */}
+                <div className={cx('serviceInfoModern')}>
+                    <div className={cx('serviceInfoHeader')}>
+                        <div className={cx('serviceInfoTitle')}>
+                            <h2>Thông tin dịch vụ</h2>
+                            <p>Khám phá chi tiết về gói liệu trình này</p>
+                        </div>
                     </div>
 
-                    <div className={cx('infoGrid')}>
-                        <div className={cx('infoItem')}>
-                            <FontAwesomeIcon icon={faDollarSign} />
-                            <div>
-                                <span className={cx('label')}>Giá</span>
-                                <span className={cx('value')}>
-                                    {service.priceService?.toLocaleString('vi-VN')} VNĐ
+                    <div className={cx('infoGridModern')}>
+                        <div className={cx('infoCardModern')}>
+                            <div className={cx('infoCardIcon', 'priceIcon')}>
+                                <FontAwesomeIcon icon={faDollarSign} />
+                            </div>
+                            <div className={cx('infoCardContent')}>
+                                <span className={cx('infoCardLabel')}>Giá</span>
+                                <span className={cx('infoCardValue')}>
+                                    {service.priceService?.toLocaleString('vi-VN')}
+                                    <span className={cx('infoCardUnit')}>đ</span>
                                 </span>
+                                <span className={cx('infoCardDesc')}>Giá/lần sử dụng</span>
                             </div>
                         </div>
 
-                        {isCourseService && (
-                            <div className={cx('infoItem')}>
-                                <FontAwesomeIcon icon={faBox} />
-                                <div>
-                                    <span className={cx('label')}>Gói liệu trình</span>
-                                    <span className={cx('value')}>{treatmentPlans.length} gói</span>
-                                </div>
+                        <div className={cx('infoCardModern')}>
+                            <div className={cx('infoCardIcon', 'sessionsIcon')}>
+                                <FontAwesomeIcon icon={faFlask} />
                             </div>
-                        )}
+                            <div className={cx('infoCardContent')}>
+                                <span className={cx('infoCardLabel')}>Số buổi</span>
+                                <span className={cx('infoCardValue')}>
+                                    {selectedPlan?.totalSessions || (treatmentPlans.length > 0 ? treatmentPlans[0].totalSessions : 0)}
+                                </span>
+                                <span className={cx('infoCardDesc')}>Buổi điều trị</span>
+                            </div>
+                        </div>
 
-                        {!isCourseService && (
-                            <div className={cx('infoItem')}>
+                        <div className={cx('infoCardModern')}>
+                            <div className={cx('infoCardIcon', 'durationIcon')}>
                                 <FontAwesomeIcon icon={faCalendarAlt} />
-                                <div>
-                                    <span className={cx('label')}>Lịch hẹn</span>
-                                    <span className={cx('value')}>{appointments.length}</span>
-                                </div>
                             </div>
-                        )}
+                            <div className={cx('infoCardContent')}>
+                                <span className={cx('infoCardLabel')}>Thời gian</span>
+                                <span className={cx('infoCardValue')}>
+                                    {selectedPlan?.sessionInterval ? selectedPlan.sessionInterval * selectedPlan.totalSessions : 0}
+                                    <span className={cx('infoCardUnit')}>Ngày</span>
+                                </span>
+                                <span className={cx('infoCardDesc')}>Thực hiện toàn bộ</span>
+                            </div>
+                        </div>
+
+                        <div className={cx('infoCardModern')}>
+                            <div className={cx('infoCardIcon', 'packIcon')}>
+                                <FontAwesomeIcon icon={faBox} />
+                            </div>
+                            <div className={cx('infoCardContent')}>
+                                <span className={cx('infoCardLabel')}>Tổng gói</span>
+                                <span className={cx('infoCardValue')}>
+                                    {treatmentPlans.length}
+                                </span>
+                                <span className={cx('infoCardDesc')}>Gói liệu trình</span>
+                            </div>
+                        </div>
                     </div>
 
                     {service.description && (
-                        <div className={cx('description')}>
-                            <h3>Mô tả</h3>
-                            <p>{service.description}</p>
+                        <div className={cx('serviceDescriptionCard')}>
+                            <div className={cx('descriptionIcon')}>
+                                <FontAwesomeIcon icon={faLightbulb} />
+                            </div>
+                            <div>
+                                <h4>Mô tả chi tiết</h4>
+                                <p>{service.description}</p>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -189,17 +345,10 @@ function ServiceDetailsPage() {
                                 className={cx('tabBtn', { active: activeTab === 'sessions' })}
                                 onClick={() => setActiveTab('sessions')}
                             >
-                                Chi tiết buổi học
+                                Chi tiết liệu trình
                             </button>
                         </>
-                    ) : (
-                        <button
-                            className={cx('tabBtn', { active: activeTab === 'appointments' })}
-                            onClick={() => setActiveTab('appointments')}
-                        >
-                            Lịch hẹn
-                        </button>
-                    )}
+                    ) : null}
                 </div>
 
                 {/* Tab Content */}
@@ -223,13 +372,13 @@ function ServiceDetailsPage() {
                                     <div className={cx('overviewItem')}>
                                         <span className={cx('label')}>Giá dịch vụ:</span>
                                         <span className={cx('value', 'price')}>
-                                            {service.priceService?.toLocaleString('vi-VN')} VNĐ
+                                            {service.priceService?.toLocaleString('vi-VN')} VNĐ/lần
                                         </span>
                                     </div>
                                     {isCourseService && (
                                         <div className={cx('overviewItem')}>
                                             <span className={cx('label')}>Số gói liệu trình:</span>
-                                            <span className={cx('value')}>{treatmentPlans.length}</span>
+                                            <span className={cx('value')}>{selectedPlan?.totalSessions || (treatmentPlans.length > 0 ? treatmentPlans[0].totalSessions : 0)}</span>
                                         </div>
                                     )}
                                 </div>
@@ -246,50 +395,101 @@ function ServiceDetailsPage() {
                     {/* Treatment Plans Tab */}
                     {activeTab === 'plans' && isCourseService && (
                         <div className={cx('tabPane')}>
-                            <div className={cx('plansContainer')}>
+                            <div className={cx('plansGrid')}>
                                 {treatmentPlans.length > 0 ? (
-                                    treatmentPlans.map((plan) => (
+                                    treatmentPlans.map((plan, index) => (
                                         <div
-                                            key={plan.treatmentPlanID}
-                                            className={cx('planCard', {
-                                                selected: selectedPlan?.treatmentPlanID === plan.treatmentPlanID,
+                                            key={plan.id}
+                                            className={cx('modernPlanCard', {
+                                                selected: selectedPlan?.id === plan.id,
+                                                featured: index === 0
                                             })}
                                             onClick={() => handlePlanSelect(plan)}
                                         >
-                                            <div className={cx('planHeader')}>
-                                                <div>
-                                                    <h3>{plan.planName}</h3>
-                                                    <p className={cx('planSubtitle')}>
-                                                        {plan.totalSessions} buổi
-                                                    </p>
+                                            {index === 0 && (
+                                                <div className={cx('badgeFeatured')}>
+                                                    <FontAwesomeIcon icon={faTrophy} />
+                                                    Bán chạy nhất
                                                 </div>
-                                                {selectedPlan?.treatmentPlanID === plan.treatmentPlanID && (
-                                                    <FontAwesomeIcon
-                                                        icon={faCheckCircle}
-                                                        className={cx('checkIcon')}
-                                                    />
+                                            )}
+                                            
+                                            <div className={cx('planCardContent')}>
+                                                <div className={cx('planCardHeader')}>
+                                                    <div className={cx('planCardTitle')}>
+                                                        <h3>{plan.planName}</h3>
+                                                        {selectedPlan?.id === plan.id && (
+                                                            <div className={cx('selectedBadge')}>
+                                                                <FontAwesomeIcon icon={faCheck} />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {plan.description && (
+                                                    <p className={cx('planCardDesc')}>{plan.description}</p>
                                                 )}
-                                            </div>
-                                            <div className={cx('planDetails')}>
-                                                <div className={cx('planItem')}>
-                                                    <FontAwesomeIcon icon={faClock} />
-                                                    <span>{plan.totalSessions} buổi điều trị</span>
+
+                                                <div className={cx('statsContainer')}>
+                                                    <div className={cx('stat')}>
+                                                        <div className={cx('statIcon')}>
+                                                            <FontAwesomeIcon icon={faFlask} />
+                                                        </div>
+                                                        <div className={cx('statContent')}>
+                                                            <span className={cx('statLabel')}>Số buổi</span>
+                                                            <span className={cx('statValue')}>{plan.totalSessions}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className={cx('stat')}>
+                                                        <div className={cx('statIcon')}>
+                                                            <FontAwesomeIcon icon={faCalendarAlt} />
+                                                        </div>
+                                                        <div className={cx('statContent')}>
+                                                            <span className={cx('statLabel')}>Khoảng cách</span>
+                                                            <span className={cx('statValue')}>{plan.sessionInterval} ngày</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className={cx('stat')}>
+                                                        <div className={cx('statIcon')}>
+                                                            <FontAwesomeIcon icon={faClock} />
+                                                        </div>
+                                                        <div className={cx('statContent')}>
+                                                            <span className={cx('statLabel')}>Thời lượng</span>
+                                                            <span className={cx('statValue')}>{plan.totalSessions * plan.sessionInterval}d</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className={cx('planItem')}>
-                                                    <FontAwesomeIcon icon={faDollarSign} />
-                                                    <span>
-                                                        {(
-                                                            service.priceService / plan.totalSessions
-                                                        ).toLocaleString('vi-VN')}{' '}
-                                                        VNĐ/buổi
+
+                                                <div className={cx('priceSection')}>
+                                                    <span className={cx('priceLabel')}>Giá gói</span>
+                                                    <span className={cx('price')}>
+                                                        {plan.price?.toLocaleString('vi-VN')}
+                                                        <span className={cx('currency')}>đ</span>
                                                     </span>
                                                 </div>
+
+                                                <button 
+                                                    className={cx('selectPlanBtnModern', {
+                                                        selected: selectedPlan?.id === plan.id
+                                                    })}
+                                                    onClick={() => handlePlanSelect(plan)}
+                                                >
+                                                    {selectedPlan?.id === plan.id ? (
+                                                        <>
+                                                            <FontAwesomeIcon icon={faCheck} />
+                                                            Thêm vào đặt lịch
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            Thêm vào đặt lịch
+                                                            <FontAwesomeIcon icon={faArrowRight} />
+                                                        </>
+                                                    )}
+                                                </button>
                                             </div>
-                                            <button className={cx('selectPlanBtn')}>
-                                                {selectedPlan?.treatmentPlanID === plan.treatmentPlanID
-                                                    ? '✓ Đã chọn'
-                                                    : 'Chọn gói này'}
-                                            </button>
+
+                                            <div className={cx('planCardGradient')}></div>
                                         </div>
                                     ))
                                 ) : (
@@ -302,102 +502,124 @@ function ServiceDetailsPage() {
                     {/* Treatment Sessions Tab */}
                     {activeTab === 'sessions' && isCourseService && selectedPlan && (
                         <div className={cx('tabPane')}>
-                            <div className={cx('sessionsContainer')}>
-                                <div className={cx('selectedPlanInfo')}>
-                                    <h3>📅 Chi tiết gói: {selectedPlan.planName}</h3>
-                                    <p>Tổng cộng {selectedPlan.totalSessions} buổi</p>
+                            <div className={cx('modernSessionsContainer')}>
+                                <div className={cx('sessionHeaderInfo')}>
+                                    <div className={cx('headerContent')}>
+                                        <div className={cx('headerIcon')}>
+                                            <FontAwesomeIcon icon={faGem} />
+                                        </div>
+                                        <div>
+                                            <h3>{selectedPlan.planName}</h3>
+                                            <p>{selectedPlan.description}</p>
+                                        </div>
+                                    </div>
+                                    <div className={cx('headerStats')}>
+                                        <div className={cx('headerStat')}>
+                                            <span className={cx('statNum')}>{selectedPlan.totalSessions}</span>
+                                            <span className={cx('statText')}>Buổi điều trị</span>
+                                        </div>
+                                        <div className={cx('statDivider')}></div>
+                                        <div className={cx('headerStat')}>
+                                            <span className={cx('statNum', 'priceValue')}>
+                                                {selectedPlan.price ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedPlan.price) : '0 ₫'}
+                                            </span>
+                                            <span className={cx('statText')}>Giá gói</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className={cx('sessionsList')}>
-                                    {sessionDetails.length > 0 ? (
-                                        sessionDetails.map((session, index) => (
-                                            <div key={session.treatmentSessionID || index} className={cx('sessionCard')}>
-                                                <div className={cx('sessionNumber')}>
-                                                    <span>Buổi {session.sessionNumber || index + 1}</span>
-                                                </div>
-                                                <div className={cx('sessionContent')}>
-                                                    <div className={cx('sessionMeta')}>
-                                                        <span className={cx('badge', 'session')}>
-                                                            Buổi {session.sessionNumber || index + 1}
-                                                        </span>
+                                <div className={cx('sessionsGridLayout')}>
+                                    {sessionDetails && sessionDetails.length > 0 ? (
+                                        <div className={cx('sessionsGrid')}>
+                                            {sessionDetails.map((session, index) => {
+                                                // Find products for this session based on sessionNumber or other criteria
+                                                const sessionProducts = selectedPlan?.sessionProducts?.filter(
+                                                    product => product.serviceId === selectedPlan?.serviceId
+                                                ) || [];
+                                                
+                                                return (
+                                                <div key={session.id} className={cx('sessionGridCard')}>
+                                                    <div className={cx('sessionGridHeader')}>
+                                                        <div className={cx('sessionCheckboxArea')}>
+                                                            <input
+                                                                type="checkbox"
+                                                                id={`session-${session.id}`}
+                                                                checked={checkedSessions.has(session.id)}
+                                                                onChange={() => handleSessionCheck(session.id)}
+                                                                className={cx('sessionCheckbox')}
+                                                            />
+                                                            <label htmlFor={`session-${session.id}`} className={cx('checkboxLabel')}>
+                                                                {checkedSessions.has(session.id) ? (
+                                                                    <FontAwesomeIcon icon={faCheckSquare} />
+                                                                ) : (
+                                                                    <FontAwesomeIcon icon={faSquare} />
+                                                                )}
+                                                            </label>
+                                                        </div>
+                                                        <div className={cx('sessionBadgeModern', { checked: checkedSessions.has(session.id) })}>
+                                                            <FontAwesomeIcon icon={faBolt} />
+                                                            Buổi {session.sessionNumber}
+                                                        </div>
                                                     </div>
 
-                                                    {session.products && session.products.length > 0 ? (
-                                                        <div className={cx('productsSection')}>
-                                                            <h4>Sản phẩm sử dụng:</h4>
-                                                            <div className={cx('productsList')}>
-                                                                {session.products.map((product, idx) => (
-                                                                    <div
-                                                                        key={idx}
-                                                                        className={cx('productItem')}
-                                                                    >
-                                                                        <FontAwesomeIcon icon={faBox} />
-                                                                        <span>{product.productName || product}</span>
-                                                                    </div>
-                                                                ))}
+                                                    <div className={cx('sessionGridContent')}>
+                                                        {session.sessionName && (
+                                                            <h4>{session.sessionName}</h4>
+                                                        )}
+
+                                                        {session.description && (
+                                                            <p className={cx('sessionDesc')}>
+                                                                {session.description}
+                                                            </p>
+                                                        )}
+
+                                                        <div className={cx('sessionMetaInfoModern')}>
+                                                            {session.duration && (
+                                                                <div className={cx('metaItemModern')}>
+                                                                    <FontAwesomeIcon icon={faClock} />
+                                                                    <span>{session.duration} phút</span>
+                                                                </div>
+                                                            )}
+                                                            <div className={cx('metaItemModern')}>
+                                                                <FontAwesomeIcon icon={faCalendarAlt} />
+                                                                <span>Ngày {(index + 1) * selectedPlan.sessionInterval}</span>
                                                             </div>
                                                         </div>
-                                                    ) : (
-                                                        <p className={cx('noProducts')}>
-                                                            Chưa có sản phẩm được quy định
-                                                        </p>
-                                                    )}
+
+                                                        {sessionProducts && sessionProducts.length > 0 && (
+                                                            <div className={cx('productsGridModern')}>
+                                                                <div className={cx('productsHeaderModern')}>
+                                                                    <FontAwesomeIcon icon={faGift} />
+                                                                    <span>Sản phẩm sử dụng</span>
+                                                                </div>
+                                                                <div className={cx('productsTagsModern')}>
+                                                                    {sessionProducts.map((sp) => (
+                                                                        <div key={sp.sessionProductId} className={cx('productTagModern')}>
+                                                                            <FontAwesomeIcon icon={faBox} />
+                                                                            <span>{sp.productName}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))
+                                            );
+                                            })}
+                                        </div>
                                     ) : (
                                         <p className={cx('emptyMessage')}>
                                             Chọn một gói liệu trình để xem chi tiết buổi học
                                         </p>
                                     )}
                                 </div>
-                            </div>
-                        </div>
-                    )}
 
-                    {/* Appointments Tab */}
-                    {activeTab === 'appointments' && !isCourseService && (
-                        <div className={cx('tabPane')}>
-                            <div className={cx('appointmentsContainer')}>
-                                {appointments.length > 0 ? (
-                                    <div className={cx('appointmentsList')}>
-                                        {appointments.map((appointment) => (
-                                            <div
-                                                key={appointment.appointmentID}
-                                                className={cx('appointmentCard')}
-                                            >
-                                                <div className={cx('appointmentHeader')}>
-                                                    <div>
-                                                        <h3>
-                                                            <FontAwesomeIcon icon={faUser} />
-                                                            Khách hàng #{appointment.customerId}
-                                                        </h3>
-                                                        <p>ID: {appointment.appointmentID}</p>
-                                                    </div>
-                                                    <span className={cx('badge', 'appointment')}>
-                                                        Đã đặt lịch
-                                                    </span>
-                                                </div>
-                                                <div className={cx('appointmentDetails')}>
-                                                    <div className={cx('detailItem')}>
-                                                        <span className={cx('label')}>Dịch vụ:</span>
-                                                        <span>{service.serviceName}</span>
-                                                    </div>
-                                                    <div className={cx('detailItem')}>
-                                                        <span className={cx('label')}>Trạng thái:</span>
-                                                        <span className={cx('status', 'confirmed')}>
-                                                            ✓ Xác nhận
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className={cx('emptyState')}>
-                                        <p>Chưa có lịch hẹn nào cho dịch vụ này</p>
-                                    </div>
-                                )}
+                                <div className={cx('sessionFooter')}>
+                                    <button className={cx('addToCartBtnLarge')}>
+                                        <FontAwesomeIcon icon={faGift} />
+                                        Thêm {selectedPlan.planName} vào đặt lịch
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}

@@ -2,87 +2,125 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import classNames from 'classnames/bind';
 import styles from './ServicesListPage.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faFilter, faArrowRight, faStar, faClock, faDollarSign } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faArrowRight, faStar, faClock, faDollarSign, faChevronLeft, faChevronRight, faWandMagicSparkles, faHeartbeat } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
 function ServicesListPage() {
+    const navigate = useNavigate();
     const [services, setServices] = useState([]);
-    const [filteredServices, setFilteredServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [serviceType, setServiceType] = useState('all');
-    const [sortBy, setSortBy] = useState('name');
+    const [selectedServiceTypeId, setSelectedServiceTypeId] = useState(null);
+    const [serviceTypeList, setServiceTypeList] = useState([]);
+    const [pageNo, setPageNo] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalRecordCount, setTotalRecordCount] = useState(0);
+    const PAGE_SIZE = 12;
 
+    // Fetch service types list on mount
     useEffect(() => {
-        fetchServices();
+        fetchServiceTypes();
     }, []);
 
     useEffect(() => {
-        filterAndSortServices();
-    }, [services, searchTerm, serviceType, sortBy]);
+        fetchServices(1, searchTerm, serviceType, selectedServiceTypeId);
+    }, []);
 
-    const fetchServices = async () => {
-        setLoading(true);
+    useEffect(() => {
+        fetchServices(1, searchTerm, serviceType, selectedServiceTypeId);
+    }, [searchTerm, serviceType, selectedServiceTypeId]);
+
+    const fetchServiceTypes = async () => {
         try {
             const response = await axios.post(
-                'http://localhost:5262/api/Servicess/GetSortedPagedServicess',
+                'http://localhost:5122/api/ServiceType/getservicetypelist',
                 {
-                    pageIndex: 1,
-                    pageSize: 100,
-                    minPrice: null,
-                    maxPrice: null,
-                    productsOfServicesName: null,
+                    serviceCategory: 0
+                }
+            );
+
+            let typesData = [];
+            if (Array.isArray(response.data)) {
+                typesData = response.data;
+            } else if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                typesData = response.data.baseDatas;
+            }
+            
+            setServiceTypeList(typesData);
+        } catch (error) {
+            console.error('Error fetching service types:', error);
+            setServiceTypeList([]);
+        }
+    };
+
+    const fetchServices = async (page = 1, search = '', type = 'all', serviceTypeId = null) => {
+        setLoading(true);
+        try {
+            // Map filter type to isCourse value
+            let isCourseValue = null;
+            if (type === 'single') {
+                isCourseValue = false;
+            } else if (type === 'package') {
+                isCourseValue = true;
+            }
+
+            const response = await axios.post(
+                'http://localhost:5122/api/Service/getservicelist',
+                {
+                    pageNo: page,
+                    pageSize: PAGE_SIZE,
+                    id: null,
+                    serviceName: search.trim() || null,
+                    serviceTypeId: serviceTypeId || null,
+                    isCourse: isCourseValue
                 }
             );
 
             let servicesData = [];
+            let pageCount = 1;
+            let totalCount = 0;
+
             if (Array.isArray(response.data)) {
                 servicesData = response.data;
-            } else if (response.data?.data && Array.isArray(response.data.data)) {
-                servicesData = response.data.data;
+            } else if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                servicesData = response.data.baseDatas;
+                pageCount = response.data.pageCount || 1;
+                totalCount = response.data.totalRecordCount || 0;
             }
 
             setServices(servicesData);
+            setPageNo(response.data?.pageIndex || page);
+            setTotalPages(pageCount);
+            setTotalRecordCount(totalCount);
         } catch (error) {
             console.error('Error fetching services:', error);
             setServices([]);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }
     };
 
-    const filterAndSortServices = () => {
-        let results = [...services];
+    const handleSearch = (value) => {
+        setSearchTerm(value);
+    };
 
-        // Filter by service type
-        if (serviceType === 'single') {
-            results = results.filter(s => !s.isCourse);
-        } else if (serviceType === 'package') {
-            results = results.filter(s => s.isCourse);
+    const handleServiceTypeChange = (value) => {
+        setServiceType(value);
+    };
+
+    const handleServiceTypeIdChange = (value) => {
+        setSelectedServiceTypeId(value === 'all' ? null : parseInt(value));
+    };
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            fetchServices(newPage, searchTerm, serviceType, selectedServiceTypeId);
         }
-
-        // Filter by search term
-        if (searchTerm.trim()) {
-            const term = searchTerm.toLowerCase();
-            results = results.filter(s =>
-                s.serviceName.toLowerCase().includes(term) ||
-                s.description?.toLowerCase().includes(term)
-            );
-        }
-
-        // Sort
-        if (sortBy === 'name') {
-            results.sort((a, b) => a.serviceName.localeCompare(b.serviceName));
-        } else if (sortBy === 'price-asc') {
-            results.sort((a, b) => (a.priceService || 0) - (b.priceService || 0));
-        } else if (sortBy === 'price-desc') {
-            results.sort((a, b) => (b.priceService || 0) - (a.priceService || 0));
-        }
-
-        setFilteredServices(results);
     };
 
     if (loading) {
@@ -99,12 +137,12 @@ function ServicesListPage() {
     return (
         <div className={cx('wrapper')}>
             {/* Hero Section */}
-            <div className={cx('hero')}>
+            {/* <div className={cx('hero')}>
                 <div className={cx('heroContent')}>
                     <h1>Danh sách Dịch Vụ</h1>
                     <p>Khám phá các dịch vụ chuyên môn của chúng tôi</p>
                 </div>
-            </div>
+            </div> */}
 
             <div className={cx('container')}>
                 {/* Search & Filter Section */}
@@ -115,7 +153,7 @@ function ServicesListPage() {
                             type="text"
                             placeholder="Tìm kiếm dịch vụ..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => handleSearch(e.target.value)}
                             className={cx('searchInput')}
                         />
                     </div>
@@ -128,77 +166,121 @@ function ServicesListPage() {
                             </label>
                             <select
                                 value={serviceType}
-                                onChange={(e) => setServiceType(e.target.value)}
+                                onChange={(e) => handleServiceTypeChange(e.target.value)}
                                 className={cx('selectInput')}
                             >
                                 <option value="all">Tất cả</option>
                                 <option value="single">Dịch vụ đơn lẻ</option>
-                                <option value="package">Gói liệu trình</option>
+                                <option value="package">Có liệu trình</option>
                             </select>
                         </div>
 
                         <div className={cx('filterGroup')}>
-                            <label>Sắp xếp</label>
+                            <label>
+                                <FontAwesomeIcon icon={faFilter} />
+                                Danh mục dịch vụ
+                            </label>
                             <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
+                                value={selectedServiceTypeId || 'all'}
+                                onChange={(e) => handleServiceTypeIdChange(e.target.value)}
                                 className={cx('selectInput')}
                             >
-                                <option value="name">Theo tên A-Z</option>
-                                <option value="price-asc">Giá: Thấp → Cao</option>
-                                <option value="price-desc">Giá: Cao → Thấp</option>
+                                <option value="all">Tất cả</option>
+                                {serviceTypeList.map((st) => (
+                                    <option key={st.id} value={st.id}>
+                                        {st.serviceTypeName}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
 
                     <div className={cx('resultCount')}>
-                        Hiển thị <span>{filteredServices.length}</span> dịch vụ
+                        <span className={cx('countInfo')}>Tổng: <strong>{totalRecordCount}</strong> dịch vụ</span>
+                        <span className={cx('pageInfo')}>Trang <strong>{pageNo}</strong> / <strong>{totalPages}</strong></span>
                     </div>
                 </div>
 
                 {/* Services Grid */}
-                <div className={cx('servicesGrid')}>
-                    {filteredServices.length > 0 ? (
-                        filteredServices.map((service) => (
+                <div className={cx('servicesContainer')}>
+                    {services.length > 0 ? (
+                        services.map((service) => (
                             <Link
-                                key={service.serviceID}
-                                to={`/services/${service.serviceID}`}
-                                className={cx('serviceCard')}
+                                key={service.id}
+                                to={`/services/${service.id}`}
+                                className={cx('serviceCardRow')}
                             >
-                                <div className={cx('cardImage')}>
-                                    <div className={cx('imagePlaceholder')}>
-                                        {service.isCourse ? '📦' : '💄'}
+                                <div className={cx('cardRowImageCol')}>
+                                    <div className={cx('cardRowImage')}>
+                                        {service.serviceImage ? (
+                                            <img src={service.serviceImage} alt={service.serviceName} />
+                                        ) : (
+                                            <div className={cx('imagePlaceholderIcon')}>
+                                                <FontAwesomeIcon 
+                                                    icon={service.isCourse ? faWandMagicSparkles : faHeartbeat} 
+                                                />
+                                            </div>
+                                        )}
                                     </div>
-                                    <span className={cx('badge', { package: service.isCourse })}>
-                                        {service.isCourse ? 'Gói liệu trình' : 'Dịch vụ đơn lẻ'}
-                                    </span>
+                                    <div className={cx('badgeContainer')}>
+                                        <span className={cx('badge', { course: service.isCourse, single: !service.isCourse })}>
+                                            {service.isCourse ? 'Có liệu trình' : 'Dịch vụ đơn lẻ'}
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div className={cx('cardContent')}>
-                                    <h3 className={cx('serviceName')}>{service.serviceName}</h3>
+                                <div className={cx('cardRowContent')}>
+                                    <div className={cx('contentTop')}>
+                                        <div className={cx('titleSection')}>
+                                            <div className={cx('serviceTypeTag')}>{service.serviceTypeName}</div>
+                                            <h3 className={cx('serviceName')}>{service.serviceName}</h3>
+                                        </div>
+                                    </div>
 
                                     {service.description && (
                                         <p className={cx('serviceDescription')}>
-                                            {service.description.substring(0, 100)}...
+                                            {service.description}
                                         </p>
                                     )}
 
-                                    <div className={cx('serviceStats')}>
-                                        <div className={cx('stat')}>
-                                            <FontAwesomeIcon icon={faDollarSign} />
-                                            <span>{service.priceService?.toLocaleString('vi-VN')} VNĐ</span>
-                                        </div>
-                                        <div className={cx('stat')}>
-                                            <FontAwesomeIcon icon={faStar} />
-                                            <span>4.8 (245)</span>
-                                        </div>
-                                    </div>
+                                    <div className={cx('contentBottom')}>
+                                        <div className={cx('statsGroup')}>
+                                            <div className={cx('statItem')}>
+                                                <div className={cx('statIcon')}>
+                                                    <FontAwesomeIcon icon={faClock} />
+                                                </div>
+                                                <div className={cx('statContent')}>
+                                                    <div className={cx('statLabel')}>Thời gian</div>
+                                                    <div className={cx('statValue')}>{service.duration} phút</div>
+                                                </div>
+                                            </div>
 
-                                    <div className={cx('cardFooter')}>
-                                        <span className={cx('viewMore')}>
-                                            Xem chi tiết
-                                            <FontAwesomeIcon icon={faArrowRight} />
-                                        </span>
+                                            <div className={cx('statItem')}>
+                                                <div className={cx('statIcon')}>
+                                                    <FontAwesomeIcon icon={faDollarSign} />
+                                                </div>
+                                                <div className={cx('statContent')}>
+                                                    <div className={cx('statLabel')}>Giá</div>
+                                                    <div className={cx('statValue')}>
+                                                        {service.price?.toLocaleString('vi-VN')} VNĐ
+                                                        {!service.isCourse ? '/buổi' : ''}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {service.isCourse && (
+                                            <button 
+                                                className={cx('actionBtn')}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    navigate(`/services/${service.id}`);
+                                                }}
+                                            >
+                                                Xem chi tiết
+                                                <FontAwesomeIcon icon={faArrowRight} />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </Link>
@@ -218,6 +300,41 @@ function ServicesListPage() {
                         </div>
                     )}
                 </div>
+
+                {/* Pagination */}
+                {services.length > 0 && totalPages > 1 && (
+                    <div className={cx('pagination')}>
+                        <button
+                            className={cx('paginationBtn', { disabled: pageNo === 1 })}
+                            onClick={() => handlePageChange(pageNo - 1)}
+                            disabled={pageNo === 1}
+                        >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                            Trước
+                        </button>
+
+                        <div className={cx('pageNumbers')}>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+                                <button
+                                    key={num}
+                                    className={cx('pageNumber', { active: pageNo === num })}
+                                    onClick={() => handlePageChange(num)}
+                                >
+                                    {num}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            className={cx('paginationBtn', { disabled: pageNo === totalPages })}
+                            onClick={() => handlePageChange(pageNo + 1)}
+                            disabled={pageNo === totalPages}
+                        >
+                            Tiếp theo
+                            <FontAwesomeIcon icon={faChevronRight} />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

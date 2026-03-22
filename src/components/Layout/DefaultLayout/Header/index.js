@@ -139,17 +139,8 @@ function Header() {
     };
 
     const fetchServices = async (serviceName) => {
-        try {
-            const response = await axios.post('http://localhost:5262/api/Servicess/GetList_SearchServicess', {
-                serviceID: null,
-                serviceName: serviceName,
-                productsOfServicesID: null,
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching services:', error);
-            return [];
-        }
+        // API removed
+        return [];
     };
 
     useEffect(() => {

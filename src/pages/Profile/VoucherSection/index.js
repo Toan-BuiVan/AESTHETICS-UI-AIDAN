@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames/bind';
 import styles from './VoucherSection.module.scss';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift, faCheckCircle, faTimes, faTag, faCalendarAlt, faStar, faSpinner, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -222,109 +224,140 @@ function VoucherSection() {
         }
     }, [successMessage]);
 
-    if (loading) return <div className={cx('content')}>Đang tải...</div>;
-    if (error) return <div className={cx('content')}>{error}</div>;
+    if (loading) {
+        return (
+            <div className={cx('voucher-section')}>
+                <div className={cx('loading-container')}>
+                    <FontAwesomeIcon icon={faSpinner} className={cx('spinner-icon')} />
+                    <p>Đang tải kho voucher...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={cx('voucher-section')}>
+                <div className={cx('error-container')}>
+                    <FontAwesomeIcon icon={faExclamationCircle} className={cx('error-icon')} />
+                    <p>{error}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={cx('voucher-section')}>
             {successMessage && <SuccessMessage message={successMessage} />}
-            <h2>Kho Voucher</h2>
-            <div className={cx('voucher-input')}>
-                <input
-                    type="text"
-                    placeholder="Nhập mã voucher tại đây"
-                    value={voucherCode}
-                    onChange={(e) => setVoucherCode(e.target.value)}
-                />
-                <button>Lưu</button>
+            <div className={cx('section-header')}>
+                <h2><FontAwesomeIcon icon={faGift} className={cx('header-icon')} /> Kho Voucher</h2>
             </div>
-            <div className={cx('voucher-grid')}>
-                {Array.isArray(vouchers) && vouchers.length > 0 ? (
-                    vouchers.map((voucher) => (
+            
+            {Array.isArray(vouchers) && vouchers.length > 0 ? (
+                <div className={cx('voucher-grid')}>
+                    {vouchers.map((voucher) => (
                         <div key={voucher.voucherID} className={cx('voucher-card')}>
-                            <div className={cx('voucher-card-header')}>
+                            <div className={cx('card-header')}>
                                 <img
                                     src={`http://localhost:5262/Images/${voucher.voucherImage}`}
                                     alt={voucher.code}
-                                    className={cx('voucher-logo')}
+                                    className={cx('voucher-image')}
                                 />
+                                <span className={cx('rank-badge')}>
+                                    <FontAwesomeIcon icon={faStar} /> {voucher.rankMember}
+                                </span>
                             </div>
-                            <div className={cx('voucher-details')}>
-                                <p className={cx('rank-member')}>{voucher.rankMember}</p>
-                                <div className={cx('voucher-discount')}>
-                                    <span className={cx('discount-percent')}>{voucher.discountValue}%</span>
-                                    <span className={cx('discount-text')}>
-                                        Giảm tối đa {voucher.maxValue.toLocaleString('vi-VN')}đ
-                                    </span>
+                            <div className={cx('card-body')}>
+                                <div className={cx('discount-section')}>
+                                    <span className={cx('discount-value')}>{voucher.discountValue}%</span>
+                                    <p className={cx('discount-label')}>Giảm tối đa</p>
                                 </div>
-                                <p>Đơn tối thiểu {voucher.minimumOrderValue.toLocaleString('vi-VN')}đ</p>
-                                <p>Hết hạn: {new Date(voucher.endDate).toLocaleDateString('vi-VN')}</p>
-                                <div className={cx('button-group')}>
-                                    <button className={cx('save-button')} onClick={() => handleSaveVoucher(voucher)}>
-                                        Lưu
+                                <div className={cx('details-section')}>
+                                    <p className={cx('detail-item')}>
+                                        <FontAwesomeIcon icon={faTag} className={cx('detail-icon')} />
+                                        Tối đa: {voucher.maxValue?.toLocaleString('vi-VN') || '0'}đ
+                                    </p>
+                                    <p className={cx('detail-item')}>
+                                        <FontAwesomeIcon icon={faTag} className={cx('detail-icon')} />
+                                        Đơn tối thiểu: {voucher.minimumOrderValue?.toLocaleString('vi-VN') || '0'}đ
+                                    </p>
+                                    <p className={cx('detail-item')}>
+                                        <FontAwesomeIcon icon={faCalendarAlt} className={cx('detail-icon')} />
+                                        Hết hạn: {voucher.endDate ? new Date(voucher.endDate).toLocaleDateString('vi-VN') : 'Không xác định'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className={cx('card-footer')}>
+                                <button className={cx('btn-save')} onClick={() => handleSaveVoucher(voucher)} title="Lưu voucher này vào ví">
+                                    <FontAwesomeIcon icon={faCheckCircle} /> Lưu
+                                </button>
+                                <div className={cx('exchange-container')}>
+                                    <button
+                                        className={cx('btn-exchange')}
+                                        onMouseEnter={() => handleExchangeHover(voucher, true)}
+                                        onMouseLeave={() => handleExchangeHover(voucher, false)}
+                                        onClick={() => handleExchangeClick(voucher)}
+                                        title="Đổi điểm lấy voucher"
+                                    >
+                                        <FontAwesomeIcon icon={faGift} /> Đổi
                                     </button>
-                                    <div className={cx('exchange-container')}>
-                                        <button
-                                            className={cx('exchange-button')}
-                                            onMouseEnter={() => handleExchangeHover(voucher, true)}
-                                            onMouseLeave={() => handleExchangeHover(voucher, false)}
-                                            onClick={() => handleExchangeClick(voucher)}
+                                    {showExchangeOptions[voucher.voucherID] && (
+                                        <div
+                                            className={cx('exchange-dropdown')}
+                                            onMouseEnter={() => {
+                                                if (timeoutRefs.current[voucher.voucherID]) {
+                                                    clearTimeout(timeoutRefs.current[voucher.voucherID]);
+                                                    delete timeoutRefs.current[voucher.voucherID];
+                                                }
+                                            }}
+                                            onMouseLeave={() => {
+                                                timeoutRefs.current[voucher.voucherID] = setTimeout(() => {
+                                                    setShowExchangeOptions((prev) => ({
+                                                        ...prev,
+                                                        [voucher.voucherID]: false,
+                                                    }));
+                                                    delete timeoutRefs.current[voucher.voucherID];
+                                                }, 200);
+                                            }}
                                         >
-                                            Đổi
-                                        </button>
-                                        {showExchangeOptions[voucher.voucherID] && (
-                                            <div
-                                                className={cx('exchange-options')}
-                                                onMouseEnter={() => {
-                                                    if (timeoutRefs.current[voucher.voucherID]) {
-                                                        clearTimeout(timeoutRefs.current[voucher.voucherID]);
-                                                        delete timeoutRefs.current[voucher.voucherID];
+                                            <label className={cx('option-item')}>
+                                                <input
+                                                    type="radio"
+                                                    value="Accumulated"
+                                                    checked={selectedOptions[voucher.voucherID] === 'Accumulated'}
+                                                    onChange={(e) =>
+                                                        handleOptionChange(voucher.voucherID, e.target.value)
                                                     }
-                                                }}
-                                                onMouseLeave={() => {
-                                                    timeoutRefs.current[voucher.voucherID] = setTimeout(() => {
-                                                        setShowExchangeOptions((prev) => ({
-                                                            ...prev,
-                                                            [voucher.voucherID]: false,
-                                                        }));
-                                                        delete timeoutRefs.current[voucher.voucherID];
-                                                    }, 200);
-                                                }}
-                                            >
-                                                <label>
-                                                    <input
-                                                        type="radio"
-                                                        value="Accumulated"
-                                                        checked={selectedOptions[voucher.voucherID] === 'Accumulated'}
-                                                        onChange={(e) =>
-                                                            handleOptionChange(voucher.voucherID, e.target.value)
-                                                        }
-                                                    />
-                                                    Accumulated
-                                                </label>
-                                                <label>
-                                                    <input
-                                                        type="radio"
-                                                        value="Rating"
-                                                        checked={selectedOptions[voucher.voucherID] === 'Rating'}
-                                                        onChange={(e) =>
-                                                            handleOptionChange(voucher.voucherID, e.target.value)
-                                                        }
-                                                    />
-                                                    Rating
-                                                </label>
-                                            </div>
-                                        )}
-                                    </div>
+                                                />
+                                                <span>Điểm tích lũy</span>
+                                            </label>
+                                            <label className={cx('option-item')}>
+                                                <input
+                                                    type="radio"
+                                                    value="Rating"
+                                                    checked={selectedOptions[voucher.voucherID] === 'Rating'}
+                                                    onChange={(e) =>
+                                                        handleOptionChange(voucher.voucherID, e.target.value)
+                                                    }
+                                                />
+                                                <span>Điểm đánh giá</span>
+                                            </label>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                    ))
-                ) : (
-                    <p>Không có voucher nào để hiển thị.</p>  
-                )}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <div className={cx('empty-state')}>
+                    <FontAwesomeIcon icon={faGift} className={cx('empty-icon')} />
+                    <p className={cx('empty-text')}>Không có voucher nào để hiển thị</p>
+                    <p className={cx('empty-subtext')}>Hãy quay lại sau để xem các voucher mới</p>
+                </div>
+            )}
         </div>
     );
 }
+
 export default VoucherSection;

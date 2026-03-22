@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faStar, faBox, faUser, faTag, faHeart } from '@fortawesome/free-solid-svg-icons';
 import styles from './ItemProduct.module.scss';
@@ -8,6 +8,52 @@ function ItemProduct({ product, onSuccess, onClick }) {
     const imageUrl = product.productImages ? `${imageBaseUrl}/${product.productImages}` : null;
     const [isHovered, setIsHovered] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [averageRating, setAverageRating] = useState(0);
+    const [loadingRating, setLoadingRating] = useState(true);
+
+    // Fetch rating từ API
+    useEffect(() => {
+        const fetchRating = async () => {
+            try {
+                const response = await fetch('http://localhost:5122/api/Comment/getcommentlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pageNo: 1,
+                        pageSize: 10,
+                        productId: product.id || product.productID || 0,
+                        serviceId: 0,
+                    }),
+                });
+                const data = await response.json();
+                
+                if (data.baseDatas && Array.isArray(data.baseDatas)) {
+                    if (data.baseDatas.length > 0) {
+                        const avgRating = (data.baseDatas.reduce((sum, comment) => sum + (comment.rating || 0), 0) / data.baseDatas.length).toFixed(1);
+                        setAverageRating(parseFloat(avgRating));
+                    } else {
+                        // Nếu không có comment, set rating mặc định là 4.5 sao
+                        setAverageRating(4.8);
+                    }
+                } else {
+                    // Nếu không có data, set rating mặc định là 4.5 sao
+                    setAverageRating(4.8);
+                }
+                setLoadingRating(false);
+            } catch (error) {
+                console.error('Error fetching rating:', error);
+                // Nếu có lỗi, set rating mặc định là 4.5 sao
+                setAverageRating(4.8);
+                setLoadingRating(false);
+            }
+        };
+        
+        if (product.id || product.productID) {
+            fetchRating();
+        }
+    }, [product.id, product.productID]);
 
     const handleAddToCart = async (e) => {
         e.stopPropagation();
@@ -160,7 +206,7 @@ function ItemProduct({ product, onSuccess, onClick }) {
                     )}
                     {product.quantity !== undefined && (
                         <span className={`${styles.stock} ${isOutOfStock ? styles.outStock : ''}`}>
-                            {product.quantity} sẵn có
+                            {product.quantity}  sẵn có
                         </span>
                     )}
                 </div>
@@ -176,8 +222,16 @@ function ItemProduct({ product, onSuccess, onClick }) {
 
                     {/* Rating */}
                     <div className={styles.ratingSection}>
-                        <FontAwesomeIcon icon={faStar} className={styles.star} />
-                        <span className={styles.ratingText}>4.8</span>
+                        <div className={styles.stars}>
+                            {[...Array(5)].map((_, i) => (
+                                <FontAwesomeIcon 
+                                    key={i} 
+                                    icon={faStar} 
+                                    className={`${styles.star} ${i < Math.floor(averageRating) ? styles.filled : ''}`}
+                                />
+                            ))}
+                        </div>
+                        <span className={styles.ratingText}>{averageRating.toFixed(1)}</span>
                     </div>
                 </div>
             </div>

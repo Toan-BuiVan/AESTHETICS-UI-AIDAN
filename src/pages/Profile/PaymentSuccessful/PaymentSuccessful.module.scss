@@ -1,108 +1,224 @@
-.payment-successful {
-    padding: 20px;
+// Colors & Gradients
+$color-primary: #4299e1;
+$color-success: #48bb78;
+$color-text: #2d3748;
+$color-text-light: #718096;
+$color-bg-light: #f7fafc;
+$color-white: #ffffff;
+$color-border: #e2e8f0;
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.payment-successful {
+    padding: 32px 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.3s ease-in;
+
+    h2 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: $color-text;
+        margin-bottom: 32px;
+    }
 }
 
 .table-wrapper {
-    overflow-x: auto; /* Cho phép cuộn ngang trên mobile */
+    background: $color-white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    animation: slideUp 0.5s ease-out;
 }
 
 .invoice-table {
     width: 100%;
     border-collapse: collapse;
-}
 
-.invoice-table th,
-.invoice-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
+    th {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: $color-white;
+        padding: 16px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
-.invoice-table th {
-    background-color: #f2f2f2;
+    td {
+        padding: 16px;
+        border-bottom: 1px solid $color-border;
+        color: $color-text;
+    }
+
+    tbody tr {
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: $color-bg-light;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        &:last-child td {
+            border-bottom: none;
+        }
+    }
 }
 
 .caret-icon {
-    color: rgb(12, 167, 115);
+    color: $color-success;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.2);
+    }
 }
 
 .btn-Submit {
-    padding: 5px 10px;
-    color: #fff;
-    font-weight: 500;
-    background-color: #156953;
+    padding: 8px 16px;
+    color: $color-white;
+    font-weight: 600;
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
     cursor: pointer;
     border: none;
-}
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
 
-.btn-Submit:hover {
-    background-color: #46dab2;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
 }
 
 .detail-table-wrapper {
-    overflow-x: auto; /* Cho phép cuộn ngang bảng chi tiết */
+    background: $color-bg-light;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    animation: slideUp 0.4s ease-out;
 }
 
 .detail-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-}
 
-.detail-table th,
-.detail-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
+    th {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: $color-white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
 
-.detail-table th {
-    background-color: #f9f9f9;
+    td {
+        padding: 12px;
+        border-bottom: 1px solid $color-border;
+        color: $color-text;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
 }
 
 .loading,
 .error {
-    font-size: 18px;
-    color: #333;
+    font-size: 1.1rem;
+    color: $color-text;
     text-align: center;
     margin-top: 20px;
+    padding: 60px 20px;
+    background: $color-white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* Responsive cho mobile (< 768px) */
+.error {
+    color: #f56565;
+}
+
 @media (max-width: 767px) {
+    .payment-successful {
+        padding: 20px 16px;
+
+        h2 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+        }
+    }
+
     .invoice-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap; /* Ngăn nội dung xuống dòng */
-    }
+        th,
+        td {
+            font-size: 0.85rem;
+            padding: 12px;
+        }
 
-    .invoice-table th,
-    .invoice-table td {
-        font-size: 14px; /* Giảm cỡ chữ */
-        padding: 5px; /* Giảm padding */
-    }
-
-    /* Ẩn cột "Giảm Giá" (3), "Tổng Tiền" (4), "Ngày Tạo" (6) */
-    .invoice-table th:nth-child(3),
-    .invoice-table td:nth-child(3),
-    .invoice-table th:nth-child(4),
-    .invoice-table td:nth-child(4),
-    .invoice-table th:nth-child(6),
-    .invoice-table td:nth-child(6) {
-        display: none;
+        th:nth-child(n + 3),
+        td:nth-child(n + 3) {
+            display: none;
+        }
     }
 
     .detail-table th,
     .detail-table td {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .invoice-table, .detail-table {
+        th,
+        td {
+            font-size: 0.9rem;
+            padding: 12px;
+        }
+    }
+}
+
+@media (min-width: 1024px) {
+    .invoice-table, .detail-table {
+        th,
+        td {
+            font-size: 0.95rem;
+            padding: 16px;
+        }
+    }
+}
+
+    .detail-table td {
         font-size: 14px;
         padding: 5px;
     }
-}
 
 /* Responsive cho tablet (768px - 1023px) */
 @media (min-width: 768px) and (max-width: 1023px) {

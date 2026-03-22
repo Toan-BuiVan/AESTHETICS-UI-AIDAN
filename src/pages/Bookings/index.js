@@ -333,28 +333,7 @@ function Bookings() {
         };
 
         try {
-            const response = await fetch('http://localhost:5262/api/Servicess/GetList_SearchServicess', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(requestData),
-            });
-
-            const data = await response.json();
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-
-            if (!response.ok) {
-                throw new Error('Lỗi khi tìm kiếm dịch vụ');
-            }
-            if (Array.isArray(data)) {
-                setSearchResults(data);
-            } else if (data && data.data && Array.isArray(data.data)) {
-                setSearchResults(data.data);
-            } else {
-                setSearchResults([]);
-            }
+            setSearchResults([]);
         } catch (error) {
             console.error('Lỗi khi tìm kiếm dịch vụ:', error);
             setSearchResults([]);
