@@ -77,6 +77,7 @@ function Login({ onClose, setSuccessMessage }) {
                     const userIDFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid'];
                     const roleFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
                     const customerIdFromToken = decodedToken['CustomerId'];
+                    const staffIdFromToken = decodedToken['StaffId'];
 
                     // Store token and refresh token
                     localStorage.setItem('token', data.token);
@@ -87,6 +88,7 @@ function Login({ onClose, setSuccessMessage }) {
                     if (userIDFromToken) localStorage.setItem('userID', userIDFromToken);
                     if (roleFromToken) localStorage.setItem('role', roleFromToken);
                     if (customerIdFromToken) localStorage.setItem('customerId', customerIdFromToken);
+                    if (staffIdFromToken) localStorage.setItem('staffId', staffIdFromToken);
 
                     // Clear unnecessary fields
                     localStorage.removeItem('typePerson');

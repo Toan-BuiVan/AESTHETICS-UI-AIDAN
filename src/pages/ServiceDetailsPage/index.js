@@ -7,7 +7,6 @@ import {
     faArrowLeft,
     faClock,
     faDollarSign,
-    faCheckCircle,
     faBox,
     faCalendarAlt,
     faGem,
@@ -19,7 +18,12 @@ import {
     faCheckSquare,
     faSquare,
     faLightbulb,
-    faBolt
+    faBolt,
+    faStethoscope,
+    faCertificate,
+    faGraduationCap,
+    faBriefcase,
+    faUserMd
 } from '@fortawesome/free-solid-svg-icons';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -35,10 +39,19 @@ function ServiceDetailsPage() {
     const [checkedSessions, setCheckedSessions] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview');
+    const [doctors, setDoctors] = useState([]);
+    const [loadingDoctors, setLoadingDoctors] = useState(false);
+    const [selectedDoctor, setSelectedDoctor] = useState(null);
 
     useEffect(() => {
         fetchTreatmentPlans(serviceId);
     }, [serviceId]);
+
+    useEffect(() => {
+        if (selectedPlan?.serviceId) {
+            fetchDoctorsList(selectedPlan.serviceId);
+        }
+    }, [selectedPlan?.serviceId]);
 
     const fetchTreatmentPlans = async (svcId) => {
         setLoading(true);
@@ -128,6 +141,112 @@ function ServiceDetailsPage() {
         setCheckedSessions(newChecked);
     };
 
+    const handleSelectAllSessions = () => {
+        // Nếu tất cả đã được tích chọn, bỏ tích. Ngược lại, tích tất cả
+        if (checkedSessions.size === sessionDetails.length) {
+            setCheckedSessions(new Set());
+        } else {
+            const allIds = new Set(sessionDetails.map(s => s.id));
+            setCheckedSessions(allIds);
+        }
+    };
+
+    const handleViewDoctorInfo = (doctor) => {
+        setSelectedDoctor(doctor);
+    };
+
+    const handleBackToDoctorsList = () => {
+        setSelectedDoctor(null);
+    };
+
+    const fetchDoctorsList = async (serviceTypeId) => {
+        setLoadingDoctors(true);
+        try {
+            const response = await axios.post(
+                'http://localhost:5122/api/Staff/get-list',
+                {
+                    isDoctor: true,
+                    servicetypeId: parseInt(serviceTypeId)
+                }
+            );
+
+            console.log('API Response:', response.data);
+            
+            if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                console.log('Doctor sample:', response.data.baseDatas[0]);
+                setDoctors(response.data.baseDatas);
+            } else {
+                console.log('No baseDatas in response');
+                setDoctors([]);
+            }
+        } catch (error) {
+            console.error('Error fetching doctors list:', error);
+            setDoctors([]);
+        } finally {
+            setLoadingDoctors(false);
+        }
+    };
+
+    const handleCreateCustomerTreatmentPlan = async (isFullPackage = true) => {
+        try {
+            // Get user info from localStorage
+            let customerId = parseInt(localStorage.getItem('customerId') || 0);
+            const staffIdFromStorage = parseInt(localStorage.getItem('staffId') || 0);
+            
+            // If no customerId found, fallback to staffId from localStorage
+            if (!customerId || customerId === 0) {
+                customerId = staffIdFromStorage || selectedDoctor?.id || 0;
+            }
+            
+            const staffId = selectedDoctor?.id || staffIdFromStorage || 0;
+            const voucherId = 0; // You can add voucher selection later
+
+            if (!selectedPlan) {
+                alert('Vui lòng chọn một gói liệu trình');
+                return;
+            }
+
+            if (!isFullPackage && checkedSessions.size === 0) {
+                alert('Vui lòng chọn ít nhất một buổi điều trị');
+                return;
+            }
+
+            const payload = {
+                customerId: customerId,
+                staffId: staffId,
+                treatmentPlanId: isFullPackage ? selectedPlan.id : 0,
+                treatmentSessionIds: isFullPackage ? [] : Array.from(checkedSessions),
+                isFullPackage: isFullPackage,
+                notes: '',
+                voucherId: voucherId
+            };
+
+            console.log('Creating customer treatment plan:', {
+                customerId: customerId,
+                staffId: staffId,
+                isFullPackage: isFullPackage,
+                payload: payload
+            });
+
+            const response = await axios.post(
+                'http://localhost:5122/api/CustomerTreatmentPlans/createcustomertreatmentplan',
+                payload
+            );
+
+            console.log('Response:', response.data);
+            alert('Đặt lịch thành công! Vui lòng kiểm tra lịch đặt của bạn.');
+            
+            // Reset selections
+            setCheckedSessions(new Set());
+            
+            // Navigate to bookings page
+            navigate('/profile?tab=bookings');
+        } catch (error) {
+            console.error('Error creating customer treatment plan:', error);
+            alert('Lỗi khi đặt lịch: ' + (error.response?.data?.message || error.message));
+        }
+    };
+
     if (loading) {
         return (
             <div className={cx('wrapper')}>
@@ -180,67 +299,77 @@ function ServiceDetailsPage() {
                             {selectedPlan?.planName || 'Dịch vụ chăm sóc da cao cấp'}
                         </h1>
 
-                        <div className={cx('heroStats')}>
-                            <div className={cx('heroStat')}>
-                                <span className={cx('statValue')}>4.9</span>
-                                <span className={cx('statLabel')}>Đánh giá</span>
-                                <div className={cx('stars')}>★★★★★</div>
-                            </div>
-                            <div className={cx('statDivider')}></div>
-                            <div className={cx('heroStat')}>
-                                <span className={cx('statValue')}>2.5K+</span>
-                                <span className={cx('statLabel')}>Khách hài lòng</span>
-                            </div>
-                            <div className={cx('statDivider')}></div>
-                            <div className={cx('heroStat')}>
-                                <span className={cx('statValue')}>10+</span>
-                                <span className={cx('statLabel')}>Năm kinh nghiệm</span>
-                            </div>
+                        <div className={cx('serviceMetaHeader')}>
+                            {selectedPlan?.serviceInfo?.serviceName && (
+                                <div className={cx('metaItem')}>
+                                    <span className={cx('metaLabel')}>Dịch vụ:</span>
+                                    <span className={cx('metaValue')}>{selectedPlan.serviceInfo.serviceName}</span>
+                                </div>
+                            )}
+                            {selectedPlan?.serviceInfo?.price && (
+                                <div className={cx('metaItem')}>
+                                    <span className={cx('metaLabel')}>Giá từng buổi:</span>
+                                                                        <span className={cx('metaValue', 'price')}>{selectedPlan.price.toLocaleString('vi-VN')}đ</span>
+                                    
+                                </div>
+                            )}
+                            {selectedPlan?.price && (
+                                <div className={cx('metaItem')}>
+                                    <span className={cx('metaLabel')}>Giá gói trọn:</span>
+                                    <span className={cx('metaValue')}>{selectedPlan.serviceInfo.price.toLocaleString('vi-VN')}đ</span>
+                                </div>
+                            )}
+                            {selectedPlan?.serviceInfo?.duration && (
+                                <div className={cx('metaItem')}>
+                                    <span className={cx('metaLabel')}>Thời lượng:</span>
+                                    <span className={cx('metaValue')}>{selectedPlan.serviceInfo.duration} phút/buổi</span>
+                                </div>
+                            )}
+                            {selectedPlan?.totalSessions && (
+                                <div className={cx('metaItem')}>
+                                    <span className={cx('metaLabel')}>Số buổi:</span>
+                                    <span className={cx('metaValue')}>{selectedPlan.totalSessions} buổi</span>
+                                </div>
+                            )}
                         </div>
 
-                        <div className={cx('heroBenefits')}>
-                            <div className={cx('benefitChip')}>
-                                <span>🎯</span>
-                                <span>Kết quả tối ưu</span>
+                        {selectedPlan?.serviceInfo?.price && selectedPlan?.price && selectedPlan?.totalSessions && (
+                            <div className={cx('savingNotice')}>
+                                {(() => {
+                                    const singlePrice = selectedPlan.price * selectedPlan.totalSessions; // Giá mua lẻ từng buổi
+                                    const bundlePrice = selectedPlan.serviceInfo.price; // Giá trọn gói
+                                    const saving = singlePrice - bundlePrice;
+                                    const savingPercent = Math.round((saving / singlePrice) * 100);
+                                    
+                                    return (
+                                        <>
+                                            <span className={cx('savingIcon')}>💰</span>
+                                            <span className={cx('savingText')}>
+                                                Mua trọn gói tiết kiệm <strong>{saving.toLocaleString('vi-VN')}đ</strong> ({savingPercent}%) so với mua lẻ
+                                            </span>
+                                        </>
+                                    );
+                                })()}
                             </div>
-                            <div className={cx('benefitChip')}>
-                                <span>💯</span>
-                                <span>Chất lượng đảm bảo</span>
-                            </div>
-                            <div className={cx('benefitChip')}>
-                                <span>🔒</span>
-                                <span>An toàn 100%</span>
-                            </div>
-                            <div className={cx('benefitChip')}>
-                                <span>🚀</span>
-                                <span>Kỹ thuật tiên tiến</span>
-                            </div>
-                        </div>
+                        )}
 
                         <p className={cx('heroDescription')}>
                             {service?.description || selectedPlan?.description || 'Liệu trình chắp chải đặc biệt được thiết kế riêng cho từng loại da, mang lại hiệu quả tối đa'}
                         </p>
 
                         <div className={cx('heroCta')}>
-                            <button className={cx('ctaPrimary')}>
+                            <button 
+                                className={cx('ctaPrimary')}
+                                onClick={() => {
+                                    setActiveTab('sessions');
+                                    setTimeout(() => {
+                                        document.querySelector('[data-tab-content]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }, 100);
+                                }}
+                            >
                                 <FontAwesomeIcon icon={faGift} />
                                 Đặt lịch ngay
                             </button>
-                            {/* <button className={cx('ctaSecondary')}>
-                                Xem chi tiết
-                                <FontAwesomeIcon icon={faArrowRight} />
-                            </button> */}
-                        </div>
-
-                        <div className={cx('heroTrust')}>
-                            <div className={cx('trustItem')}>
-                                <span className={cx('trustIcon')}>👥</span>
-                                <span>Được tin tưởng bởi hàng nghìn khách hàng</span>
-                            </div>
-                            <div className={cx('trustItem')}>
-                                <span className={cx('trustIcon')}>✓</span>
-                                <span>Hoàn tiền 100% nếu không hài lòng</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -351,8 +480,11 @@ function ServiceDetailsPage() {
                     ) : null}
                 </div>
 
-                {/* Tab Content */}
-                <div className={cx('tabContent')}>
+                {/* Two Column Layout: Service Details (Left) + Doctors (Right) */}
+                <div className={cx('twoColumnLayout')}>
+                    {/* Left Column - Tab Content */}
+                    <div className={cx('contentColumn')}>
+                        <div className={cx('tabContent')} data-tab-content>
                     {/* Overview Tab */}
                     {activeTab === 'overview' && (
                         <div className={cx('tabPane')}>
@@ -365,9 +497,17 @@ function ServiceDetailsPage() {
                                             {isCourseService ? 'Gói liệu trình' : 'Dịch vụ đơn lẻ'}
                                         </span>
                                     </div>
-                                    <div className={cx('overviewItem')}>
+                                    {/* <div className={cx('overviewItem')}>
                                         <span className={cx('label')}>Mã dịch vụ:</span>
                                         <span className={cx('value')}>{service.serviceID}</span>
+                                    </div> */}
+                                    <div className={cx('overviewItem')}>
+                                        <span className={cx('label')}>Tên dịch vụ:</span>
+                                        <span className={cx('value')}>{service.serviceName}</span>
+                                    </div>
+                                    <div className={cx('overviewItem')}>
+                                        <span className={cx('label')}>Gói liệu trình:</span>
+                                        <span className={cx('value')}>{selectedPlan.planName}</span>
                                     </div>
                                     <div className={cx('overviewItem')}>
                                         <span className={cx('label')}>Giá dịch vụ:</span>
@@ -377,8 +517,8 @@ function ServiceDetailsPage() {
                                     </div>
                                     {isCourseService && (
                                         <div className={cx('overviewItem')}>
-                                            <span className={cx('label')}>Số gói liệu trình:</span>
-                                            <span className={cx('value')}>{selectedPlan?.totalSessions || (treatmentPlans.length > 0 ? treatmentPlans[0].totalSessions : 0)}</span>
+                                            <span className={cx('label')}>Số buổi liệu trình:</span>
+                                            <span className={cx('value')}>{selectedPlan?.totalSessions || (treatmentPlans.length > 0 ? treatmentPlans[0].totalSessions : 0)} buổi</span>
                                         </div>
                                     )}
                                 </div>
@@ -582,7 +722,7 @@ function ServiceDetailsPage() {
                                                             )}
                                                             <div className={cx('metaItemModern')}>
                                                                 <FontAwesomeIcon icon={faCalendarAlt} />
-                                                                <span>Ngày {(index + 1) * selectedPlan.sessionInterval}</span>
+                                                                <span>Ngày {session.sessionNumber * selectedPlan.sessionInterval}</span>
                                                             </div>
                                                         </div>
 
@@ -615,14 +755,224 @@ function ServiceDetailsPage() {
                                 </div>
 
                                 <div className={cx('sessionFooter')}>
-                                    <button className={cx('addToCartBtnLarge')}>
+                                    <button 
+                                        className={cx('addToCartBtnLarge')}
+                                        onClick={() => {
+                                            if (checkedSessions.size === 0) {
+                                                // No sessions selected, book full package
+                                                handleCreateCustomerTreatmentPlan(true);
+                                            } else {
+                                                // Some sessions selected, book individual sessions
+                                                handleCreateCustomerTreatmentPlan(false);
+                                            }
+                                        }}
+                                    >
                                         <FontAwesomeIcon icon={faGift} />
-                                        Thêm {selectedPlan.planName} vào đặt lịch
+                                        {checkedSessions.size > 0 
+                                            ? `Đặt lịch ${checkedSessions.size} buổi` 
+                                            : `Đặt lịch toàn bộ ${selectedPlan.planName}`
+                                        }
                                     </button>
                                 </div>
                             </div>
                         </div>
                     )}
+                        </div>
+                    </div>
+
+                    {/* Right Column - Doctors Sidebar */}
+                    <div className={cx('doctorsSidebar')}>
+                        {/* Doctor Detail View */}
+                        {selectedDoctor ? (
+                            <div className={cx('doctorDetailView')}>
+                                {/* Back Button */}
+                                <button 
+                                    className={cx('doctorDetailBackBtn')}
+                                    onClick={handleBackToDoctorsList}
+                                >
+                                    <FontAwesomeIcon icon={faArrowLeft} />
+                                    Quay lại
+                                </button>
+
+                                {/* Doctor Large Image */}
+                                <div className={cx('doctorDetailImage')}>
+                                    {selectedDoctor.staffImage ? (
+                                        <img src={selectedDoctor.staffImage} alt={selectedDoctor.fullName || selectedDoctor.accountName} />
+                                    ) : (
+                                        <div className={cx('doctorImagePlaceholder')}>
+                                            <FontAwesomeIcon icon={faUserMd} />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Doctor Detail Info */}
+                                <div className={cx('doctorDetailContent')}>
+                                    <h2 className={cx('doctorDetailName')}>
+                                        {selectedDoctor.fullName || selectedDoctor.accountName}
+                                    </h2>
+                                    
+                                    {selectedDoctor.specialization && (
+                                        <p className={cx('doctorDetailSpecialty')}>
+                                            {selectedDoctor.specialization}
+                                        </p>
+                                    )}
+
+                                    {/* Full Details Grid */}
+                                    <div className={cx('doctorDetailGrid')}>
+                                        {selectedDoctor.degree && (
+                                            <div className={cx('detailGridItem')}>
+                                                <div className={cx('detailGridIcon')}>
+                                                    <FontAwesomeIcon icon={faGraduationCap} />
+                                                </div>
+                                                <div>
+                                                    <span className={cx('detailGridLabel')}>Bằng cấp</span>
+                                                    <span className={cx('detailGridValue')}>{selectedDoctor.degree}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedDoctor.experienceYears && (
+                                            <div className={cx('detailGridItem')}>
+                                                <div className={cx('detailGridIcon')}>
+                                                    <FontAwesomeIcon icon={faBriefcase} />
+                                                </div>
+                                                <div>
+                                                    <span className={cx('detailGridLabel')}>Kinh nghiệm</span>
+                                                    <span className={cx('detailGridValue')}>{selectedDoctor.experienceYears} năm</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedDoctor.licenseNumber && (
+                                            <div className={cx('detailGridItem')}>
+                                                <div className={cx('detailGridIcon')}>
+                                                    <FontAwesomeIcon icon={faCertificate} />
+                                                </div>
+                                                <div>
+                                                    <span className={cx('detailGridLabel')}>Số giấy phép</span>
+                                                    <span className={cx('detailGridValue')}>{selectedDoctor.licenseNumber}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedDoctor.doctorLevel !== undefined && selectedDoctor.doctorLevel !== null && (
+                                            <div className={cx('detailGridItem')}>
+                                                <div className={cx('detailGridIcon')}>
+                                                    <FontAwesomeIcon icon={faUserMd} />
+                                                </div>
+                                                <div>
+                                                    <span className={cx('detailGridLabel')}>Chuyên gia</span>
+                                                    <span className={cx('detailGridValue')}>
+                                                        {selectedDoctor.doctorLevel === 0 ? 'Y tá' : 'Bác sĩ'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Biography */}
+                                    {selectedDoctor.biography && (
+                                        <div className={cx('doctorDetailBio')}>
+                                            <h4>Giới thiệu</h4>
+                                            <p>{selectedDoctor.biography}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Book Appointment Button */}
+                                    <button 
+                                        className={cx('doctorDetailBookBtn')}
+                                        onClick={() => handleCreateCustomerTreatmentPlan(true)}
+                                    >
+                                        <FontAwesomeIcon icon={faCalendarAlt} />
+                                        Đặt lịch với {selectedDoctor.fullName || selectedDoctor.accountName}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            /* Doctors List View */
+                            <>
+                                <div className={cx('sidebarHeader')}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div className={cx('sidebarIcon')}>
+                                            <FontAwesomeIcon icon={faUserMd} />
+                                        </div>
+                                        <h3>Đội ngũ bác sĩ</h3>
+                                    </div>
+                                    {doctors && doctors.length > 0 && (
+                                        <div className={cx('doctorCountBadge')}>
+                                            {doctors.length} bác sĩ
+                                        </div>
+                                    )}
+                                </div>
+
+                                {loadingDoctors ? (
+                                    <div className={cx('doctorsSidebarLoading')}>
+                                        <div className={cx('spinner')}></div>
+                                        <p>Đang tải...</p>
+                                    </div>
+                                ) : doctors && doctors.length > 0 ? (
+                                    <div className={cx('doctorsSidebarList')}>
+                                        {doctors.map((doctor, index) => (
+                                            <div key={doctor.id} className={cx('doctorSidebarCard')}>
+                                                {/* Doctor Image */}
+                                                <div className={cx('doctorSidebarImage')}>
+                                                    {doctor.staffImage ? (
+                                                        <img src={doctor.staffImage} alt={doctor.fullName || doctor.accountName} />
+                                                    ) : (
+                                                        <div className={cx('doctorImagePlaceholder')}>
+                                                            <FontAwesomeIcon icon={faUserMd} />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Doctor Info */}
+                                                <div className={cx('doctorSidebarInfo')}>
+                                                    <h4 className={cx('doctorSidebarName')}>
+                                                        {doctor.fullName || doctor.accountName}
+                                                    </h4>
+                                                    {doctor.specialization && (
+                                                        <p className={cx('doctorSidebarSpecialty')}>
+                                                            {doctor.specialization}
+                                                        </p>
+                                                    )}
+
+                                                    {/* Compact Details */}
+                                                    <div className={cx('doctorSidebarDetails')}>
+                                                        {doctor.degree && (
+                                                            <div className={cx('sidebarDetailItem')}>
+                                                                <FontAwesomeIcon icon={faGraduationCap} />
+                                                                <span>{doctor.degree}</span>
+                                                            </div>
+                                                        )}
+                                                        {doctor.experienceYears && (
+                                                            <div className={cx('sidebarDetailItem')}>
+                                                                <FontAwesomeIcon icon={faBriefcase} />
+                                                                <span>{doctor.experienceYears} năm</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Book Button */}
+                                                    <button 
+                                                        className={cx('doctorSidebarBookBtn')}
+                                                        onClick={() => handleViewDoctorInfo(doctor)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faCalendarAlt} />
+                                                        Xem thông tin
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={cx('noDoctorsMessageSidebar')}>
+                                        <FontAwesomeIcon icon={faUserMd} />
+                                        <p>Chưa có bác sĩ</p>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

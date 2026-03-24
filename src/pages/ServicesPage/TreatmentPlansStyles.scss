@@ -1,0 +1,1619 @@
+// Treatment Plans Section Styles
+.treatmentPlansSection {
+    width: 100%;
+    margin-bottom: 60px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.plansHeader {
+    margin-bottom: 30px;
+    padding: 0 10px;
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+
+    h2 {
+        font-size: 28px;
+        font-weight: 950;
+        color: #1a1a1a;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    .headerIcon {
+        color: #1ca07d;
+        font-size: 24px;
+    }
+
+    .planCount {
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(28, 160, 125, 0.2);
+    }
+}
+
+.headerSubtitle {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+    font-weight: 500;
+}
+
+.plansGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+    animation: staggerIn 0.6s ease-out;
+}
+
+@keyframes staggerIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.treatmentPlanCard {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fcfb 100%);
+    border: 1px solid rgba(28, 160, 125, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 16px rgba(28, 160, 125, 0.08);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #1ca07d 0%, #169d72 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+        transform: translateY(-6px);
+        border-color: rgba(28, 160, 125, 0.25);
+        box-shadow: 0 12px 32px rgba(28, 160, 125, 0.15);
+
+        &::before {
+            opacity: 1;
+        }
+
+        .viewDetailsBtn {
+            background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+            color: white;
+            transform: translateX(4px);
+        }
+    }
+}
+
+.planCardHeader {
+    padding: 20px;
+    border-bottom: 1px solid rgba(28, 160, 125, 0.08);
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.02) 0%, rgba(28, 160, 125, 0) 100%);
+}
+
+.planTitleSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+
+    .planTitle {
+        font-size: 16px;
+        font-weight: 950;
+        color: #1a1a1a;
+        margin: 0;
+        flex: 1;
+        letter-spacing: -0.3px;
+    }
+
+    .statusBadge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight:800;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+
+        &.chodatlich {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+            color: #f57c00;
+            border: 1px solid rgba(255, 152, 0, 0.2);
+        }
+
+        &.dangthuchien {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(3, 155, 229, 0.1) 100%);
+            color: #1976d2;
+            border: 1px solid rgba(33, 150, 243, 0.2);
+        }
+
+        &.hoantac {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%);
+            color: #388e3c;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+    }
+}
+
+.serviceName {
+    font-size: 12px;
+    color: #1ca07d;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.planCardContent {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.planStats {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.05) 0%, rgba(28, 160, 125, 0.02) 100%);
+    border: 1px solid rgba(28, 160, 125, 0.08);
+    border-radius: 12px;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+
+    .statIcon {
+        color: #1ca07d;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+}
+
+.statLabel {
+    font-size: 10px;
+    color: #888;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+.statValue {
+    font-size: 14px;
+    font-weight: 850;
+    color: #1a1a1a;
+}
+
+.statDivider {
+    width: 1px;
+    height: 30px;
+    background: rgba(28, 160, 125, 0.1);
+}
+
+.sessionsOverview {
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.03) 0%, rgba(28, 160, 125, 0.01) 100%);
+    border: 1px solid rgba(28, 160, 125, 0.08);
+    border-radius: 12px;
+}
+
+.sessionsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .sessionsTitle {
+        font-size: 12px;
+        font-weight: 800;
+        color: #1a1a1a;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .completedCount {
+        font-size: 12px;
+        font-weight: 750;
+        color: #1ca07d;
+        background: rgba(28, 160, 125, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+}
+
+.sessionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sessionItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    background: linear-gradient(135deg, #fafbfd 0%, #f5f8fc 100%);
+    border: 1px solid rgba(28, 160, 125, 0.1);
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+
+    &:hover {
+        background: linear-gradient(135deg, rgba(28, 160, 125, 0.08) 0%, rgba(28, 160, 125, 0.04) 100%);
+        border-color: rgba(28, 160, 125, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(28, 160, 125, 0.12);
+    }
+
+    &.selectable {
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+
+    &.selected {
+        background: linear-gradient(135deg, rgba(28, 160, 125, 0.15) 0%, rgba(28, 160, 125, 0.08) 100%);
+        border-color: rgba(28, 160, 125, 0.4);
+        box-shadow: 0 4px 16px rgba(28, 160, 125, 0.15);
+    }
+
+    &.expanded {
+        background: linear-gradient(135deg, rgba(28, 160, 125, 0.12) 0%, rgba(28, 160, 125, 0.06) 100%);
+        border-color: rgba(28, 160, 125, 0.3);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .sessionItemLeft {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .sessionCheckbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .sessionInfo {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+
+        .sessionNumber {
+            font-size: 12px;
+            font-weight: 800;
+            color: #1ca07d;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .sessionName {
+            font-size: 13px;
+            font-weight: 600;
+            color: #212121;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .sessionItemRight {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .statusBadge {
+        font-size: 11px;
+        font-weight: 750;
+        padding: 5px 10px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+        text-align: center;
+
+        &.chodatlich {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.12) 0%, rgba(255, 152, 0, 0.08) 100%);
+            color: #f57c00;
+            border: 1px solid rgba(255, 152, 0, 0.15);
+        }
+
+        &.dadatlich {
+            background: linear-gradient(135deg, rgba(28, 160, 125, 0.12) 0%, rgba(22, 157, 114, 0.08) 100%);
+            color: #1ca07d;
+            border: 1px solid rgba(28, 160, 125, 0.15);
+        }
+
+        &.dangthuchien {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.12) 0%, rgba(3, 155, 229, 0.08) 100%);
+            color: #1976d2;
+            border: 1px solid rgba(33, 150, 243, 0.15);
+        }
+
+        &.hoantac {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(56, 142, 60, 0.08) 100%);
+            color: #388e3c;
+            border: 1px solid rgba(76, 175, 80, 0.15);
+        }
+
+        &.huy {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.12) 0%, rgba(211, 47, 47, 0.08) 100%);
+            color: #d32f2f;
+            border: 1px solid rgba(244, 67, 54, 0.15);
+        }
+    }
+
+    .sessionActions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .sessionDateTimeInput {
+        padding: 6px 10px;
+        border: 1.5px solid #1ca07d;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 140px;
+
+        &:hover {
+            border-color: #169d72;
+            box-shadow: 0 2px 8px rgba(28, 160, 125, 0.2);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: #169d72;
+            box-shadow: 0 0 0 3px rgba(28, 160, 125, 0.1);
+        }
+
+        &::placeholder {
+            color: #999;
+        }
+    }
+
+    .deleteSessionBtn {
+        padding: 6px 8px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
+.moreSessionsIndicator {
+    font-size: 11px;
+    color: #1ca07d;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px;
+    background: rgba(28, 160, 125, 0.08);
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+// Inline Session Details Styles
+.inlineSessionDetails {
+    margin-top: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.05) 0%, rgba(28, 160, 125, 0.02) 100%);
+    border: 1px solid rgba(28, 160, 125, 0.15);
+    border-radius: 14px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 1000px;
+    }
+}
+
+.detailsHeroSection {
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    color: white;
+}
+
+.detailsHeroContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 800;
+    }
+}
+
+.detailsHeroStatus {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.detailsContentGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.detailsInfoCard,
+.detailsProductsCard {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border: 1px solid rgba(28, 160, 125, 0.1);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: rgba(28, 160, 125, 0.25);
+        box-shadow: 0 4px 12px rgba(28, 160, 125, 0.08);
+    }
+}
+
+.detailsCardIcon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.detailsCardBody {
+    flex: 1;
+
+    h4 {
+        margin: 0 0 6px 0;
+        font-size: 12px;
+        font-weight: 800;
+        color: #1ca07d;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    p {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: #212121;
+    }
+}
+
+.productsList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.productItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+    background: #f9fbfc;
+    border-radius: 6px;
+    border-left: 2px solid #1ca07d;
+}
+
+.productItemName {
+    font-size: 12px;
+    font-weight: 600;
+    color: #212121;
+}
+
+.productItemQty {
+    font-size: 11px;
+    font-weight: 800;
+    color: #1ca07d;
+    background: rgba(28, 160, 125, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.detailsDescriptionBox {
+    padding: 12px;
+    background: linear-gradient(135deg, #fffbf5 0%, #fff8f0 100%);
+    border: 1px solid rgba(255, 152, 0, 0.1);
+    border-radius: 10px;
+
+    h4 {
+        margin: 0 0 6px 0;
+        font-size: 12px;
+        font-weight: 800;
+        color: #ff9800;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #666;
+    }
+}
+
+.planFooter {
+    padding-top: 12px;
+    border-top: 1px solid rgba(28, 160, 125, 0.08);
+}
+
+.priceSection {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    .priceLabel {
+        font-size: 11px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .price {
+        font-size: 16px;
+        font-weight: 950;
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
+.description {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+    font-weight: 500;
+}
+
+.cardAction {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.02) 0%, rgba(28, 160, 125, 0) 100%);
+    border-top: 1px solid rgba(28, 160, 125, 0.08);
+}
+
+.viewDetailsBtn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.12) 0%, rgba(28, 160, 125, 0.06) 100%);
+    border: 1.5px solid rgba(28, 160, 125, 0.18);
+    color: #1ca07d;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    &:hover {
+        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+        color: white;
+        border-color: #1ca07d;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+    .plansGrid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .plansGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .planCardHeader,
+    .planCardContent,
+    .cardAction {
+        padding: 16px;
+    }
+
+    .headerTitle {
+        h2 {
+            font-size: 22px;
+        }
+    }
+
+    .planStats {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .statDivider {
+        display: none;
+    }
+}
+
+// Session Selection Styles
+.sessionItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: default;
+
+    &.selectable {
+        cursor: pointer;
+        background: rgba(28, 160, 125, 0.04);
+        border: 1px solid rgba(28, 160, 125, 0.1);
+        
+        &:hover {
+            background: rgba(28, 160, 125, 0.08);
+            border-color: rgba(28, 160, 125, 0.2);
+        }
+
+        &.selected {
+            background: rgba(28, 160, 125, 0.15);
+            border-color: rgba(28, 160, 125, 0.3);
+        }
+    }
+}
+
+.sessionCheckbox {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    cursor: pointer;
+    accent-color: #1ca07d;
+    
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.bookSelectedBtn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 11px 16px;
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 12px rgba(28, 160, 125, 0.25);
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(28, 160, 125, 0.35);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(-1px);
+    }
+}
+
+// Booking Modal Styles
+.bookingModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.bookingModal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    border-bottom: 1px solid #eee;
+
+    h3 {
+        font-size: 18px;
+        font-weight: 950;
+        color: #1a1a1a;
+        margin: 0;
+    }
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #f0f0f0;
+        color: #333;
+    }
+}
+
+.modalContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.planInfo {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 20px 0;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.05) 0%, rgba(28, 160, 125, 0) 100%);
+    border-radius: 8px;
+    border-left: 3px solid #1ca07d;
+
+    strong {
+        color: #1a1a1a;
+        display: block;
+        margin-bottom: 4px;
+    }
+}
+
+.sessionDatesList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sessionDateItem {
+    display: flex;
+    flex-direction: column;
+
+    label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #333;
+    }
+}
+
+.sessionLabel {
+    color: #1ca07d;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-size: 11px;
+}
+
+.dateInput {
+    padding: 10px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: #1ca07d;
+        background: linear-gradient(135deg, rgba(28, 160, 125, 0.02) 0%, rgba(28, 160, 125, 0) 100%);
+        box-shadow: 0 0 0 3px rgba(28, 160, 125, 0.1);
+    }
+
+    &:invalid,
+    &:required:invalid {
+        border-color: #ff6b6b;
+    }
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    padding: 24px;
+    border-top: 1px solid #eee;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.02) 0%, rgba(28, 160, 125, 0) 100%);
+}
+
+.cancelBtn,
+.confirmBtn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.cancelBtn {
+    background: #f0f0f0;
+    color: #666;
+    border: 1px solid #ddd;
+
+    &:hover {
+        background: #e8e8e8;
+        color: #333;
+    }
+}
+
+.confirmBtn {
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(28, 160, 125, 0.25);
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(28, 160, 125, 0.35);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .bookingModal {
+        width: 95%;
+        max-width: calc(100vw - 20px);
+    }
+
+    .modalHeader,
+    .modalContent,
+    .modalActions {
+        padding: 16px;
+    }
+
+    .sessionDatesList {
+        gap: 12px;
+    }
+}
+
+// ===== ULTRA MODERN SESSION DETAILS MODAL =====
+.sessionDetailsOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    animation: fadeIn 0.4s ease;
+    backdrop-filter: blur(4px);
+}
+
+.sessionDetailsModal {
+    background: #ffffff;
+    border-radius: 28px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #1ca07d 0%, #169d72 100%);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: linear-gradient(180deg, #169d72 0%, #0f7a5a 100%);
+        }
+    }
+}
+
+// Hero Section
+.modalHeroSection {
+    position: relative;
+    overflow: hidden;
+    padding: 48px 40px 36px 40px;
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 50%, #0f7a5a 100%);
+    border-radius: 28px 28px 0 0;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
+}
+
+.heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background: 
+            linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%),
+            linear-gradient(-45deg, transparent 30%, rgba(255, 255, 255, 0.02) 50%, transparent 70%);
+        animation: shimmer 8s infinite;
+    }
+}
+
+.heroContent {
+    position: relative;
+    z-index: 2;
+}
+
+.heroCloseBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    font-size: 32px;
+    color: white;
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: rotate(90deg) scale(1.1);
+    }
+
+    &:active {
+        transform: rotate(90deg) scale(0.95);
+    }
+}
+
+.sessionNumberBadge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(8px);
+    margin-bottom: 16px;
+}
+
+.heroTitle {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.heroStatusSection {
+    margin-top: 18px;
+}
+
+.modernStatusBadge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 8px 18px;
+    border-radius: 24px;
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    transition: all 0.3s ease;
+
+    &.chodatlich {
+        background: rgba(255, 193, 7, 0.2);
+        color: #FFE082;
+        border-color: rgba(255, 193, 7, 0.4);
+    }
+
+    &.dadatlich {
+        background: rgba(76, 175, 80, 0.2);
+        color: #A5D6A7;
+        border-color: rgba(76, 175, 80, 0.4);
+    }
+
+    &.dangthuchien {
+        background: rgba(33, 150, 243, 0.2);
+        color: #64B5F6;
+        border-color: rgba(33, 150, 243, 0.4);
+    }
+
+    &.hoantac {
+        background: rgba(76, 175, 80, 0.2);
+        color: #A5D6A7;
+        border-color: rgba(76, 175, 80, 0.4);
+    }
+
+    &.huy {
+        background: rgba(244, 67, 54, 0.2);
+        color: #EF9A9A;
+        border-color: rgba(244, 67, 54, 0.4);
+    }
+}
+
+// Modern Content Grid
+.modernContentGrid {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+// Modern Card Base
+.modernCard {
+    position: relative;
+    overflow: hidden;
+    padding: 28px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #f8fafb 0%, #f0f4f7 100%);
+    border: 1px solid rgba(28, 160, 125, 0.1);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &:hover {
+        border-color: rgba(28, 160, 125, 0.25);
+        transform: translateY(-6px);
+
+        .cardGlow {
+            opacity: 0.8;
+        }
+    }
+}
+
+.cardGlassHeader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1ca07d 0%, #169d72 50%, #0f7a5a 100%);
+    border-radius: 20px 20px 0 0;
+}
+
+.cardIcon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: inline-block;
+
+    &.planIcon {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    &.descIcon {
+        animation: float 4s ease-in-out infinite 0.5s;
+    }
+}
+
+.cardContent {
+    position: relative;
+    z-index: 2;
+}
+
+.cardTitle {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1ca07d;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.cardDescription {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #2c3e50;
+    font-weight: 600;
+
+    &.fullDescription {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.8;
+        font-weight: 500;
+    }
+}
+
+.cardGlow {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(28, 160, 125, 0.15) 0%, transparent 70%);
+    opacity: 0.3;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+
+    &.planGlow {
+        background: radial-gradient(circle, rgba(28, 160, 125, 0.1) 0%, transparent 70%);
+    }
+
+    &.descGlow {
+        background: radial-gradient(circle, rgba(255, 152, 0, 0.1) 0%, transparent 70%);
+    }
+}
+
+// Products Section
+.productsGridSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sectionTitleBar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.08) 0%, rgba(28, 160, 125, 0.03) 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(28, 160, 125, 0.1);
+
+    .sectionIcon {
+        font-size: 24px;
+        animation: bounce 2s infinite;
+    }
+
+    h3 {
+        margin: 0;
+        flex: 1;
+        font-size: 15px;
+        font-weight: 800;
+        color: #1ca07d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+.productCountBadge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.productsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.ultraModernProductCard {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fbfc 100%);
+    border: 2px solid rgba(28, 160, 125, 0.12);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+
+    &:hover {
+        border-color: rgba(28, 160, 125, 0.4);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(28, 160, 125, 0.12);
+
+        .productCardGlow {
+            opacity: 0.8;
+        }
+
+        .productNumber {
+            transform: scale(1.15) rotate(5deg);
+        }
+    }
+}
+
+.productCardGlass {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #1ca07d 0%, #ff9800 100%);
+}
+
+.productCardContent {
+    position: relative;
+    z-index: 2;
+}
+
+.productNumber {
+    display: inline-block;
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 900;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.productTitle {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #212121;
+    line-height: 1.4;
+}
+
+.productSeparator {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #1ca07d 0%, transparent 100%);
+    margin: 10px 0 12px 0;
+}
+
+.quantityDisplay {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quantityLabel {
+    font-size: 12px;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.quantityAmount {
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 900;
+    box-shadow: 0 4px 12px rgba(28, 160, 125, 0.2);
+}
+
+.productCardGlow {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(28, 160, 125, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+
+    &.glow0 {
+        background: radial-gradient(circle, rgba(28, 160, 125, 0.2) 0%, transparent 70%);
+    }
+
+    &.glow1 {
+        background: radial-gradient(circle, rgba(255, 152, 0, 0.15) 0%, transparent 70%);
+    }
+
+    &.glow2 {
+        background: radial-gradient(circle, rgba(33, 150, 243, 0.15) 0%, transparent 70%);
+    }
+}
+
+// Modern Footer
+.modernFooter {
+    padding: 28px 40px 40px 40px;
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid rgba(28, 160, 125, 0.08);
+}
+
+.modernCloseBtn {
+    position: relative;
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 10px 30px rgba(28, 160, 125, 0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 50px rgba(28, 160, 125, 0.35);
+
+        &::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btnGlow {
+            opacity: 1;
+        }
+    }
+
+    &:active {
+        transform: translateY(-1px);
+    }
+}
+
+.btnContent {
+    position: relative;
+    z-index: 2;
+}
+
+.btnGlow {
+    position: absolute;
+    bottom: -2px;
+    left: -2px;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 18px;
+}
+
+// Animations
+@keyframes shimmer {
+    0% {
+        transform: translate(0%, 0%);
+    }
+    50% {
+        transform: translate(50%, 50%);
+    }
+    100% {
+        transform: translate(0%, 0%);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

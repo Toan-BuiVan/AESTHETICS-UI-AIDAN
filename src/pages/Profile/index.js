@@ -1,4 +1,3 @@
-import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 import { useLocation } from 'react-router-dom';
 import ChangePasswordForm from './ChangePasswordForm';
 import VoucherSection from './VoucherSection';
@@ -9,13 +8,11 @@ import PaymentCanceled from './PaymentCanceled';
 import PaymentOrder from './PaymentOrder';
 import UseVoucher from './UseVoucher';
 import CustomerForm from './CustomerForm';
-import StaffForm from './StaffForm';
-import AdminForm from './AdminForm';
 
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faExchange, faGifts, faHistory, faShieldAlt, faStethoscope, faCrown } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faExchange, faGifts, faHistory } from '@fortawesome/free-solid-svg-icons';
 import styles from './Profile.module.scss';
 import images from '~/assets/images';
 
@@ -79,16 +76,8 @@ function Profile() {
                         className={cx('menuItem', 'account', { active: selectedMenu === 'account' })}
                         onClick={() => setSelectedMenu('account')}
                     >
-                        <FontAwesomeIcon icon={
-                            userRole === 2 ? faCrown : 
-                            userRole === 1 ? faStethoscope : 
-                            faUser
-                        } />
-                        <span>
-                            {userRole === 2 ? 'Hồ Sơ Quản Trị' : 
-                             userRole === 1 ? 'Hồ Sơ Nhân Viên' : 
-                             'Hồ Sơ Của Tôi'}
-                        </span>
+                        <FontAwesomeIcon icon={faUser} />
+                        <span>Hồ Sơ Của Tôi</span>
                     </li>
                     <li
                         className={cx('menuItem', 'changePassword', { active: selectedMenu === 'changePassword' })}
@@ -159,11 +148,7 @@ function Profile() {
                     )}
                 </div>
                 <div className={cx('content-content')}>
-                    {selectedMenu === 'account' && (
-                        userRole === 2 ? <AdminForm /> :
-                        userRole === 1 ? <StaffForm /> :
-                        <CustomerForm />
-                    )}
+                    {selectedMenu === 'account' && <CustomerForm />}
                     {selectedMenu === 'changePassword' && <ChangePasswordForm />}
                     {selectedMenu === 'voucher' && userRole === 0 && <VoucherSection />}
                     {selectedMenu === 'deviceHistory' && <DeviceHistory />}

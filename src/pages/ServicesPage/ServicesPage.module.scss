@@ -1,3 +1,14 @@
+@import './TreatmentPlansStyles.scss';
+
+// Color Palette
+$primary: #1ca07d;
+$primary-dark: #169d72;
+$gray-bg: #f5f5f5;
+$gray-border: #e0e0e0;
+$gray-text: #757575;
+$text-primary: #212121;
+$text-secondary: #999;
+
 .wrapper {
     display: flex;
     flex-direction: column;
@@ -77,8 +88,26 @@
     width: 100%;
     padding: 50px 30px;
     display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 40px;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+}
+
+.leftPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.treatmentPlansSection {
+    width: 100%;
+}
+
+.rightPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    animation: fadeIn 0.6s ease-out 0.3s both;
 }
 
 .mainContent {
@@ -91,6 +120,237 @@
 .sidebar {
     flex-shrink: 0;
     animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+// Right Panel with Doctors Sidebar + Booking Summary
+.rightPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-shrink: 0;
+    animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+// Doctors Sidebar Section
+.doctorsSidebarSection {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(28, 160, 125, 0.1);
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+}
+
+.doctorsSidebarHeader {
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.05) 0%, rgba(28, 160, 125, 0) 100%);
+    border-bottom: 2px solid rgba(28, 160, 125, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    h3 {
+        font-size: 18px;
+        font-weight: 950;
+        color: #1a1a1a;
+        margin: 0;
+        letter-spacing: -0.3px;
+    }
+
+    p {
+        margin: 4px 0 0 0;
+        font-size: 11px;
+        font-weight: 600;
+        color: #66b3a0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+.doctorHeaderIcon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.doctorCountBadge {
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    font-weight: 800;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(28, 160, 125, 0.3);
+}
+
+.doctorsSidebarList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(28, 160, 125, 0.3);
+        border-radius: 3px;
+
+        &:hover {
+            background: rgba(28, 160, 125, 0.5);
+        }
+    }
+}
+
+.doctorSidebarCard {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f9fbfa;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &:hover {
+        background: linear-gradient(135deg, rgba(28, 160, 125, 0.08) 0%, rgba(28, 160, 125, 0.02) 100%);
+        border-color: rgba(28, 160, 125, 0.2);
+        transform: translateX(2px);
+    }
+
+    &.selected {
+        background: linear-gradient(135deg, rgba(28, 160, 125, 0.15) 0%, rgba(28, 160, 125, 0.08) 100%);
+        border-color: rgba(28, 160, 125, 0.4);        
+        box-shadow: 0 4px 12px rgba(28, 160, 125, 0.15);
+    }
+}
+
+.doctorCardImage {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover img {
+        transform: scale(1.05);
+    }
+}
+
+.doctorCardOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0) 0%, rgba(28, 160, 125, 0.2) 100%);
+    pointer-events: none;
+}
+
+.doctorCardInfo {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+}
+
+.doctorCardName {
+    font-size: 12px;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.doctorCardSpecialty {
+    font-size: 10px;
+    font-weight: 600;
+    color: #1ca07d;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.doctorCardStats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.statRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9px;
+    color: #666;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.statIcon {
+    color: #1ca07d;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+.selectDoctorBtn {
+    display: none; // Hidden in sidebar, only shown on hover in full view
+}
+
+.noDoctorsMessage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 12px;
+
+    svg {
+        font-size: 32px;
+        margin-bottom: 12px;
+        opacity: 0.5;
+    }
+}
+
+.bookingSummaryWrapper {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(28, 160, 125, 0.1);
+    overflow: hidden;
 }
 
 @keyframes fadeIn {
@@ -407,32 +667,484 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
-        z-index: -1;
-        transition: left 0.3s ease;
+        background: linear-gradient(90deg, transparent, rgba($primary, 0.1), transparent);
+        transition: left 0.6s ease;
     }
 
     &:hover {
-        border-color: #1ca07d;
-        color: #1ca07d;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(28, 160, 125, 0.2);
+        border-color: $primary;
+        color: $primary;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba($primary, 0.15);
+
+        &::before {
+            left: 100%;
+        }
     }
 
     &.selected {
+        background: $primary;
+        border-color: $primary;
         color: white;
-        border-color: #1ca07d;
-        background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
-        box-shadow: 0 8px 24px rgba(28, 160, 125, 0.3);
-        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba($primary, 0.3);
+        transform: translateY(-4px);
+    }
+}
 
-        &::after {
-            content: '✓';
-            position: absolute;
-            right: 6px;
-            top: 2px;
-            font-size: 16px;
+// ===== BOOKING MODAL STYLES =====
+
+.bookingModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.bookingModalContent {
+    background: white;
+    border-radius: 16px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease-out;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $gray-border;
+        border-radius: 3px;
+
+        &:hover {
+            background: #ccc;
         }
+    }
+}
+
+.bookingModalHeader {
+    padding: 24px;
+    border-bottom: 1px solid $gray-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.bookingModalTitle {
+    h2 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: $text-primary;
+    }
+
+    p {
+        margin: 0;
+        font-size: 13px;
+        color: $text-secondary;
+    }
+}
+
+.bookingModalClose {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: $text-secondary;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+        background: $gray-bg;
+        color: $primary;
+    }
+}
+
+.bookingModalBody {
+    padding: 24px;
+}
+
+.doctorSelector {
+    margin-bottom: 24px;
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: $text-primary;
+
+        .required {
+            color: #f44336;
+            margin-left: 4px;
+        }
+    }
+
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid $gray-border;
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: inherit;
+        color: $text-primary;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 20px;
+        padding-right: 32px;
+
+        &:hover {
+            border-color: $primary;
+            box-shadow: 0 0 0 3px rgba($primary, 0.1);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: $primary;
+            box-shadow: 0 0 0 3px rgba($primary, 0.15);
+        }
+
+        option {
+            color: $text-primary;
+        }
+    }
+}
+
+.sessionsList {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.sessionItem {
+    padding: 14px;
+    background: $gray-bg;
+    border-radius: 10px;
+    border: 1px solid $gray-border;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba($primary, 0.02);
+        border-color: $primary;
+    }
+}
+
+.sessionBadge {
+    display: inline-block;
+    background: rgba($primary, 0.12);
+    color: $primary;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.sessionName {
+    display: block;
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-primary;
+}
+
+.dateTimeInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid $gray-border;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    color: $text-primary;
+    background: white;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: $primary;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+}
+
+.bookingModalFooter {
+    padding: 16px 24px 24px 24px;
+    border-top: 1px solid $gray-border;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.buttonCancel {
+    padding: 10px 20px;
+    background: $gray-bg;
+    color: $text-primary;
+    border: 1px solid $gray-border;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #efefef;
+        border-color: #ccc;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.buttonConfirm {
+    padding: 10px 20px;
+    background: $primary;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background: $primary-dark;
+        box-shadow: 0 4px 12px rgba($primary, 0.3);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+// Treatment Booking Panel - Right Side
+.treatmentBookingPanel {
+    margin-top: 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid $gray-border;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.treatmentBookingHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid $gray-bg;
+
+    h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: $text-primary;
+    }
+}
+
+.treatmentBookingClose {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: $gray-bg;
+        color: $text-primary;
+    }
+}
+
+.treatmentBookingSection {
+    margin-bottom: 20px;
+}
+
+.treatmentLabel {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: 8px;
+
+    .required {
+        color: #e53935;
+    }
+}
+
+.treatmentDoctorSelector {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid $gray-border;
+    border-radius: 8px;
+    font-size: 13px;
+    color: $text-primary;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: $primary;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+
+    option {
+        padding: 8px;
+        color: $text-primary;
+    }
+}
+
+.treatmentSessionsSection {
+    margin-bottom: 20px;
+}
+
+.treatmentSessionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.treatmentSessionItem {
+    padding: 12px;
+    background: $gray-bg;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+
+    .treatmentSessionLabel {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: $text-primary;
+        margin-bottom: 8px;
+    }
+}
+
+.treatmentDateTimeInput {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid $gray-border;
+    border-radius: 6px;
+    font-size: 12px;
+    color: $text-primary;
+    background: white;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: $primary;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+}
+
+.treatmentBookingFooter {
+    display: flex;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid $gray-bg;
+    margin-top: 16px;
+}
+
+.treatmentButtonCancel {
+    flex: 1;
+    padding: 10px 16px;
+    background: $gray-bg;
+    color: $text-primary;
+    border: 1px solid $gray-border;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #efefef;
+        border-color: #ccc;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.treatmentButtonConfirm {
+    flex: 1;
+    padding: 10px 16px;
+    background: $primary;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background: $primary-dark;
+        box-shadow: 0 4px 12px rgba($primary, 0.3);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 }
 
