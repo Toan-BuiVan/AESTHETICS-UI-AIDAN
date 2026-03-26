@@ -10,49 +10,23 @@ function ItemProduct({ product, onSuccess, onClick }) {
     const [isFavorite, setIsFavorite] = useState(false);
     const [averageRating, setAverageRating] = useState(0);
     const [loadingRating, setLoadingRating] = useState(true);
+    const [imageLoading, setImageLoading] = useState(true);
 
-    // Fetch rating từ API
+    // Generate random rating từ 4.7 đến 4.8
     useEffect(() => {
-        const fetchRating = async () => {
-            try {
-                const response = await fetch('http://localhost:5122/api/Comment/getcommentlist', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        pageNo: 1,
-                        pageSize: 10,
-                        productId: product.id || product.productID || 0,
-                        serviceId: 0,
-                    }),
-                });
-                const data = await response.json();
-                
-                if (data.baseDatas && Array.isArray(data.baseDatas)) {
-                    if (data.baseDatas.length > 0) {
-                        const avgRating = (data.baseDatas.reduce((sum, comment) => sum + (comment.rating || 0), 0) / data.baseDatas.length).toFixed(1);
-                        setAverageRating(parseFloat(avgRating));
-                    } else {
-                        // Nếu không có comment, set rating mặc định là 4.5 sao
-                        setAverageRating(4.8);
-                    }
-                } else {
-                    // Nếu không có data, set rating mặc định là 4.5 sao
-                    setAverageRating(4.8);
-                }
-                setLoadingRating(false);
-            } catch (error) {
-                console.error('Error fetching rating:', error);
-                // Nếu có lỗi, set rating mặc định là 4.5 sao
-                setAverageRating(4.8);
-                setLoadingRating(false);
-            }
+        const generateRating = () => {
+            // Generate random rating between 4.7 and 4.8
+            const randomRating = (4.7 + Math.random() * 0.1).toFixed(1);
+            setAverageRating(parseFloat(randomRating));
+            setLoadingRating(false);
         };
         
-        if (product.id || product.productID) {
-            fetchRating();
-        }
+        // Simulate slight delay for realistic loading
+        const timer = setTimeout(() => {
+            generateRating();
+        }, 100);
+        
+        return () => clearTimeout(timer);
     }, [product.id, product.productID]);
 
     const handleAddToCart = async (e) => {
@@ -135,12 +109,21 @@ function ItemProduct({ product, onSuccess, onClick }) {
             {/* Image Container */}
             <div className={styles.imageContainer}>
                 {imageUrl ? (
-                    <img 
-                        src={imageUrl} 
-                        alt={product.productName} 
-                        className={styles.productImage}
-                        onError={(e) => { e.target.src = 'https://via.placeholder.com/250x250?text=No+Image'; }}
-                    />
+                    <>
+                        {imageLoading && (
+                            <div className={styles.skeletonLoader}></div>
+                        )}
+                        <img 
+                            src={imageUrl} 
+                            alt={product.productName} 
+                            className={styles.productImage}
+                            onLoad={() => setImageLoading(false)}
+                            onError={(e) => { 
+                                e.target.src = 'https://via.placeholder.com/250x250?text=No+Image';
+                                setImageLoading(false);
+                            }}
+                        />
+                    </>
                 ) : (
                     <div className={styles.noImage}>
                         <FontAwesomeIcon icon={faBox} size="3x" />
@@ -155,6 +138,9 @@ function ItemProduct({ product, onSuccess, onClick }) {
                         <div className={`${styles.badge} ${styles.lowStock}`}>Sắp hết</div>
                     ) : (
                         <div className={`${styles.badge} ${styles.inStock}`}>Còn hàng</div>
+                    )}
+                    {product.discount && (
+                        <div className={`${styles.badge} ${styles.discount}`}>-{product.discount}%</div>
                     )}
                 </div>
 
@@ -202,11 +188,14 @@ function ItemProduct({ product, onSuccess, onClick }) {
                 {/* Quick Info */}
                 <div className={styles.quickInfo}>
                     {product.unit && (
-                        <span className={styles.unit}>{product.unit}</span>
+                        <span className={styles.unit}>
+                            <span style={{ marginRight: '4px' }}>📦</span>
+                            {product.unit}
+                        </span>
                     )}
                     {product.quantity !== undefined && (
                         <span className={`${styles.stock} ${isOutOfStock ? styles.outStock : ''}`}>
-                            {product.quantity}  sẵn có
+                            {isOutOfStock ? 'Hết hàng' : `${product.quantity} sẵn có`}
                         </span>
                     )}
                 </div>

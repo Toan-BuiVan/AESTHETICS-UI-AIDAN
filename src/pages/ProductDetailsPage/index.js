@@ -179,24 +179,24 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                     setComments(data.baseDatas);
                     setTotalComments(data.totalRecordCount || 0);
                     
-                    // Tính rating trung bình
-                    if (data.baseDatas.length > 0) {
-                        const avgRating = (data.baseDatas.reduce((sum, comment) => sum + (comment.rating || 0), 0) / data.baseDatas.length).toFixed(1);
-                        setAverageRating(parseFloat(avgRating));
-                    } else {
-                        setAverageRating(4.5);
-                    }
+                    // Generate random rating từ 4.7 đến 4.8
+                    const randomRating = (4.7 + Math.random() * 0.1).toFixed(1);
+                    setAverageRating(parseFloat(randomRating));
                 } else {
                     setComments([]);
                     setTotalComments(0);
-                    setAverageRating(4.5);
+                    // Generate random rating từ 4.7 đến 4.8
+                    const randomRating = (4.7 + Math.random() * 0.1).toFixed(1);
+                    setAverageRating(parseFloat(randomRating));
                 }
                 setLoadingComments(false);
             } catch (error) {
                 console.error('Error fetching comments:', error);
                 setComments([]);
                 setTotalComments(0);
-                setAverageRating(4.5);
+                // Generate random rating từ 4.7 đến 4.8
+                const randomRating = (4.7 + Math.random() * 0.1).toFixed(1);
+                setAverageRating(parseFloat(randomRating));
                 setLoadingComments(false);
             }
         };
@@ -408,14 +408,6 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                     <div className={cx('info-header')}>
                         <div>
                             <h1 className={cx('product-name')}>{product.productName}</h1>
-                            <div className={cx('rating-info')}>
-                                <div className={cx('stars')}>
-                                    {[...Array(5)].map((_, i) => (
-                                        <FontAwesomeIcon key={i} icon={faStar} className={cx('star-icon', i < Math.floor(averageRating) ? 'filled' : '')} />
-                                    ))}
-                                </div>
-                                <span className={cx('reviews')}>{averageRating.toFixed(1)} ({totalComments} đánh giá)</span>
-                            </div>
                         </div>
                         <button className={cx('favorite-btn', isFavorite ? 'active' : '')} onClick={() => setIsFavorite(!isFavorite)}>
                             <FontAwesomeIcon icon={faHeart} />

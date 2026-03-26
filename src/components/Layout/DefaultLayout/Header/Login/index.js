@@ -74,10 +74,15 @@ function Login({ onClose, setSuccessMessage }) {
                     
                     // Extract claims from token
                     const userNameFromToken = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-                    const userIDFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid'];
+                    let userIDFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid'];
                     const roleFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
                     const customerIdFromToken = decodedToken['CustomerId'];
                     const staffIdFromToken = decodedToken['StaffId'];
+
+                    // Fallback: if primarysid not found, use CustomerId or StaffId
+                    if (!userIDFromToken) {
+                        userIDFromToken = customerIdFromToken || staffIdFromToken;
+                    }
 
                     // Store token and refresh token
                     localStorage.setItem('token', data.token);
@@ -90,14 +95,33 @@ function Login({ onClose, setSuccessMessage }) {
                     if (customerIdFromToken) localStorage.setItem('customerId', customerIdFromToken);
                     if (staffIdFromToken) localStorage.setItem('staffId', staffIdFromToken);
 
+                    // Debug log
+                    console.log('Token decoded:', {
+                        userID: userIDFromToken,
+                        customerId: customerIdFromToken,
+                        staffId: staffIdFromToken
+                    });
+
                     // Clear unnecessary fields
                     localStorage.removeItem('typePerson');
                     localStorage.removeItem('deviceName');
                 } catch (decodeError) {
                     console.error('Lỗi giải mã token:', decodeError);
-                    // If decode fails, still store the tokens
+                    // If decode fails, still store the tokens and try to get ID from data object
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('refreshToken', data.refreshToken);
+                    
+                    // Try to get IDs from data object if available
+                    const fallbackId = data.userID || data.customerId || data.staffId;
+                    if (fallbackId) localStorage.setItem('userID', fallbackId);
+                    if (data.customerId) localStorage.setItem('customerId', data.customerId);
+                    if (data.staffId) localStorage.setItem('staffId', data.staffId);
+                    
+                    console.warn('Fallback to data object for IDs:', { 
+                        userID: fallbackId,
+                        customerId: data.customerId,
+                        staffId: data.staffId 
+                    });
                 }
 
                 setTimeout(() => {
@@ -113,8 +137,10 @@ function Login({ onClose, setSuccessMessage }) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('refreshToken', data.refreshToken);
 
-                // Store user info if available
-                if (data.userID) localStorage.setItem('userID', data.userID);
+                // Store user info if available (with fallback)
+                const userId = data.userID || data.customerId || data.id;
+                if (userId) localStorage.setItem('userID', userId);
+                if (data.customerId) localStorage.setItem('customerId', data.customerId);
                 if (data.userName) localStorage.setItem('userName', data.userName);
                 if (data.role) localStorage.setItem('role', data.role);
 

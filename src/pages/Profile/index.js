@@ -8,11 +8,12 @@ import PaymentCanceled from './PaymentCanceled';
 import PaymentOrder from './PaymentOrder';
 import UseVoucher from './UseVoucher';
 import CustomerForm from './CustomerForm';
+import MyBookings from './MyBookings';
 
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faExchange, faGifts, faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faExchange, faGifts, faHistory, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import styles from './Profile.module.scss';
 import images from '~/assets/images';
 
@@ -79,6 +80,15 @@ function Profile() {
                         <FontAwesomeIcon icon={faUser} />
                         <span>Hồ Sơ Của Tôi</span>
                     </li>
+                    {userRole === 0 && (
+                        <li
+                            className={cx('menuItem', 'myBookings', { active: selectedMenu === 'myBookings' })}
+                            onClick={() => setSelectedMenu('myBookings')}
+                        >
+                            <FontAwesomeIcon icon={faCalendarAlt} />
+                            <span>Đặt Lịch Của Tôi</span>
+                        </li>
+                    )}
                     <li
                         className={cx('menuItem', 'changePassword', { active: selectedMenu === 'changePassword' })}
                         onClick={() => setSelectedMenu('changePassword')}
@@ -149,6 +159,7 @@ function Profile() {
                 </div>
                 <div className={cx('content-content')}>
                     {selectedMenu === 'account' && <CustomerForm />}
+                    {selectedMenu === 'myBookings' && <MyBookings />}
                     {selectedMenu === 'changePassword' && <ChangePasswordForm />}
                     {selectedMenu === 'voucher' && userRole === 0 && <VoucherSection />}
                     {selectedMenu === 'deviceHistory' && <DeviceHistory />}

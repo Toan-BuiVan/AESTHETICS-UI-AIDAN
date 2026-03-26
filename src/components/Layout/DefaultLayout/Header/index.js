@@ -171,10 +171,14 @@ function Header() {
 
     // Hàm xử lý khi nhấp vào biểu tượng giỏ hàng
     const handleCartClick = () => {
-        const requiredFields = ['deviceName', 'refreshToken', 'token', 'typePerson', 'userID', 'userName'];
-        const missingFields = requiredFields.filter((field) => !localStorage.getItem(field));
+        // Check if user is logged in - must have token AND at least one ID
+        const token = localStorage.getItem('token');
+        const userID = localStorage.getItem('userID');
+        const customerId = localStorage.getItem('customerId');
+        const staffId = localStorage.getItem('staffId');
+        const refreshToken = localStorage.getItem('refreshToken');
 
-        if (missingFields.length > 0) {
+        if (!token || !refreshToken || (!userID && !customerId && !staffId)) {
             setSuccessMessage('Vui lòng đăng nhập để xem giỏ hàng.');
             setTimeout(() => {
                 setSuccessMessage(null);

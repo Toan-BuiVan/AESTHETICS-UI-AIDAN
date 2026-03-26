@@ -57,28 +57,41 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
     const [cartItems, setCartItems] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [successMessage, setSuccessMessage] = useState(null);
-    const userID = localStorage.getItem('userID') || '';
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // Get all possible IDs
+    const staffId = localStorage.getItem('staffId');
+    const customerId = localStorage.getItem('customerId');
+    const userID = localStorage.getItem('userID');
+    const token = localStorage.getItem('token');
+    
+    // Use whichever ID is available (priority: staff > customer > user)
+    const activeUserID = staffId || customerId || userID || '';
+    const isLoggedIn = !!token && !!activeUserID;
 
     useEffect(() => {
-        if (!userID) {
-            alert('Bạn cần đăng nhập để xem giỏ hàng.');
+        // If not logged in, don't try to fetch
+        if (!token || !activeUserID) {
+            console.warn('Not logged in', { token: !!token, activeUserID });
+            setIsLoading(false);
             return;
         }
 
         const fetchCartItems = async () => {
+            setIsLoading(true);
             const deviceName = localStorage.getItem('deviceName') || '';
             const refreshToken = localStorage.getItem('refreshToken') || '';
-            const token = localStorage.getItem('token') || '';
+            const authToken = localStorage.getItem('token') || '';
 
             const headers = {
                 'Content-Type': 'application/json',
                 DeviceName: deviceName,
                 RefreshToken: refreshToken,
-                Authorization: token ? `Bearer ${token}` : '',
-                UserID: userID,
+                Authorization: authToken ? `Bearer ${authToken}` : '',
+                UserID: activeUserID,
             };
 
-            const requestData = { userID };
+            const requestData = { userID: activeUserID };
 
             try {
                 const response = await fetch('http://localhost:5262/api/CartProduct/GetList_SearchCartProduct', {
@@ -93,14 +106,19 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
                 if (result.data) {
                     setCartItems(result.data);
                     calculateTotalPrice(result.data);
+                } else {
+                    setCartItems([]);
                 }
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu giỏ hàng:', error);
+                setCartItems([]);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchCartItems();
-    }, [userID]);
+    }, [activeUserID, token]);
 
     const calculateTotalPrice = (items) => {
         const total = items.reduce((sum, item) => sum + item.sellingPrice * item.quantity, 0);
@@ -117,7 +135,7 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
             DeviceName: deviceName,
             RefreshToken: refreshToken,
             Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
+            UserID: activeUserID,
         };
 
         const requestData = {
@@ -151,7 +169,7 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
             DeviceName: deviceName,
             RefreshToken: refreshToken,
             Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
+            UserID: activeUserID,
         };
 
         const requestData = {
@@ -190,7 +208,12 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
     return (
         <div className={cx('cart-container')}>
             {successMessage && <SuccessMessage message={successMessage} />}
-            {cartItems.length === 0 ? (
+            
+            {isLoading ? (
+                <p>Đang tải giỏ hàng...</p>
+            ) : !isLoggedIn ? (
+                <p>Vui lòng đăng nhập để xem giỏ hàng.</p>
+            ) : cartItems.length === 0 ? (
                 <p>Giỏ hàng của bạn đang trống.</p>
             ) : (
                 <>

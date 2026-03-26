@@ -239,6 +239,17 @@ $text-secondary: #999;
         border-color: rgba(28, 160, 125, 0.4);        
         box-shadow: 0 4px 12px rgba(28, 160, 125, 0.15);
     }
+
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        
+        &:hover {
+            background: #f9fbfa;
+            border-color: transparent;
+            transform: none;
+        }
+    }
 }
 
 .doctorCardImage {
@@ -269,6 +280,24 @@ $text-secondary: #999;
     right: 0;
     bottom: 0;
     background: linear-gradient(135deg, rgba(28, 160, 125, 0) 0%, rgba(28, 160, 125, 0.2) 100%);
+    pointer-events: none;
+}
+
+.disabledOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    padding: 4px;
     pointer-events: none;
 }
 
@@ -327,6 +356,16 @@ $text-secondary: #999;
 
 .selectDoctorBtn {
     display: none; // Hidden in sidebar, only shown on hover in full view
+
+    &.disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+
+        &:hover {
+            background-color: #ccc;
+        }
+    }
 }
 
 .noDoctorsMessage {

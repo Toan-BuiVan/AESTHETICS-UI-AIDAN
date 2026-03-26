@@ -9,50 +9,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilter, faTimes, faCheckCircle, faClock, faCalendarAlt, faGift, faStar, faUsers, faFlask, faUserMd, faArrowRight, faSearch, faTrophy, faBriefcase, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faFilter, faTimes, faCheckCircle, faClock, faCalendarAlt, faGift, faStar, faUsers, faFlask, faUserMd, faArrowRight, faSearch, faTrophy, faBriefcase, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
-
-const MOCK_DOCTORS = [
-    {
-        doctorID: 1,
-        doctorName: 'Dr. Nguyễn Thị Hoa',
-        specialty: 'Bác sĩ Da liễu',
-        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-        rating: 4.8,
-        reviews: 245,
-        experience: 12,
-    },
-    {
-        doctorID: 2,
-        doctorName: 'Dr. Trần Văn Hùng',
-        specialty: 'Bác sĩ Thẩm mỹ',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-        rating: 4.7,
-        reviews: 180,
-        experience: 10,
-    },
-    {
-        doctorID: 3,
-        doctorName: 'Dr. Phạm Minh Tú',
-        specialty: 'Chuyên gia Massage',
-        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
-        rating: 4.9,
-        reviews: 320,
-        experience: 15,
-    },
-    {
-        doctorID: 4,
-        doctorName: 'Dr. Đặng Thị Linh',
-        specialty: 'Bác sĩ Chăm sóc da',
-        image: 'https://images.unsplash.com/photo-1517841905240-472988bababb?w=400&h=400&fit=crop',
-        rating: 4.6,
-        reviews: 156,
-        experience: 8,
-    },
-];
 
 const APPOINTMENT_TIMES = [
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
@@ -62,7 +28,7 @@ const APPOINTMENT_TIMES = [
 
 function ServicesPage() {
     const [services, setServices] = useState([]);
-    const [doctors, setDoctors] = useState(MOCK_DOCTORS);
+    const [doctors, setDoctors] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -86,38 +52,91 @@ function ServicesPage() {
     const [expandedSessionKey, setExpandedSessionKey] = useState(null);
     const [inlineBookings, setInlineBookings] = useState({}); // { sessionKey: { planIndex, sessionIndex, date, time, planName, sessionNumber, sessionName } }
     const [selectedTreatmentSessions, setSelectedTreatmentSessions] = useState([]); // Array of { planIndex, sessionIndex, planName, sessionNumber, sessionName }
+    const [deleteConfirmation, setDeleteConfirmation] = useState({ open: false, sessionId: null, sessionNumber: null });
 
     useEffect(() => {
-        fetchServices();
         fetchCustomerTreatmentPlans();
     }, []);
 
-    const fetchServices = async () => {
-        try {
-            const response = await axios.post(
-                'http://localhost:5262/api/Servicess/GetSortedPagedServicess',
-                {
-                    pageIndex: 1,
-                    pageSize: 20,
-                    minPrice: null,
-                    maxPrice: null,
-                    productsOfServicesName: null,
+    // Monitor selected sessions and reset doctor if not eligible
+    useEffect(() => {
+        if (selectedDoctor && selectedTreatmentSessions.length > 0) {
+            // Get eligible service type IDs from selected sessions
+            const eligibleIds = new Set();
+            selectedTreatmentSessions.forEach(session => {
+                const plan = customerTreatmentPlans[session.planIndex];
+                if (plan?.serviceInformation?.serviceTypeId) {
+                    eligibleIds.add(plan.serviceInformation.serviceTypeId);
                 }
-            );
+            });
 
-            let servicesData = [];
-            if (Array.isArray(response.data)) {
-                servicesData = response.data;
-            } else if (response.data?.data && Array.isArray(response.data.data)) {
-                servicesData = response.data.data;
+            // Check if selected doctor's serviceTypeId is in eligible list
+            const isEligible = Array.from(eligibleIds).includes(selectedDoctor.serviceTypeId);
+            if (!isEligible) {
+                setSelectedDoctor(null);
+            }
+        }
+    }, [selectedTreatmentSessions, customerTreatmentPlans]);
+
+    const fetchDoctors = async (serviceTypeIds) => {
+        try {
+            if (!serviceTypeIds || serviceTypeIds.length === 0) {
+                setDoctors([]);
+                return;
             }
 
-            setServices(servicesData);
-            setFilteredServices(servicesData);
+            // Fetch doctors for each service type ID and combine results
+            const doctorMap = new Map();
+
+            for (const serviceTypeId of serviceTypeIds) {
+                try {
+                    const response = await axios.post(
+                        'http://localhost:5122/api/Staff/get-list',
+                        {
+                            isDoctor: true,
+                            servicetypeId: serviceTypeId
+                        }
+                    );
+
+                    // API returns { baseDatas: [...], totalRecordCount, pageIndex, pageCount }
+                    if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                        response.data.baseDatas.forEach(doctor => {
+                            if (!doctorMap.has(doctor.id)) {
+                                // Map API response to expected format
+                                const doctorName = doctor.fullName || 'Bác sĩ chuyên khoa';
+                                const formattedDoctor = {
+                                    staffId: doctor.id,
+                                    doctorID: doctor.id, // For backward compatibility
+                                    doctorName: doctorName,
+                                    image: doctor.staffImage || 'https://via.placeholder.com/200?text=Doctor',
+                                    specialty: doctor.specialization || 'Bác sĩ chuyên khoa',
+                                    rating: 4.8, // Default rating
+                                    reviews: 120, // Default reviews count
+                                    experience: doctor.experienceYears || 8,
+                                    email: '',
+                                    phone: doctor.phone || '',
+                                    degree: doctor.degree || '',
+                                    licenseNumber: doctor.licenseNumber || '',
+                                    biography: doctor.biography || '',
+                                    serviceTypeId: serviceTypeId, // ← Track which service type this doctor belongs to
+                                    // Keep original data as well
+                                    ...doctor
+                                };
+                                doctorMap.set(doctor.id, formattedDoctor);
+                                console.log('Formatted doctor:', formattedDoctor);
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Lỗi khi lấy danh sách bác sĩ cho serviceTypeId ${serviceTypeId}:`, error);
+                }
+            }
+
+            setDoctors(Array.from(doctorMap.values()));
+            console.log('All doctors fetched and formatted:', Array.from(doctorMap.values()));
         } catch (error) {
-            console.error('Error fetching services:', error);
-            setServices([]);
-            setFilteredServices([]);
+            console.error('Lỗi trong fetchDoctors:', error);
+            setDoctors([]);
         }
     };
 
@@ -148,13 +167,28 @@ function ServicesPage() {
             console.log('Customer treatment plans response:', response.data);
 
             if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
-                // Remove duplicates based on plan ID
+                // Remove duplicates based on customerTreatmentPlanInformation ID
                 const uniquePlans = Array.from(
-                    new Map(response.data.baseDatas.map(plan => [plan.id, plan])).values()
+                    new Map(response.data.baseDatas.map(plan => [plan.customerTreatmentPlanInformation?.id, plan])).values()
                 );
                 setCustomerTreatmentPlans(uniquePlans);
+                
+                // Extract unique serviceTypeIds from serviceInformation
+                const serviceTypeIds = [...new Set(
+                    uniquePlans
+                        .map(plan => plan.serviceInformation?.serviceTypeId)
+                        .filter(id => id !== undefined && id !== null)
+                )];
+                
+                // Fetch doctors based on serviceTypeIds
+                if (serviceTypeIds.length > 0) {
+                    fetchDoctors(serviceTypeIds);
+                } else {
+                    setDoctors([]);
+                }
             } else {
                 setCustomerTreatmentPlans([]);
+                setDoctors([]);
             }
         } catch (error) {
             console.error('Error fetching customer treatment plans:', error);
@@ -239,6 +273,41 @@ function ServicesPage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleDeleteSession = async (sessionId, sessionNumber) => {
+        setDeleteConfirmation({ open: true, sessionId, sessionNumber });
+    };
+
+    const confirmDeleteSession = async () => {
+        const { sessionId, sessionNumber } = deleteConfirmation;
+        setDeleteConfirmation({ open: false, sessionId: null, sessionNumber: null });
+
+        try {
+            setIsLoading(true);
+            const response = await axios.post(
+                'http://localhost:5122/api/CustomerTreatmentSessions/deletecustomertreatmentsession',
+                { id: sessionId }
+            );
+            console.log('Delete session response:', response.data);
+            
+            setSuccessMessage('✓ Xóa buổi điều trị thành công!');
+            
+            // Refresh treatment plans
+            fetchCustomerTreatmentPlans();
+            
+            setTimeout(() => setSuccessMessage(null), 3000);
+        } catch (error) {
+            console.error('Delete session error:', error);
+            setSuccessMessage('❌ Lỗi khi xóa buổi: ' + error.message);
+            setTimeout(() => setSuccessMessage(null), 3000);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const cancelDeleteSession = () => {
+        setDeleteConfirmation({ open: false, sessionId: null, sessionNumber: null });
     };
 
     const handleSessionDateTimeChange = (planIndex, sessionIndex, dateTimeString) => {
@@ -345,6 +414,41 @@ function ServicesPage() {
         } else {
             setFilteredServices(services.filter(s => s.isCourse));
         }
+    };
+
+    // Get eligible service type IDs from selected treatment sessions
+    const getEligibleServiceTypeIds = () => {
+        if (selectedTreatmentSessions.length === 0) {
+            return []; // No sessions selected = no filter
+        }
+        
+        const eligibleIds = new Set();
+        selectedTreatmentSessions.forEach(session => {
+            const plan = customerTreatmentPlans[session.planIndex];
+            if (plan?.serviceInformation?.serviceTypeId) {
+                eligibleIds.add(plan.serviceInformation.serviceTypeId);
+            }
+        });
+        return Array.from(eligibleIds);
+    };
+
+    // Get eligible doctors based on selected treatment sessions
+    const getEligibleDoctors = () => {
+        const eligibleServiceTypeIds = getEligibleServiceTypeIds();
+        
+        // If no sessions selected, all doctors are eligible
+        if (eligibleServiceTypeIds.length === 0) {
+            return doctors;
+        }
+        
+        // Filter doctors that match the eligible service type IDs
+        return doctors.filter(doctor => eligibleServiceTypeIds.includes(doctor.serviceTypeId));
+    };
+
+    // Check if a doctor is eligible
+    const isDoctorEligible = (doctor) => {
+        const eligibleDoctors = getEligibleDoctors();
+        return eligibleDoctors.some(d => d.staffId === doctor.staffId);
     };
 
     // Check if a time is within business hours (08:00 - 16:30)
@@ -541,7 +645,7 @@ function ServicesPage() {
                                                     <div>
                                                         <span className={cx('statLabel')}>Số buổi</span>
                                                         <span className={cx('statValue')}>
-                                                            {plan.treatmentPlanInformation?.totalSessions}
+                                                            {plan.customerSessions?.length || 0}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -576,10 +680,13 @@ function ServicesPage() {
                                                     </span>
                                                 </div>
                                                 <div className={cx('sessionsList')}>
-                                                    {plan.customerSessions?.slice(0, 5).map((session, idx) => {
+                                                    {plan.customerSessions?.map((session, idx) => {
                                                         const sessionKey = `${index}-${idx}`; 
                                                         const isSelectable = session.status === 'ChoDatLich';
                                                         const isSelected = selectedSessions[index]?.includes(sessionKey);
+                                                        
+                                                        // Debug: Log session structure
+                                                        console.log('Session object:', session);
                                                         
                                                         const statusMap = {
                                                             'ChoDatLich': '⏳ Chờ đặt lịch',
@@ -634,16 +741,50 @@ function ServicesPage() {
                                                                                         e.stopPropagation();
                                                                                         handleRemoveInlineBooking(sessionKey);
                                                                                     }}
-                                                                                    title="Xóa"
+                                                                                    title="Xóa lịch"
                                                                                 >
                                                                                     <FontAwesomeIcon icon={faTrash} />
                                                                                 </button>
                                                                             )}
+                                                                            <button
+                                                                                className={cx('deleteSessionApiBtn')}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    const sessionId = session.id || session.sessionId || session.customerSessionId;
+                                                                                    if (sessionId) {
+                                                                                        handleDeleteSession(sessionId, session.sessionNumber);
+                                                                                    } else {
+                                                                                        alert('Không tìm thấy ID buổi điều trị');
+                                                                                    }
+                                                                                }}
+                                                                                title="Xóa buổi điều trị"
+                                                                                disabled={isLoading}
+                                                                            >
+                                                                                <FontAwesomeIcon icon={faTrash} />
+                                                                            </button>
                                                                         </div>
                                                                     ) : (
-                                                                        <span className={cx('statusBadge', session.status?.toLowerCase())}>
-                                                                            {statusMap[session.status] || session.status}
-                                                                        </span>
+                                                                        <div className={cx('sessionStatusActions')}>
+                                                                            <span className={cx('statusBadge', session.status?.toLowerCase())}>
+                                                                                {statusMap[session.status] || session.status}
+                                                                            </span>
+                                                                            <button
+                                                                                className={cx('deleteSessionApiBtn')}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    const sessionId = session.id || session.sessionId || session.customerSessionId;
+                                                                                    if (sessionId) {
+                                                                                        handleDeleteSession(sessionId, session.sessionNumber);
+                                                                                    } else {
+                                                                                        alert('Không tìm thấy ID buổi điều trị');
+                                                                                    }
+                                                                                }}
+                                                                                title="Xóa buổi điều trị"
+                                                                                disabled={isLoading}
+                                                                            >
+                                                                                <FontAwesomeIcon icon={faTrash} />
+                                                                            </button>
+                                                                        </div>
                                                                     )}
                                                                 </div>
                                                             </div>
@@ -701,11 +842,6 @@ function ServicesPage() {
                                                             </div>
                                                         );
                                                     })}
-                                                    {plan.customerSessions?.length > 5 && (
-                                                        <div className={cx('moreSessionsIndicator')}>
-                                                            +{plan.customerSessions.length - 5} buổi khác
-                                                        </div>
-                                                    )}
                                                 </div>
                                                 {plan.customerTreatmentPlanInformation?.status === 'ChoDatLich' && (plan.customerSessions?.some(s => s.status === 'ChoDatLich') || false) && (
                                                     <button
@@ -737,11 +873,11 @@ function ServicesPage() {
                                             </div>
                                         </div>
 
-                                        <div className={cx('cardAction')}>
+                                        {/* <div className={cx('cardAction')}>
                                             <button className={cx('viewDetailsBtn')}>
                                                 Xem chi tiết →
                                             </button>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 ))}
                             </div>
@@ -825,42 +961,64 @@ function ServicesPage() {
 
                         <div className={cx('doctorsSidebarList')}>
                             {doctors && doctors.length > 0 ? (
-                                doctors.map((doctor, index) => (
-                                    <div
-                                        key={doctor.doctorID}
-                                        className={cx('doctorSidebarCard', { selected: selectedDoctor?.doctorID === doctor.doctorID })}
-                                        onClick={() => setSelectedDoctor(doctor)}
-                                    >
-                                        <div className={cx('doctorCardImage')}>
-                                            <img
-                                                src={doctor.image}
-                                                alt={doctor.doctorName}
-                                            />
-                                            <div className={cx('doctorCardOverlay')}></div>
-                                        </div>
-
-                                        <div className={cx('doctorCardInfo')}>
-                                            <h4 className={cx('doctorCardName')}>{doctor.doctorName}</h4>
-                                            <p className={cx('doctorCardSpecialty')}>{doctor.specialty}</p>
-
-                                            <div className={cx('doctorCardStats')}>
-                                                <div className={cx('statRow')}>
-                                                    <FontAwesomeIcon icon={faTrophy} className={cx('statIcon')} />
-                                                    <span>{doctor.rating} ⭐ ({doctor.reviews} đánh giá)</span>
-                                                </div>
-                                                <div className={cx('statRow')}>
-                                                    <FontAwesomeIcon icon={faBriefcase} className={cx('statIcon')} />
-                                                    <span>{doctor.experience} năm kinh nghiệm</span>
-                                                </div>
+                                doctors.map((doctor, index) => {
+                                    const isEligible = isDoctorEligible(doctor);
+                                    const canSelect = selectedTreatmentSessions.length === 0 || isEligible;
+                                    
+                                    return (
+                                        <div
+                                            key={doctor.doctorID}
+                                            className={cx('doctorSidebarCard', { 
+                                                selected: selectedDoctor?.doctorID === doctor.doctorID,
+                                                disabled: !canSelect
+                                            })}
+                                            onClick={() => canSelect && setSelectedDoctor(doctor)}
+                                            title={!canSelect ? 'Bác sĩ này không phù hợp với các buổi bạn đã chọn' : ''}
+                                            style={{
+                                                opacity: canSelect ? 1 : 0.5,
+                                                cursor: canSelect ? 'pointer' : 'not-allowed',
+                                                pointerEvents: canSelect ? 'auto' : 'none'
+                                            }}
+                                        >
+                                            <div className={cx('doctorCardImage')}>
+                                                <img
+                                                    src={doctor.image}
+                                                    alt={doctor.doctorName}
+                                                />
+                                                <div className={cx('doctorCardOverlay')}></div>
+                                                {!canSelect && (
+                                                    <div className={cx('disabledOverlay')}>
+                                                        Không khả dụng
+                                                    </div>
+                                                )}
                                             </div>
 
-                                            <button className={cx('selectDoctorBtn')}>
-                                                <FontAwesomeIcon icon={faArrowRight} />
-                                                Chọn bác sĩ
-                                            </button>
+                                            <div className={cx('doctorCardInfo')}>
+                                                <h4 className={cx('doctorCardName')}>{doctor.doctorName}</h4>
+                                                <p className={cx('doctorCardSpecialty')}>{doctor.specialty}</p>
+
+                                                <div className={cx('doctorCardStats')}>
+                                                    <div className={cx('statRow')}>
+                                                        <FontAwesomeIcon icon={faTrophy} className={cx('statIcon')} />
+                                                        <span>{doctor.rating} ⭐ ({doctor.reviews} đánh giá)</span>
+                                                    </div>
+                                                    <div className={cx('statRow')}>
+                                                        <FontAwesomeIcon icon={faBriefcase} className={cx('statIcon')} />
+                                                        <span>{doctor.experience} năm kinh nghiệm</span>
+                                                    </div>
+                                                </div>
+
+                                                <button 
+                                                    className={cx('selectDoctorBtn', { disabled: !canSelect })}
+                                                    disabled={!canSelect}
+                                                >
+                                                    <FontAwesomeIcon icon={faArrowRight} />
+                                                    {canSelect ? 'Chọn bác sĩ' : 'Không phù hợp'}
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div className={cx('noDoctorsMessage')}>
                                     <FontAwesomeIcon icon={faSearch} />
@@ -889,6 +1047,129 @@ function ServicesPage() {
                 </div>
             </div>
 
+            {/* Delete Confirmation Modal */}
+            <Dialog
+                open={deleteConfirmation.open}
+                onClose={cancelDeleteSession}
+                maxWidth="sm"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: '16px',
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                    }
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
+                        color: 'white',
+                        fontSize: '20px',
+                        fontWeight: '700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '24px'
+                    }}
+                >
+                    <FontAwesomeIcon icon={faExclamationTriangle} style={{ fontSize: '22px' }} />
+                    Xác nhận xóa buổi
+                </DialogTitle>
+                <DialogContent
+                    sx={{
+                        padding: '24px',
+                        background: 'linear-gradient(135deg, #fff5f5 0%, #fffbfb 100%)',
+                    }}
+                >
+                    <div style={{ marginTop: '12px' }}>
+                        <p style={{
+                            fontSize: '16px',
+                            color: '#333',
+                            lineHeight: '1.6',
+                            margin: '0 0 16px 0'
+                        }}>
+                            Bạn có chắc chắn muốn xóa <strong>buổi {deleteConfirmation.sessionNumber}</strong>?
+                        </p>
+                        <div style={{
+                            background: 'rgba(255, 107, 107, 0.1)',
+                            border: '1px solid rgba(255, 107, 107, 0.2)',
+                            borderRadius: '10px',
+                            padding: '12px 16px',
+                            marginTop: '16px'
+                        }}>
+                            <p style={{
+                                margin: '0',
+                                fontSize: '13px',
+                                color: '#666',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span style={{
+                                    width: '6px',
+                                    height: '6px',
+                                    background: '#ff6b6b',
+                                    borderRadius: '50%',
+                                    display: 'inline-block'
+                                }}></span>
+                                Hành động này không thể hoàn tác
+                            </p>
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions
+                    sx={{
+                        padding: '20px 24px',
+                        borderTop: '1px solid #eee',
+                        gap: '12px',
+                        background: '#fafafa'
+                    }}
+                >
+                    <Button
+                        onClick={cancelDeleteSession}
+                        variant="outlined"
+                        sx={{
+                            borderColor: '#ddd',
+                            color: '#666',
+                            borderRadius: '10px',
+                            textTransform: 'none',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            padding: '10px 24px',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                                background: '#f5f5f5',
+                                borderColor: '#ccc'
+                            }
+                        }}
+                    >
+                        Hủy
+                    </Button>
+                    <Button
+                        onClick={confirmDeleteSession}
+                        variant="contained"
+                        sx={{
+                            background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
+                            color: 'white',
+                            borderRadius: '10px',
+                            textTransform: 'none',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            padding: '10px 28px',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #ff5252 0%, #ee3d5f 100%)',
+                                boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                                transform: 'translateY(-2px)'
+                            }
+                        }}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Đang xóa...' : 'Xóa buổi'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </div>
     );

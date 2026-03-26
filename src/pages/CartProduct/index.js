@@ -24,7 +24,7 @@ function CartProduct() {
             const deviceName = localStorage.getItem('deviceName') || '';
             const refreshToken = localStorage.getItem('refreshToken') || '';
             const token = localStorage.getItem('token') || '';
-            const userID = localStorage.getItem('userID') || '';
+            const userID = localStorage.getItem('userID') || localStorage.getItem('customerId') || '';
 
             const headers = {
                 'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ function CartProduct() {
         setShowPaymentForm(false); // Đóng form thanh toán
         setPaymentMethod(method);
 
-        const userID = localStorage.getItem('userID') || '';
+        const userID = localStorage.getItem('userID') || localStorage.getItem('customerId') || '';
         const deviceName = localStorage.getItem('deviceName') || '';
         const refreshToken = localStorage.getItem('refreshToken') || '';
         const token = localStorage.getItem('token') || '';
@@ -208,137 +208,173 @@ function CartProduct() {
     return (
         <div className={cx('wrapper')}>
             {successMessage && <SuccessMessage message={successMessage} />}
-            <div className={cx('container')}>
-                <div className={cx('contentProducts')}>
-                    <h1>Giỏ Hàng</h1>
-                    <div className={cx('content')}>
+            
+            {/* Header - Luxury Statement */}
+            <div className={cx('header')}>
+                <h1 className={cx('pageTitle')}>Giỏ Hàng Của Bạn</h1>
+                <p className={cx('pageSubtitle')}>Lựa Chọn Cao Cấp Của Bạn</p>
+            </div>
+
+            <div className={cx('content')}>
+                <div className={cx('container')}>
+                    {/* Products Section */}
+                    <div className={cx('contentProducts')}>
+                        <h2 className={cx('productsTitle')}>SẢN PHẨM TRONG GIỎ</h2>
                         <ItemCartproduct onAddToInvoice={handleAddToInvoice} onCheckoutAll={handleCheckoutAll} />
                     </div>
-                </div>
-                <div className={cx('contentInvoice')}>
-                    <div className={cx('invoiceDetail')}>
-                        <h2 className={cx('invoiceTitle')}>Hóa Đơn Thanh Toán</h2>
-                        {invoiceItems.length > 0 ? (
-                            <div className={cx('invoice-items')}>
-                                {invoiceItems.map((item, index) => (
-                                    <div key={index} className={cx('invoice-item')}>
-                                        <img
-                                            src={`http://localhost:5262/Images/${item.productImages}`}
-                                            alt={item.productName}
-                                            className={cx('invoice-item-image')}
-                                        />
-                                        <div className={cx('invoice-item-details')}>
-                                            <h2 className={cx('invoice-item-name')}>{item.productName}</h2>
-                                            <p className={cx('invoice-item-price')}>
-                                                {item.sellingPrice.toLocaleString()} VND
-                                            </p>
-                                            <p className={cx('invoice-item-quantity')}>Số lượng: {item.quantity}</p>
-                                            <button
-                                                className={cx('invoice-delete-button')}
-                                                onClick={() => handleRemoveFromInvoice(index)}
-                                            >
-                                                Xóa
-                                            </button>
-                                            <button
-                                                className={cx('invoice-checkout-button')}
-                                                onClick={() => handleCheckout(index)}
-                                            >
-                                                Mua
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p>Chưa có sản phẩm nào được chọn.</p>
-                        )}
-                    </div>
-                    <div className={cx('vouchersDetail')}>
-                        <h2
-                            className={cx('vouchersTital')}
-                            onClick={toggleVouchersVisibility}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            Chọn Voucher {isVouchersVisible ? '▲' : '▼'}
-                        </h2>
-                        {isVouchersVisible && (
-                            <div className={cx('voucher-list')}>
-                                {Array.isArray(vouchers) ? (
-                                    vouchers.map((voucher) => (
-                                        <label key={voucher.voucherID} className={cx('voucher-item')}>
-                                            <input
-                                                type="radio"
-                                                name="voucher"
-                                                value={voucher.voucherID}
-                                                checked={selectedVoucher?.voucherID === voucher.voucherID}
-                                                onChange={() => setSelectedVoucher(voucher)}
+
+                    {/* Sidebar */}
+                    <div className={cx('sidebar')}>
+                        {/* Invoice Detail */}
+                        <div className={cx('invoiceDetail')}>
+                            <h2 className={cx('invoiceTitle')}>CHI TIẾT ĐƠN HÀNG</h2>
+                            
+                            {invoiceItems.length > 0 ? (
+                                <div className={cx('invoiceItems')}>
+                                    {invoiceItems.map((item, index) => (
+                                        <div key={index} className={cx('invoiceItem')}>
+                                            <img
+                                                src={`http://localhost:5262/Images/${item.productImages}`}
+                                                alt={item.productName}
+                                                className={cx('itemImage')}
                                             />
-                                            <div className={cx('voucher-content')}>
-                                                <img
-                                                    src={`http://localhost:5262/Images/${voucher.voucherImage}`}
-                                                    alt={voucher.code}
-                                                    className={cx('voucher-image')}
-                                                />
-                                                <div className={cx('voucher-details')}>
-                                                    <p>{voucher.description}</p>
-                                                    <p>Giảm giá: {voucher.discountValue}%</p>
-                                                    <p>
-                                                        Đơn hàng tối thiểu: {voucher.minimumOrderValue.toLocaleString()}{' '}
-                                                        VND
-                                                    </p>
-                                                    <p>Giảm tối đa: {voucher.maxValue.toLocaleString()} VND</p>
-                                                </div>
+                                            <div className={cx('itemContent')}>
+                                                <h3 className={cx('itemName')}>{item.productName}</h3>
+                                                <p className={cx('itemMeta')}>
+                                                    <span className={cx('itemQuantity')}>SỐ LƯỢNG: {item.quantity}</span>
+                                                </p>
                                             </div>
-                                        </label>
-                                    ))
-                                ) : (
-                                    <p>Không có voucher nào.</p>
+                                            <span className={cx('itemPrice')}>
+                                                {(item.sellingPrice * item.quantity).toLocaleString()} VND
+                                            </span>
+                                            <div className={cx('itemActions')}>
+                                                <button
+                                                    className={cx('deleteBtn')}
+                                                    onClick={() => handleRemoveFromInvoice(index)}
+                                                    title="Remove"
+                                                >
+                                                    XÓA
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className={cx('emptyState')}>
+                                    <p>Giỏ hàng của bạn trống</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Vouchers */}
+                        <div className={cx('vouchersDetail')}>
+                            <h2 className={cx('vouchersTitle')}>ĐIỀU KIỆN ĐẶC BIỆT</h2>
+                            <button
+                                className={cx('voucherToggleBtn')}
+                                onClick={toggleVouchersVisibility}
+                            >
+                                {isVouchersVisible ? '▼ ẨN ĐỀ XUẤT' : '▶ XEM ĐỀ XUẤT'}
+                            </button>
+
+                            {isVouchersVisible && (
+                                <div className={cx('voucherList')}>
+                                    {Array.isArray(vouchers) && vouchers.length > 0 ? (
+                                        vouchers.map((voucher) => (
+                                            <label 
+                                                key={voucher.voucherID} 
+                                                className={cx('voucherItem', {
+                                                    selected: selectedVoucher?.voucherID === voucher.voucherID
+                                                })}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    className={cx('voucherRadio')}
+                                                    name="voucher"
+                                                    value={voucher.voucherID}
+                                                    checked={selectedVoucher?.voucherID === voucher.voucherID}
+                                                    onChange={() => setSelectedVoucher(voucher)}
+                                                />
+                                                <div className={cx('voucherContent')}>
+                                                    <h4 className={cx('voucherName')}>{voucher.code}</h4>
+                                                    <p className={cx('voucherDiscount')}>Tiết kiệm {voucher.discountValue}%</p>
+                                                </div>
+                                            </label>
+                                        ))
+                                    ) : (
+                                        <p className={cx('emptyState')}>Không có đề xuất nào khả dụng</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {selectedVoucher && (
+                                <div className={cx('selectedVoucher')}>
+                                    <p className={cx('selectedVoucherTitle')}>ĐÃ ÁP DỤNG ĐỀ XUẤT</p>
+                                    <p className={cx('selectedVoucherInfo')}>
+                                        {selectedVoucher.code} • Bạn tiết kiệm {discountInfo.discountAmount.toLocaleString()} VND
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Payment Summary */}
+                        <div className={cx('creatInvoice')}>
+                            <div className={cx('priceBreakdown')}>
+                                <div className={cx('priceRow')}>
+                                    <span className={cx('priceLabel')}>Tổng cộng</span>
+                                    <span className={cx('priceValue')}>{totalPrice.toLocaleString()} VND</span>
+                                </div>
+                                {selectedVoucher && (
+                                    <>
+                                        <div className={cx('priceRow', 'discount')}>
+                                            <span className={cx('priceLabel')}>Giảm giá</span>
+                                            <span className={cx('priceValue')}>−{discountInfo.discountAmount.toLocaleString()} VND</span>
+                                        </div>
+                                        <div className={cx('priceRow', 'total')}>
+                                            <span className={cx('priceLabel')}>Thành tiền</span>
+                                            <span className={cx('priceValue')}>{discountInfo.finalTotal.toLocaleString()} VND</span>
+                                        </div>
+                                    </>
                                 )}
                             </div>
-                        )}
-                        {selectedVoucher && (
-                            <div className={cx('selected-voucher')}>
-                                <h5>Voucher Đã Chọn</h5>
-                                <p>
-                                    Sản phẩm:{' '}
-                                    {invoiceItems.length > 0
-                                        ? invoiceItems.map((item) => item.productName).join(', ')
-                                        : 'Không có sản phẩm'}
-                                </p>
-                                <p>Mã: {selectedVoucher.code}</p>
-                                <p>Phần trăm giảm: {selectedVoucher.discountValue}%</p>
-                                <p>Số tiền giảm: {discountInfo.discountAmount.toLocaleString()} VND</p>
-                                <p>Tổng tiền sau giảm: {discountInfo.finalTotal.toLocaleString()} VND</p>
-                            </div>
-                        )}
+                            <button 
+                                className={cx('btnPayment')} 
+                                onClick={handleCheckoutAllItems}
+                                disabled={invoiceItems.length === 0}
+                            >
+                                THANH TOÁN
+                            </button>
+                        </div>
                     </div>
-                    <div className={cx('creatInvoice')}>
-                        <h2 className={cx('totalmoney')}>
-                            {selectedVoucher ? (
-                                <>
-                                    <span className={cx('totalmoney-original')}>{totalPrice.toLocaleString()} VND</span>
-                                    <span className={cx('totalmoney-discounted')}>
-                                        {discountInfo.finalTotal.toLocaleString()} VND
-                                    </span>
-                                </>
-                            ) : (
-                                <span>{totalPrice.toLocaleString()} VND</span>
-                            )}
-                        </h2>
-                        <button className={cx('btnPayment')} onClick={handleCheckoutAllItems}>
-                            Thanh Toán
-                        </button>
-                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className={cx('footerProducts')}>
+                    <p>Chất Lượng Premium • Lựa Chọn Độc Quyền • Trải Nghiệm Mua Sắm Sang Trọng</p>
                 </div>
             </div>
+
+            {/* Payment Method Modal */}
             {showPaymentForm && (
-                <div className={cx('payment-form')}>
-                    <h3>Chọn phương thức thanh toán</h3>
-                    <button onClick={() => handlePaymentSelection('now')}>Thanh toán ngay</button>
-                    <button onClick={() => handlePaymentSelection('later')}>Thanh toán sau</button>
+                <div className={cx('modalOverlay')}>
+                    <div className={cx('paymentForm')}>
+                        <h3 className={cx('paymentFormTitle')}>Payment Method</h3>
+                        <div className={cx('paymentOptions')}>
+                            <button 
+                                className={cx('paymentFormBtn')}
+                                onClick={() => handlePaymentSelection('now')}
+                            >
+                                PAY NOW
+                            </button>
+                            <button 
+                                className={cx('paymentFormBtn')}
+                                onClick={() => handlePaymentSelection('later')}
+                            >
+                                PAY LATER
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
-            <div className={cx('footer-Products')}></div>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './DoctorCard.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +7,13 @@ import { faCheckCircle, faStar, faBriefcaseMedical } from '@fortawesome/free-sol
 const cx = classNames.bind(styles);
 
 function DoctorCard({ doctor, isSelected, onSelect }) {
+    const [doctorRating, setDoctorRating] = useState(0);
+
+    useEffect(() => {
+        // Generate random rating từ 4.7 đến 4.8
+        const randomRating = (4.7 + Math.random() * 0.1).toFixed(1);
+        setDoctorRating(parseFloat(randomRating));
+    }, [doctor.id]);
     return (
         <div
             className={cx('card', { selected: isSelected })}
@@ -25,7 +32,7 @@ function DoctorCard({ doctor, isSelected, onSelect }) {
                 )}
                 <div className={cx('ratingBadge')}>
                     <FontAwesomeIcon icon={faStar} className={cx('starIcon')} />
-                    <span>{doctor.rating || 4}.0</span>
+                    <span>{doctorRating.toFixed(1)}</span>
                 </div>
             </div>
 
@@ -44,7 +51,7 @@ function DoctorCard({ doctor, isSelected, onSelect }) {
                                 key={i}
                                 icon={faStar}
                                 className={cx('star', {
-                                    filled: i < (doctor.rating || 4),
+                                    filled: i < Math.floor(doctorRating),
                                 })}
                             />
                         ))}
