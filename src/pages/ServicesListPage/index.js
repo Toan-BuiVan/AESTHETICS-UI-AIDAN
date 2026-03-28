@@ -5,6 +5,7 @@ import styles from './ServicesListPage.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faFilter, faArrowRight, faStar, faClock, faDollarSign, faChevronLeft, faChevronRight, faWandMagicSparkles, faHeartbeat } from '@fortawesome/free-solid-svg-icons';
+import useDebounce from '~/hooks/useDebounce';
 
 const cx = classNames.bind(styles);
 
@@ -21,18 +22,18 @@ function ServicesListPage() {
     const [totalRecordCount, setTotalRecordCount] = useState(0);
     const PAGE_SIZE = 12;
 
+    const debouncedSearchTerm = useDebounce(searchTerm, 3000);
+    const debouncedServiceType = useDebounce(serviceType, 3000);
+    const debouncedSelectedServiceTypeId = useDebounce(selectedServiceTypeId, 3000);
+
     // Fetch service types list on mount
     useEffect(() => {
         fetchServiceTypes();
     }, []);
 
     useEffect(() => {
-        fetchServices(1, searchTerm, serviceType, selectedServiceTypeId);
-    }, []);
-
-    useEffect(() => {
-        fetchServices(1, searchTerm, serviceType, selectedServiceTypeId);
-    }, [searchTerm, serviceType, selectedServiceTypeId]);
+        fetchServices(1, debouncedSearchTerm, debouncedServiceType, debouncedSelectedServiceTypeId);
+    }, [debouncedSearchTerm, debouncedServiceType, debouncedSelectedServiceTypeId]);
 
     const fetchServiceTypes = async () => {
         try {

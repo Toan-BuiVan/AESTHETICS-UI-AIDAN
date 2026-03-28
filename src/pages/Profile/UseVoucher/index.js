@@ -14,68 +14,9 @@ function UseVoucher() {
     const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
-        const fetchUserVouchers = async () => {
-            const deviceName = localStorage.getItem('deviceName') || '';
-            const refreshToken = localStorage.getItem('refreshToken') || '';
-            const token = localStorage.getItem('token') || '';
-            const userID = localStorage.getItem('userID') || '';
-
-            if (!userID) {
-                setLoading(false);
-                return;
-            }
-
-            const headers = {
-                'Content-Type': 'application/json',
-                DeviceName: deviceName,
-                RefreshToken: refreshToken,
-                Authorization: token ? `Bearer ${token}` : '',
-                UserID: userID,
-            };
-
-            const data = {
-                userID: parseInt(userID),
-            };
-            try {
-                const response = await fetch('http://localhost:5262/api/Wallets/GetList_SearchWallets', {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify(data),
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    setError(result.returnMessage || 'Không thể tải danh sách voucher. Vui lòng thử lại sau.');
-                    setLoading(false);
-                    return;
-                }
-
-               
-                const voucherData = result?.data || [];  
-                if (Array.isArray(voucherData)) {
-                    setVouchers(voucherData);
-                    console.log('Vouchers fetched successfully:', voucherData);  
-                } else {
-                    setVouchers([]);
-                    setError('Dữ liệu voucher không hợp lệ hoặc không phải mảng.');
-                    console.warn('Dữ liệu từ API không phải array:', voucherData);  
-                }
-                setLoading(false);
-
-                const newAccessToken = response.headers.get('New-AccessToken');
-                const newRefreshToken = response.headers.get('New-RefreshToken');
-                if (newAccessToken) localStorage.setItem('token', newAccessToken);
-                if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-            } catch (err) {
-                setLoading(false);
-                console.error('Lỗi khi lấy voucher:', err);
-                setError('Có lỗi xảy ra khi tải voucher.');
-                setVouchers([]); 
-            }
-        };
-
-        fetchUserVouchers();
+        // Initialize empty vouchers list
+        setVouchers([]);
+        setLoading(false);
     }, []);
 
     useEffect(() => {

@@ -19,52 +19,35 @@ function CartProduct() {
     const [discountInfo, setDiscountInfo] = useState({ discountAmount: 0, finalTotal: 0 });
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchVouchers = async () => {
-            const deviceName = localStorage.getItem('deviceName') || '';
-            const refreshToken = localStorage.getItem('refreshToken') || '';
-            const token = localStorage.getItem('token') || '';
-            const userID = localStorage.getItem('userID') || localStorage.getItem('customerId') || '';
 
-            const headers = {
-                'Content-Type': 'application/json',
-                DeviceName: deviceName,
-                RefreshToken: refreshToken,
-                Authorization: token ? `Bearer ${token}` : '',
-                UserID: userID,
-            };
-
-            try {
-                const response = await fetch('http://localhost:5262/api/Wallets/GetList_SearchWallets', {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify({ userID: userID }),
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const vouchersData = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
-                    setVouchers(vouchersData);
-                } else {
-                    console.error('Failed to fetch vouchers');
-                    setVouchers([]);
-                }
-            } catch (error) {
-                console.error('Error fetching vouchers:', error);
-                setVouchers([]);
-            }
-        };
-
-        fetchVouchers();
-    }, []);
 
     const handleAddToInvoice = (item) => {
         setInvoiceItems((prevItems) => {
-            if (prevItems.some((i) => i.cartProductID === item.cartProductID)) {
-                return prevItems;
+            // Use productID as unique identifier (standard approach)
+            const itemId = item.productID || item.id || item.cartProductID;
+            const existingItem = prevItems.find((i) => {
+                const prevItemId = i.productID || i.id || i.cartProductID;
+                return prevItemId === itemId;
+            });
+            
+            if (existingItem) {
+                // Nếu sản phẩm đã tồn tại, tăng quantity
+                return prevItems.map((i) => {
+                    const prevItemId = i.productID || i.id || i.cartProductID;
+                    const currentItemId = item.productID || item.id || item.cartProductID;
+                    return prevItemId === currentItemId
+                        ? { ...i, quantity: (i.quantity || 1) + (item.quantity || 1) }
+                        : i;
+                });
             }
-            return [...prevItems, item];
+            
+            // Nếu là sản phẩm mới, thêm vào
+            return [...prevItems, { ...item, quantity: item.quantity || 1 }];
         });
+        
+        // Hiển thị thông báo thêm thành công
+        setSuccessMessage(`✓ Thêm "${item.productName}" vào chi tiết đơn hàng`);
+        setTimeout(() => setSuccessMessage(null), 2000);
     };
 
     const handleCheckoutAll = (allItems) => {
@@ -211,7 +194,7 @@ function CartProduct() {
             
             {/* Header - Luxury Statement */}
             <div className={cx('header')}>
-                <h1 className={cx('pageTitle')}>Giỏ Hàng Của Bạn</h1>
+                {/* <h1 className={cx('pageTitle')}>Giỏ Hàng Của Bạn</h1> */}
                 <p className={cx('pageSubtitle')}>Lựa Chọn Cao Cấp Của Bạn</p>
             </div>
 
@@ -227,41 +210,86 @@ function CartProduct() {
                     <div className={cx('sidebar')}>
                         {/* Invoice Detail */}
                         <div className={cx('invoiceDetail')}>
-                            <h2 className={cx('invoiceTitle')}>CHI TIẾT ĐƠN HÀNG</h2>
+                            <div className={cx('invoiceHeader')}>
+                                <h2 className={cx('invoiceTitle')}>CHI TIẾT ĐƠN HÀNG</h2>
+                                <span className={cx('orderCount')}>{invoiceItems.length}</span>
+                            </div>
                             
                             {invoiceItems.length > 0 ? (
                                 <div className={cx('invoiceItems')}>
-                                    {invoiceItems.map((item, index) => (
-                                        <div key={index} className={cx('invoiceItem')}>
-                                            <img
-                                                src={`http://localhost:5262/Images/${item.productImages}`}
-                                                alt={item.productName}
-                                                className={cx('itemImage')}
-                                            />
+                                    {invoiceItems.map((item, index) => {
+                                        // Generate stable key for React reconciliation
+                                        const itemKey = item.productID || item.id || item.cartProductID || index;
+                                        return (
+                                            <div key={itemKey} className={cx('invoiceItem')} style={{ animationDelay: `${index * 0.08}s` }}>
+                                            {/* Product Status Badge */}
+                                            <div className={cx('itemStatusBadge')}>
+                                                <span className={cx('statusDot')}></span>
+                                                <span className={cx('statusText')}>Sẵn sàng</span>
+                                            </div>
+
+                                            {/* Product Image */}
+                                            <div className={cx('imageWrapper')}>
+                                                <div className={cx('imagePulse')}></div>
+                                                <img
+                                                    src={`http://localhost:5122/Images/${item.productImages}`}
+                                                    alt={item.productName}
+                                                    className={cx('itemImage')}
+                                                    onError={(e) => e.target.src = 'https://via.placeholder.com/120?text=No+Image'}
+                                                />
+                                            </div>
+
+                                            {/* Product Content */}
                                             <div className={cx('itemContent')}>
                                                 <h3 className={cx('itemName')}>{item.productName}</h3>
-                                                <p className={cx('itemMeta')}>
-                                                    <span className={cx('itemQuantity')}>SỐ LƯỢNG: {item.quantity}</span>
-                                                </p>
+                                                {item.description && (
+                                                    <p className={cx('itemDescription')}>
+                                                        {item.description.length > 60 
+                                                            ? item.description.substring(0, 60) + '...' 
+                                                            : item.description}
+                                                    </p>
+                                                )}
+                                                <div className={cx('itemSpecs')}>
+                                                    <span className={cx('specItem')}>
+                                                        <span className={cx('specLabel')}>Số lượng:</span>
+                                                        <span className={cx('specValue')}>×{item.quantity}</span>
+                                                    </span>
+                                                    <span className={cx('specItem')}>
+                                                        <span className={cx('specLabel')}>Dạng:</span>
+                                                        <span className={cx('specValue')}>{item.unit || 'sản phẩm'}</span>
+                                                    </span>
+                                                    {item.size && (
+                                                        <span className={cx('specItem')}>
+                                                            <span className={cx('specLabel')}>Kích cỡ:</span>
+                                                            <span className={cx('specValue')}>{item.size}</span>
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <span className={cx('itemPrice')}>
-                                                {(item.sellingPrice * item.quantity).toLocaleString()} VND
-                                            </span>
-                                            <div className={cx('itemActions')}>
-                                                <button
-                                                    className={cx('deleteBtn')}
-                                                    onClick={() => handleRemoveFromInvoice(index)}
-                                                    title="Remove"
-                                                >
-                                                    XÓA
-                                                </button>
+
+                                            {/* Price Display */}
+                                            <div className={cx('priceContainer')}>
+                                                <span className={cx('priceLabel')}>Thành tiền</span>
+                                                <span className={cx('itemPrice')}>
+                                                    {(item.sellingPrice * item.quantity).toLocaleString()}₫
+                                                </span>
                                             </div>
+
+                                            {/* Delete Button */}
+                                            <button
+                                                className={cx('deleteBtn')}
+                                                onClick={() => handleRemoveFromInvoice(index)}
+                                                title="Xóa sản phẩm"
+                                            >
+                                                <span className={cx('deleteIcon')}>✕</span>
+                                            </button>
                                         </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 <div className={cx('emptyState')}>
-                                    <p>Giỏ hàng của bạn trống</p>
+                                    <p>🛍️ Giỏ hàng của bạn trống</p>
                                 </div>
                             )}
                         </div>

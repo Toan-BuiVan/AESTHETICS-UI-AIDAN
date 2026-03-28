@@ -12,39 +12,8 @@ function BookingsInvoice({ invoiceItems, setInvoiceItems, setParentSuccessMessag
     const [discountInfo, setDiscountInfo] = useState({ discountAmount: 0, finalTotal: 0 });
 
     useEffect(() => {
-        const fetchVouchers = async () => {
-            const deviceName = localStorage.getItem('deviceName') || '';
-            const refreshToken = localStorage.getItem('refreshToken') || '';
-            const token = localStorage.getItem('token') || '';
-            const userID = localStorage.getItem('userID') || '';
-
-            const headers = {
-                'Content-Type': 'application/json',
-                DeviceName: deviceName,
-                RefreshToken: refreshToken,
-                Authorization: token ? `Bearer ${token}` : '',
-                UserID: userID,
-            };
-
-            try {
-                const response = await fetch('http://localhost:5262/api/Wallets/GetList_SearchWallets', {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify({ userID: userID }),
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setVouchers(data.data || data);
-                } else {
-                    console.error('Failed to fetch vouchers');
-                }
-            } catch (error) {
-                console.error('Error fetching vouchers:', error);
-            }
-        };
-
-        fetchVouchers();
+        // Initialize empty vouchers list
+        setVouchers([]);
     }, []);
 
     const calculateDiscount = (total, voucher) => {

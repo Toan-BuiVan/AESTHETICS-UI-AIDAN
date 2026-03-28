@@ -61,30 +61,33 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
     };
 
     const handleAddToCart = async () => {
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
-        const userID = localStorage.getItem('userID') || '';
+        const customerId = localStorage.getItem('customerId');
+        const token = localStorage.getItem('token');
 
-        if (!userID) {
+        if (!customerId) {
+            setSuccessMessage('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
+            setTimeout(() => {
+                setSuccessMessage(null);
+            }, 2000);
             return;
         }
 
+        const productId = product.id || product.productID;
+        const priceAtAdd = product.sellingPrice || product.price || 0;
+
         const requestData = {
-            userID: userID,
-            productID: product.id || product.productID,
+            customerId: customerId,
+            productId: productId,
             quantity: quantity,
+            priceAtAdd: priceAtAdd,
         };
 
         const headers = {
             'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
             Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
         };
 
-        const apiUrl = 'http://localhost:5262/api/CartProduct/Insert_CartProduct';
+        const apiUrl = 'http://localhost:5122/api/CartProduct/createcartproduct';
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -92,18 +95,22 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                 body: JSON.stringify(requestData),
             });
 
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-
             const data = await response.json();
-            setSuccessMessage(data.resposeMessage || 'Thêm vào giỏ hàng thành công!');
+
+            if (response.ok) {
+                setSuccessMessage(data.resposeMessage || 'Thêm vào giỏ hàng thành công!');
+                setTimeout(() => {
+                    setSuccessMessage(null);
+                }, 2000);
+            } else {
+                throw new Error(data.resposeMessage || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+            setSuccessMessage('Có lỗi xảy ra. Vui lòng thử lại!');
             setTimeout(() => {
                 setSuccessMessage(null);
             }, 2000);
-        } catch (error) {
-            console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
         }
     };
 

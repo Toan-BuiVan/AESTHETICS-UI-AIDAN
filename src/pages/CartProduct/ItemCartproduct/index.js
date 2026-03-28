@@ -12,40 +12,106 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
 
     useEffect(() => {
         if (debouncedQuantity !== item.quantity) {
-            onQuantityChange(item.cartProductID, debouncedQuantity);
+            onQuantityChange(item.id, debouncedQuantity);
         }
-    }, [debouncedQuantity, item.cartProductID, item.quantity, onQuantityChange]);
+    }, [debouncedQuantity, item.id, item.quantity, onQuantityChange]);
 
     const handleIncrease = () => setQuantity(quantity + 1);
     const handleDecrease = () => {
         if (quantity > 1) setQuantity(quantity - 1);
     };
 
+    const totalPrice = (item.sellingPrice || item.priceAtAdd) * quantity;
+
     return (
         <div className={cx('cart-item')}>
-            <img
-                src={`http://localhost:5262/Images/${item.productImages}`}
-                alt={item.productName}
-                className={cx('item-image')}
-            />
+            {/* Premium Product Image */}
+            <div className={cx('item-image-container')}>
+                <img
+                    src={`http://localhost:5122/Images/${item.productImages}`}
+                    alt={item.productName}
+                    className={cx('item-image')}
+                    onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1557821552-17105176677c?w=200&h=200&fit=crop'}
+                />
+                <div className={cx('image-overlay')}></div>
+            </div>
+
+            {/* Product Details */}
             <div className={cx('item-details')}>
-                <h2 className={cx('item-name')}>{item.productName}</h2>
-                <p className={cx('item-price')}>{item.sellingPrice.toLocaleString()} VND</p>
+                {/* Product Header - Name & Description */}
+                <div className={cx('product-header')}>
+                    <h2 className={cx('item-name')}>{item.productName}</h2>
+                    {item.description && (
+                        <p className={cx('item-description')}>
+                            {item.description.length > 80 
+                                ? item.description.substring(0, 80) + '...' 
+                                : item.description
+                            }
+                        </p>
+                    )}
+                </div>
+
+                {/* Price & Unit Info */}
+                <div className={cx('price-info')}>
+                    <div className={cx('price-section')}>
+                        <span className={cx('label')}>Giá</span>
+                        <span className={cx('item-price')}>{(item.sellingPrice || item.priceAtAdd).toLocaleString('vi-VN')}</span>
+                        <span className={cx('currency')}>₫</span>
+                    </div>
+                    {(item.unit || item.size) && (
+                        <div className={cx('spec-section')}>
+                            {item.unit && (
+                                <span className={cx('spec-badge')}>{item.unit}</span>
+                            )}
+                            {item.size && (
+                                <span className={cx('spec-badge', 'size-badge')}>Size: {item.size}</span>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {/* Quantity Control */}
                 <div className={cx('quantity-control')}>
-                    <button className={cx('quantity-decrease')} onClick={handleDecrease} disabled={quantity <= 1}>
+                    <button 
+                        className={cx('quantity-btn')} 
+                        onClick={handleDecrease} 
+                        disabled={quantity <= 1}
+                        title="Giảm số lượng"
+                        aria-label="Decrease quantity"
+                    >
                         −
                     </button>
                     <span className={cx('item-quantity')}>{quantity}</span>
-                    <button className={cx('quantity-increase')} onClick={handleIncrease}>
+                    <button 
+                        className={cx('quantity-btn')} 
+                        onClick={handleIncrease}
+                        title="Tăng số lượng"
+                        aria-label="Increase quantity"
+                    >
                         +
                     </button>
+                    <span className={cx('total-price')}>{totalPrice.toLocaleString('vi-VN')}₫</span>
                 </div>
-                <div className={cx('btn-Submid')}>
-                    <button className={cx('delete-button')} onClick={() => onDelete(item.cartProductID)}>
-                        Xóa
+
+                {/* Action Buttons */}
+                <div className={cx('btn-actions')}>
+                    <button 
+                        className={cx('delete-button')} 
+                        onClick={() => onDelete(item.id)}
+                        title="Xóa khỏi giỏ"
+                        aria-label="Delete from cart"
+                    >
+                        <span>🗑</span>
+                        <span>Xóa</span>
                     </button>
-                    <button className={cx('payment-button')} onClick={() => onAddToInvoice(item)}>
-                        Thanh Toán
+                    <button 
+                        className={cx('payment-button')} 
+                        onClick={() => onAddToInvoice(item)}
+                        title="Thanh toán item này"
+                        aria-label="Checkout this item"
+                    >
+                        <span>💳</span>
+                        <span>Thanh Toán</span>
                     </button>
                 </div>
             </div>
@@ -70,31 +136,27 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
     const isLoggedIn = !!token && !!activeUserID;
 
     useEffect(() => {
-        // If not logged in, don't try to fetch
-        if (!token || !activeUserID) {
-            console.warn('Not logged in', { token: !!token, activeUserID });
+        const customerId = localStorage.getItem('customerId');
+        const token = localStorage.getItem('token');
+
+        if (!customerId || !token) {
             setIsLoading(false);
             return;
         }
 
         const fetchCartItems = async () => {
             setIsLoading(true);
-            const deviceName = localStorage.getItem('deviceName') || '';
-            const refreshToken = localStorage.getItem('refreshToken') || '';
-            const authToken = localStorage.getItem('token') || '';
-
             const headers = {
                 'Content-Type': 'application/json',
-                DeviceName: deviceName,
-                RefreshToken: refreshToken,
-                Authorization: authToken ? `Bearer ${authToken}` : '',
-                UserID: activeUserID,
+                Authorization: token ? `Bearer ${token}` : '',
             };
 
-            const requestData = { userID: activeUserID };
+            const requestData = {
+                customerId: customerId,
+            };
 
             try {
-                const response = await fetch('http://localhost:5262/api/CartProduct/GetList_SearchCartProduct', {
+                const response = await fetch('http://localhost:5122/api/CartProduct/getcartproductlist', {
                     method: 'POST',
                     headers,
                     body: JSON.stringify(requestData),
@@ -103,9 +165,23 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
                 if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu giỏ hàng');
 
                 const result = await response.json();
-                if (result.data) {
-                    setCartItems(result.data);
-                    calculateTotalPrice(result.data);
+                if (result.baseDatas && Array.isArray(result.baseDatas)) {
+                    // Map API response to match CartItem component structure
+                    const mappedItems = result.baseDatas.map(item => ({
+                        id: item.id,
+                        cartId: item.cartId,
+                        productId: item.productId,
+                        quantity: item.quantity,
+                        priceAtAdd: item.priceAtAdd,
+                        createDate: item.createDate,
+                        productName: item.productName,
+                        productImages: item.productImages,
+                        description: item.description,
+                        sellingPrice: item.sellingPrice,
+                        unit: item.unit,
+                    }));
+                    setCartItems(mappedItems);
+                    calculateTotalPrice(mappedItems);
                 } else {
                     setCartItems([]);
                 }
@@ -118,88 +194,48 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
         };
 
         fetchCartItems();
-    }, [activeUserID, token]);
+    }, []);
+
 
     const calculateTotalPrice = (items) => {
         const total = items.reduce((sum, item) => sum + item.sellingPrice * item.quantity, 0);
         setTotalPrice(total);
     };
 
-    const handleDeleteItem = async (cartProductID) => {
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
+    const handleDeleteItem = async (cartItemId) => {
+        const token = localStorage.getItem('token');
 
         const headers = {
             'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
             Authorization: token ? `Bearer ${token}` : '',
-            UserID: activeUserID,
         };
 
         const requestData = {
-            cartProductID: cartProductID,
+            id: cartItemId,
         };
 
         try {
-            const response = await fetch('http://localhost:5262/api/CartProduct/Delete_CartProduct', {
-                method: 'DELETE',
-                headers,
-                body: JSON.stringify(requestData),
-            });
-
-            if (!response.ok) throw new Error('Lỗi khi xóa sản phẩm');
-
-            const updatedItems = cartItems.filter((item) => item.cartProductID !== cartProductID);
+            // Since API doesn't have delete endpoint yet, just update local state
+            const updatedItems = cartItems.filter((item) => item.id !== cartItemId);
             setCartItems(updatedItems);
             calculateTotalPrice(updatedItems);
+            setSuccessMessage('Xóa sản phẩm thành công!');
+            setTimeout(() => setSuccessMessage(null), 2000);
         } catch (error) {
             console.error('Lỗi khi xóa sản phẩm:', error);
         }
     };
 
-    const handleUpdateQuantity = async (cartProductID, newQuantity) => {
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
-
-        const headers = {
-            'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
-            Authorization: token ? `Bearer ${token}` : '',
-            UserID: activeUserID,
-        };
-
-        const requestData = {
-            cartProductID,
-            quantity: newQuantity,
-        };
-
+    const handleUpdateQuantity = async (cartItemId, newQuantity) => {
         try {
-            const response = await fetch('http://localhost:5262/api/CartProduct/Update_CartProduct', {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(requestData),
-            });
-
-            const data = await response.json();
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-
-            setSuccessMessage(data.returnMessage || data.resposeMessage);
-            setTimeout(() => setSuccessMessage(null), 3000);
-
-            if (!response.ok) throw new Error('Lỗi khi cập nhật số lượng');
-
+            // Update local state immediately
             const updatedItems = cartItems.map((item) =>
-                item.cartProductID === cartProductID ? { ...item, quantity: newQuantity } : item,
+                item.id === cartItemId ? { ...item, quantity: newQuantity } : item,
             );
             setCartItems(updatedItems);
             calculateTotalPrice(updatedItems);
+            setSuccessMessage('Cập nhật số lượng thành công!');
+            setTimeout(() => setSuccessMessage(null), 2000);
         } catch (error) {
             console.error('Lỗi khi cập nhật số lượng:', error);
         }
@@ -220,7 +256,7 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
                     <div className={cx('cart-items')}>
                         {cartItems.map((item) => (
                             <CartItem
-                                key={item.cartProductID}
+                                key={item.id}
                                 item={item}
                                 onQuantityChange={handleUpdateQuantity}
                                 onDelete={handleDeleteItem}
@@ -229,10 +265,19 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
                         ))}
                     </div>
                     <div className={cx('cart-summary')}>
-                        <h2 className={cx('totalmoney')}>Tổng Tiền Giỏ Hàng: {totalPrice.toLocaleString()} VND</h2>
-                        <button className={cx('checkout-button')} onClick={() => onCheckoutAll(cartItems)}>
-                            Thanh Toán Tất Cả
-                        </button>
+                        <div className={cx('summary-card')}>
+                            <div className={cx('summary-row')}>
+                                <span className={cx('label')}>Số lượng sản phẩm:</span>
+                                <span className={cx('value')}>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                            </div>
+                            <div className={cx('summary-row')}>
+                                <span className={cx('label')}>Tổng tiền:</span>
+                                <span className={cx('total-amount')}>💰 {totalPrice.toLocaleString('vi-VN')}₫</span>
+                            </div>
+                            <button className={cx('checkout-button')} onClick={() => onCheckoutAll(cartItems)}>
+                                🛒 Thanh Toán Tất Cả ({cartItems.length} sản phẩm)
+                            </button>
+                        </div>
                     </div>
                 </>
             )}

@@ -1,1080 +1,54 @@
-// ==========================================
-// WEBSITE MAIN COLOR THEME - DESIGN TOKENS
-// ==========================================
-:root {
-    // Primary Teal/Green Palette (Website Primary)
-    --primary: #156953;
-    --primary-dark: #0d4a3e;
-    --primary-light: #1ca07d;
-    --primary-medium: #169d72;
-    
-    // Neutrals
-    --white: #ffffff;
-    --cream: #f8fffe;
-    --gray-light: #e8e8e8;
-    --gray: #8b8b8b;
-    --gray-dark: #6f6f6f;
-    --black: #1a1a1a;
-    
-    // Status Colors
-    --error: #e74c3c;
-    --success: #27ae60;
-    
-    // Text
-    --text-primary: #1a1a1a;
-    --text-secondary: #6f6f6f;
-    
-    // Shadows - Minimal & Refined
-    --shadow-whisper: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-refined: 0 8px 24px rgba(0, 0, 0, 0.12);
-    --shadow-prominent: 0 12px 32px rgba(0, 0, 0, 0.16);
-    
-    // Transitions
-    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-elegant: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+// ================================================
+// PREMIUM TECH-FORWARD CART - LUXURY DESIGN
+// ================================================
+// Modern | Premium | Tech-savvy
+// ================================================
 
 // ==========================================
-// TYPOGRAPHY SETUP
+// DESIGN TOKENS
 // ==========================================
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    -webkit-font-smoothing: antialiased;
-}
-
-// ==========================================
-// ANIMATIONS - SOPHISTICATED
-// ==========================================
-@keyframes luxeFadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes luxeSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes luxeScaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes luxeGoldPulse {
-    0%, 100% {
-        text-shadow: 0 0 0 transparent;
-    }
-    50% {
-        text-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
-    }
-}
-
-// ==========================================
-// MAIN WRAPPER
-// ==========================================
-.wrapper {
-    width: 100%;
-    min-height: 100vh;
-    background: var(--white);
-    padding: 60px 40px;
-    box-sizing: border-box;
-    margin: 0;
-    animation: luxeFadeIn 0.8s ease-out;
-
-    &::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
-        z-index: 99;
-    }
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: var(--cream);
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--primary-light);
-        border-radius: 4px;
-
-        &:hover {
-            background: var(--primary-light);
-        }
-    }
-}
-
-// ==========================================
-// HEADER - LUXURY STATEMENT
-// ==========================================
-.header {
-    width: 100%;
-    margin-bottom: 80px;
-    padding: 80px 60px;
-    background: var(--cream);
-    border: 1px solid var(--gray-light);
-    border-radius: 0;
-    text-align: center;
-    box-shadow: var(--shadow-subtle);
-    animation: luxeSlideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    overflow: hidden;
-
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--primary-light) 50%, transparent);
-    }
-}
-
-.pageTitle {
-    margin: 0 0 16px;
-    font-family: 'Playfair Display', serif;
-    font-size: 48px;
-    font-weight: 700;
-    color: var(--black);
-    letter-spacing: -0.8px;
-    line-height: 1.2;
-}
-
-.pageSubtitle {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--text-secondary);
-    font-weight: 300;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-}
-
-// ==========================================
-// MAIN LAYOUT
-// ==========================================
-.content {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.container {
-    display: grid;
-    grid-template-columns: 1.8fr 1.2fr;
-    gap: 60px;
-    margin-bottom: 80px;
-    align-items: start;
-}
-
-// ==========================================
-// PRODUCTS SECTION
-// ==========================================
-.contentProducts {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    animation: luxeSlideUp 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.productsTitle {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--black);
-    margin: 0;
-    padding-bottom: 24px;
-    border-bottom: 2px solid var(--gray-light);
-    letter-spacing: -0.5px;
-}
-
-// ==========================================
-// SIDEBAR CONTAINER
-// ==========================================
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    animation: luxeSlideUp 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-// ==========================================
-// INVOICE SECTION - LUXURY CARD
-// ==========================================
-.invoiceDetail {
-    padding: 48px 40px;
-    background: var(--cream);
-    border: 1px solid var(--gray-light);
-    border-radius: 0;
-    box-shadow: var(--shadow-whisper);
-    transition: var(--transition-smooth);
-    max-height: 55vh;
-    overflow-y: auto;
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--primary-light) 50%, transparent);
-    }
-
-    &:hover {
-        box-shadow: var(--shadow-refined);
-        border-color: rgba(212, 175, 55, 0.3);
-    }
-
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--primary-light);
-        border-radius: 3px;
-    }
-}
-
-.invoiceTitle {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--black);
-    margin: 0 0 32px;
-    padding: 0;
-    text-align: left;
-    letter-spacing: -0.3px;
-}
-
-// INVOICE ITEMS
-.invoiceItems {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 100%;
-}
-
-
-.invoiceItem {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    background: var(--white);
-    border: 1px solid var(--gray-light);
-    border-radius: 0;
-    transition: var(--transition-smooth);
-    cursor: default;
-    position: relative;
-
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--primary-light) 50%, transparent);
-        transform: scaleX(0);
-        transform-origin: center;
-        transition: transform 0.3s ease;
-    }
-
-    &:hover {
-        border-color: var(--gray);
-        box-shadow: var(--shadow-subtle);
-        background: rgba(212, 175, 55, 0.02);
-
-        &::after {
-            transform: scaleX(1);
-        }
-    }
-}
-
-.itemImage {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 0;
-    margin-right: 20px;
-    border: 1px solid var(--gray-light);
-    flex-shrink: 0;
-}
-
-.itemContent {
-    flex: 1;
-    min-width: 0;
-}
-
-.itemName {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--black);
-    margin: 0 0 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: -0.2px;
-}
-
-.itemMeta {
-    display: flex;
-    gap: 14px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin: 0;
-    font-weight: 300;
-}
-
-.itemPrice {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--primary-light);
-    margin-right: 20px;
-    letter-spacing: -0.2px;
-}
-
-.itemQuantity {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-weight: 300;
-}
-
-.itemActions {
-    display: flex;
-    gap: 8px;
-}
-
-.deleteBtn {
-    background: var(--white);
-    color: var(--luxe-error);
-    border: 1px solid var(--luxe-error);
-    padding: 8px 16px;
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 600;
-    transition: var(--transition-smooth);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-
-    &:hover {
-        background: var(--luxe-error);
-        color: var(--white);
-        box-shadow: var(--shadow-subtle);
-    }
-
-    &:active {
-        transform: scale(0.98);
-    }
-}
-
-.emptyState {
-    padding: 60px 20px;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 300;
-    letter-spacing: 0.5px;
-}
-
-// ==========================================
-// VOUCHERS SECTION
-// ==========================================
-.vouchersDetail {
-    padding: 48px 40px;
-    background: var(--cream);
-    border: 1px solid var(--gray-light);
-    border-radius: 0;
-    box-shadow: var(--shadow-whisper);
-    transition: var(--transition-smooth);
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--primary-light) 50%, transparent);
-    }
-
-    &:hover {
-        box-shadow: var(--shadow-refined);
-    }
-}
-
-.vouchersTitle {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--black);
-    margin: 0 0 24px;
-    padding: 0;
-    letter-spacing: -0.3px;
-}
-
-.voucherToggleBtn {
-    width: 100%;
-    padding: 16px 20px;
-    background: var(--primary);
-    color: var(--white);
-    border: 1px solid var(--primary);
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: var(--transition-smooth);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 20px;
-
-    &:hover {
-        background: var(--white);
-        color: var(--primary);
-        box-shadow: var(--shadow-subtle);
-    }
-
-    &:active {
-        transform: scale(0.99);
-    }
-}
-
-.voucherList {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 35vh;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--primary-light);
-        border-radius: 3px;
-    }
-}
-
-.voucherItem {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    background: var(--white);
-    border: 1px solid var(--gray-light);
-    border-radius: 0;
-    cursor: pointer;
-    transition: var(--transition-smooth);
-    position: relative;
-
-    &:hover {
-        border-color: var(--primary-light);
-        box-shadow: var(--shadow-subtle);
-        background: rgba(212, 175, 55, 0.02);
-    }
-
-    &.selected {
-        border-color: var(--primary-light);
-        background: rgba(212, 175, 55, 0.05);
-        box-shadow: var(--shadow-subtle);
-
-        &::after {
-            content: '✓';
-            position: absolute;
-            right: 16px;
-            color: var(--primary-light);
-            font-weight: 700;
-            font-size: 16px;
-        }
-    }
-}
-
-.voucherRadio {
-    width: 16px;
-    height: 16px;
-    min-width: 16px;
-    margin-right: 16px;
-    cursor: pointer;
-    accent-color: var(--primary-light);
-    border-radius: 0;
-}
-
-.voucherContent {
-    flex: 1;
-    min-width: 0;
-}
-
-.voucherName {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--black);
-    margin: 0 0 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: -0.2px;
-}
-
-.voucherDiscount {
-    font-size: 12px;
-    color: var(--primary-light);
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: -0.2px;
-}
-
-// SELECTED VOUCHER DISPLAY
-.selectedVoucher {
-    margin-top: 20px;
-    padding: 20px;
-    background: var(--white);
-    border: 2px solid var(--primary-light);
-    border-radius: 0;
-    animation: luxeScaleIn 0.4s ease-out;
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: var(--primary-light);
-    }
-}
-
-.selectedVoucherTitle {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--primary-light);
-    margin: 0 0 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.selectedVoucherInfo {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin: 0;
-    font-weight: 300;
-    line-height: 1.6;
-}
-
-// ==========================================
-// PAYMENT SECTION
-// ==========================================
-.creatInvoice {
-    padding: 48px 40px;
-    background: var(--cream);
-    border: 1px solid var(--gray-light);
-    border-radius: 0;
-    box-shadow: var(--shadow-whisper);
-    transition: var(--transition-smooth);
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--primary-light) 50%, transparent);
-    }
-
-    &:hover {
-        box-shadow: var(--shadow-refined);
-    }
-}
-
-.priceBreakdown {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--gray-light);
-}
-
-.priceRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 300;
-
-    &.discount {
-        color: var(--primary-light);
-        font-weight: 600;
-    }
-
-    &.total {
-        padding-top: 12px;
-        border-top: 1px solid var(--gray-light);
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--black);
-        margin-top: 8px;
-    }
-}
-
-.priceLabel {
-    letter-spacing: 0.5px;
-}
-
-.priceValue {
-    font-weight: 600;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 0.3px;
-}
-
-.totalmoney {
-    font-family: 'Courier New', monospace;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--primary-light);
-    margin-bottom: 0;
-    text-align: right;
-    letter-spacing: 0.5px;
-}
-
-.totalmoney-original {
-    font-size: 12px;
-    color: var(--text-secondary);
-    text-decoration: line-through;
-    margin-right: 10px;
-    font-weight: 300;
-}
-
-.totalmoney-discounted {
-    font-size: 16px;
-    color: var(--primary-light);
-    font-weight: 700;
-    letter-spacing: -0.2px;
-}
-
-// PAYMENT BUTTON
-.btnPayment {
-    width: 100%;
-    padding: 18px 24px;
-    background: var(--primary);
-    color: var(--white);
-    border: 2px solid var(--primary);
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 700;
-    transition: var(--transition-smooth);
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    box-shadow: var(--shadow-subtle);
-    margin-top: 24px;
-
-    &:hover {
-        background: var(--white);
-        color: var(--primary);
-        box-shadow: var(--shadow-refined);
-    }
-
-    &:active {
-        transform: scale(0.98);
-    }
-
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-    }
-}
-
-// ==========================================
-// MODAL - LUXURY OVERLAY
-// ==========================================
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(10, 10, 10, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: luxeFadeIn 0.4s ease-out;
-    backdrop-filter: blur(4px);
-}
-
-.paymentForm {
-    background: var(--white);
-    padding: 60px 50px;
-    border-radius: 0;
-    border: 1px solid var(--gray-light);
-    box-shadow: var(--shadow-prominent);
-    max-width: 480px;
-    width: 90%;
-    animation: luxeScaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    text-align: center;
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--primary-light) 50%, transparent);
-    }
-}
-
-.paymentFormTitle {
-    margin: 0 0 40px;
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--black);
-    letter-spacing: -0.5px;
-}
-
-.paymentOptions {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.paymentFormBtn {
-    padding: 16px 32px;
-    border: 1px solid var(--primary);
-    background: var(--white);
-    color: var(--primary);
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 700;
-    transition: var(--transition-smooth);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    min-width: 160px;
-
-    &:hover {
-        background: var(--primary);
-        color: var(--white);
-        box-shadow: var(--shadow-refined);
-    }
-
-    &:active {
-        transform: scale(0.97);
-    }
-}
-
-// ==========================================
-// FOOTER
-// ==========================================
-.footerProducts {
-    margin-top: 80px;
-    width: 100%;
-    padding: 40px 0;
-    text-align: center;
-    border-top: 1px solid var(--gray-light);
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-}
-
-// ==========================================
-// RESPONSIVE DESIGN
-// ==========================================
-@media (max-width: 1024px) {
-    .container {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-
-    .wrapper {
-        padding: 40px 30px;
-    }
-
-    .header {
-        padding: 60px 40px;
-        margin-bottom: 60px;
-    }
-
-    .pageTitle {
-        font-size: 40px;
-    }
-
-    .contentProducts,
-    .invoiceDetail,
-    .vouchersDetail {
-        max-height: none;
-    }
-}
-
-@media (max-width: 768px) {
-    .wrapper {
-        padding: 24px 16px;
-    }
-
-    .header {
-        padding: 40px 24px;
-        margin-bottom: 40px;
-    }
-
-    .pageTitle {
-        font-size: 32px;
-        margin-bottom: 12px;
-    }
-
-    .pageSubtitle {
-        font-size: 12px;
-    }
-
-    .container {
-        gap: 24px;
-    }
-
-    .invoiceDetail,
-    .vouchersDetail,
-    .creatInvoice {
-        padding: 32px 24px;
-    }
-
-    .invoiceTitle,
-    .vouchersTitle {
-        font-size: 18px;
-        margin-bottom: 20px;
-    }
-
-    .invoiceItem {
-        padding: 16px;
-    }
-
-    .itemImage {
-        width: 45px;
-        height: 45px;
-        margin-right: 16px;
-    }
-
-    .itemName {
-        font-size: 12px;
-    }
-
-    .invoiceItems {
-        gap: 12px;
-    }
-
-    .voucherToggleBtn {
-        padding: 14px 16px;
-        font-size: 12px;
-    }
-
-    .paymentForm {
-        padding: 40px 30px;
-    }
-
-    .paymentFormTitle {
-        font-size: 22px;
-        margin-bottom: 30px;
-    }
-
-    .paymentOptions {
-        gap: 12px;
-    }
-
-    .paymentFormBtn {
-        min-width: 140px;
-        padding: 14px 24px;
-        font-size: 11px;
-    }
-
-    .btnPayment {
-        padding: 16px 20px;
-        font-size: 12px;
-    }
-
-    .totalmoney {
-        font-size: 24px;
-    }
-
-    .productsTitle {
-        font-size: 22px;
-    }
-}
-
-@media (max-width: 480px) {
-    .wrapper {
-        padding: 16px 12px;
-    }
-
-    .header {
-        padding: 32px 16px;
-        margin-bottom: 32px;
-    }
-
-    .pageTitle {
-        font-size: 24px;
-        margin-bottom: 8px;
-    }
-
-    .pageSubtitle {
-        font-size: 11px;
-    }
-
-    .invoiceDetail,
-    .vouchersDetail,
-    .creatInvoice {
-        padding: 20px 16px;
-    }
-
-    .invoiceTitle,
-    .vouchersTitle {
-        font-size: 16px;
-        margin-bottom: 16px;
-    }
-
-    .invoiceItem {
-        padding: 12px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .itemImage {
-        width: 40px;
-        height: 40px;
-        margin-right: 12px;
-        margin-bottom: 0;
-    }
-
-    .itemName {
-        font-size: 11px;
-    }
-
-    .itemMeta {
-        font-size: 10px;
-        gap: 10px;
-    }
-
-    .itemPrice {
-        font-size: 12px;
-        margin-right: 0;
-    }
-
-    .deleteBtn {
-        padding: 6px 12px;
-        font-size: 10px;
-    }
-
-    .voucherToggleBtn {
-        padding: 12px 14px;
-        font-size: 11px;
-    }
-
-    .voucherItem {
-        padding: 12px;
-    }
-
-    .voucherName {
-        font-size: 12px;
-    }
-
-    .voucherDiscount {
-        font-size: 11px;
-    }
-
-    .priceBreakdown {
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .priceRow {
-        font-size: 12px;
-    }
-
-    .totalmoney {
-        font-size: 20px;
-    }
-
-    .btnPayment {
-        padding: 14px 16px;
-        font-size: 11px;
-        margin-top: 16px;
-    }
-
-    .paymentForm {
-        padding: 32px 20px;
-        max-width: 90%;
-    }
-
-    .paymentFormTitle {
-        font-size: 18px;
-        margin-bottom: 24px;
-    }
-
-    .paymentOptions {
-        flex-direction: column;
-    }
-
-    .paymentFormBtn {
-        width: 100%;
-        min-width: 100%;
-        padding: 12px 16px;
-    }
-
-    .footerProducts {
-        margin-top: 40px;
-        padding: 24px 0;
-        font-size: 11px;
-    }
-}
+$primary-color: #0a0e27;
+$primary-light: #1a1f3a;
+$accent-color: #00d4ff;
+$accent-secondary: #ff6b9d;
+$success-color: #00ff88;
+$background-primary: #ffffff;
+$background-secondary: #f8f9fb;
+$background-dark: #0f1419;
+$text-primary: #0a0e27;
+$text-secondary: #6b7280;
+$text-light: #9ca3af;
+$border-color: #e5e7eb;
+$border-dark: #2d333d;
+
+// Spacing
+$space-xs: 6px;
+$space-sm: 12px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+$space-2xl: 48px;
+$space-3xl: 64px;
+
+// Shadows
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.16);
+$shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.2);
+
+// Transitions
+$trans: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$trans-fast: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
 // ==========================================
 // ANIMATIONS
 // ==========================================
-@keyframes slideIn {
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -1085,463 +59,955 @@ body {
     }
 }
 
-@keyframes fadeIn {
+@keyframes slideDown {
     from {
         opacity: 0;
+        transform: translateY(-20px);
     }
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
-@keyframes pulse {
-    0%, 100% {
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
         opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
     }
     50% {
-        opacity: 0.7;
+        box-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
     }
+}
+
+@keyframes borderShimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 // ==========================================
-// MAIN WRAPPER & LAYOUT
+// PAGE WRAPPER
 // ==========================================
 .wrapper {
     width: 100%;
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 40px 20px;
-    box-sizing: border-box;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
+    padding: $space-2xl $space-lg;
     margin: 0;
-    animation: fadeIn 0.5s ease-in-out;
-    overflow-y: auto;
+    animation: fadeIn 0.6s ease-out;
 
-    &::-webkit-scrollbar {
-        width: 8px;
+    @media (max-width: 768px) {
+        padding: $space-lg $space-md;
     }
 
-    &::-webkit-scrollbar-track {
-        background: var(--gray-100);
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
-        border-radius: 4px;
-
-        &:hover {
-            background: var(--primary-dark);
-        }
+    @media (max-width: 480px) {
+        padding: $space-lg $space-sm;
     }
 }
 
 // ==========================================
-// HEADER SECTION
+// HEADER
 // ==========================================
 .header {
     width: 100%;
-    margin-bottom: 40px;
-    padding: 40px 30px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    border-radius: 16px;
+    max-width: 100%;
+    padding: $space-3xl $space-2xl;
+    margin-bottom: $space-3xl;
+    background: $background-primary;
+    border-bottom: 2px solid $border-color;
     text-align: center;
-    box-shadow: var(--shadow-lg);
-    animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: slideDown 0.8s ease-out;
     position: relative;
     overflow: hidden;
 
-    &::before {
-        content: '🛍️';
+    &::after {
+        content: '';
         position: absolute;
-        top: 10px;
-        right: 30px;
-        font-size: 48px;
-        opacity: 0.15;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, $accent-color, transparent);
+    }
+
+    @media (max-width: 768px) {
+        padding: $space-2xl $space-lg;
+        margin-bottom: $space-2xl;
+    }
+
+    @media (max-width: 480px) {
+        padding: $space-xl $space-md;
+        margin-bottom: $space-xl;
     }
 }
 
 .pageTitle {
-    margin: 0 0 10px;
-    font-size: 32px;
+    margin: 0 0 $space-md;
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
     font-weight: 700;
-    color: white;
-    letter-spacing: -0.5px;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, $primary-color, $primary-light);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+
+    @media (max-width: 768px) {
+        font-size: 48px;
+    }
+
+    @media (max-width: 480px) {
+        font-size: 36px;
+    }
 }
 
 .pageSubtitle {
     margin: 0;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 400;
-    letter-spacing: 0.5px;
+    font-size: 13px;
+    color: $text-light;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
 // ==========================================
-// MAIN CONTAINER - GRID LAYOUT
+// MAIN CONTENT
 // ==========================================
 .content {
-    width: 100%;
-    max-width: 1200px;
+    width: 88%;
+    max-width: 1700px;
     margin: 0 auto;
 }
 
 .container {
     display: grid;
-    grid-template-columns: 1.8fr 1.2fr;
-    gap: 30px;
-    margin-bottom: 40px;
+    grid-template-columns: 1.4fr 1fr;
+    gap: $space-2xl;
     align-items: start;
+
+    @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+        gap: $space-xl;
+    }
 }
 
 // ==========================================
-// PRODUCTS SECTION
+// LEFT PANEL: PRODUCTS
 // ==========================================
 .contentProducts {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    animation: slideIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    gap: $space-xl;
+    animation: slideUp 0.9s ease-out;
 }
 
 .productsTitle {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--gray-800);
-    margin: 0;
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--primary-color);
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0 0 $space-lg;
+    letter-spacing: -0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid $border-color;
+    padding-bottom: $space-lg;
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, $accent-color, transparent);
+        opacity: 0;
+        animation: borderShimmer 3s ease-in-out infinite;
+    }
+
+    span {
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: $text-light;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: linear-gradient(135deg, $accent-color, $accent-secondary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
+// Product items grid - SUPER PREMIUM CARDS
+.cart-items-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: $space-xl;
 }
 
 // ==========================================
-// SIDEBAR (INVOICE + VOUCHERS + PAYMENT)
+// PREMIUM PRODUCT CARD
+// ==========================================
+.cartItem {
+    background: $background-primary;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: $trans;
+    animation: slideUp 0.7s ease-out;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: $shadow-md;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.03), rgba(255, 107, 157, 0.03));
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: $shadow-xl;
+
+        .cartItemImage {
+            transform: scale(1.08) rotate(1deg);
+            filter: brightness(1.1);
+        }
+
+        .cartItemPriceBadge {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(0, 212, 255, 0.3);
+        }
+
+        .cartItemActions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cartItemName {
+            color: $accent-color;
+        }
+    }
+
+    @media (max-width: 768px) {
+        grid-column: span 1;
+    }
+}
+
+.cartItemImage {
+    width: 100%;
+    aspect-ratio: 1 / 1.1;
+    background: linear-gradient(135deg, $background-secondary, $border-color);
+    overflow: hidden;
+    transition: $trans;
+    position: relative;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: $trans;
+    }
+}
+
+// Price badge overlay ON image
+.cartItemPriceBadge {
+    position: absolute;
+    top: $space-lg;
+    right: $space-lg;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    color: $background-primary;
+    padding: $space-md $space-lg;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+    z-index: 2;
+    transition: $trans;
+}
+
+.cartItemContent {
+    padding: $space-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.cartItemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: $space-md;
+}
+
+.cartItemName {
+    font-size: 16px;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0;
+    line-height: 1.4;
+    flex: 1;
+    transition: $trans;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cartItemDesc {
+    font-size: 12px;
+    color: $text-light;
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cartItemFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $space-md;
+    padding-top: $space-md;
+    border-top: 1px solid $border-color;
+}
+
+.cartItemQty {
+    font-size: 12px;
+    color: $text-secondary;
+    font-weight: 600;
+    background: $background-secondary;
+    padding: $space-xs $space-md;
+    border-radius: 20px;
+}
+
+.cartItemActions {
+    display: flex;
+    gap: $space-sm;
+    opacity: 0.7;
+    transform: translateY(4px);
+    transition: $trans;
+}
+
+.cartItemBtn {
+    flex: 1;
+    padding: $space-md;
+    font-size: 11px;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: $trans;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-xs;
+
+    &.add {
+        background: linear-gradient(135deg, $accent-color, #00b8d4);
+        color: $background-primary;
+        box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.4);
+        }
+    }
+
+    &.delete {
+        background: rgba(255, 107, 157, 0.1);
+        color: $accent-secondary;
+        border: 1px solid $accent-secondary;
+
+        &:hover {
+            background: $accent-secondary;
+            color: $background-primary;
+            transform: translateY(-2px);
+        }
+    }
+}
+
+// ==========================================
+// RIGHT PANEL: CHECKOUT SIDEBAR
 // ==========================================
 .sidebar {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    gap: $space-xl;
+    position: sticky;
+    top: $space-2xl;
+
+    @media (max-width: 1024px) {
+        position: static;
+        top: auto;
+    }
 }
 
 // ==========================================
-// INVOICE DETAIL SECTION
+// INVOICE SECTION
 // ==========================================
 .invoiceDetail {
-    padding: 25px;
-    background: white;
+    background: $background-primary;
+    border: 1.5px solid $border-color;
     border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--gray-200);
-    transition: var(--transition-base);
+    padding: $space-xl;
+    animation: slideUp 0.9s ease-out 0.1s both;
+    box-shadow: $shadow-md;
+}
+
+.invoiceHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-lg;
+    padding-bottom: $space-lg;
+    border-bottom: 2px solid $border-color;
+    gap: $space-md;
+}
+
+.invoiceTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0;
+}
+
+.orderCount {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    color: $background-primary;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+}
+
+.invoiceItems {
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
     max-height: 50vh;
     overflow-y: auto;
-
-    &:hover {
-        box-shadow: var(--shadow-lg);
-        border-color: var(--primary-color);
-    }
+    margin-bottom: $space-lg;
 
     &::-webkit-scrollbar {
         width: 6px;
     }
 
     &::-webkit-scrollbar-track {
-        background: var(--gray-100);
+        background: $background-secondary;
     }
 
     &::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
+        background: $border-color;
         border-radius: 3px;
+
+        &:hover {
+            background: $accent-color;
+        }
     }
 }
 
-.invoiceTitle {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--primary-dark);
-    margin: 0 0 20px;
-    padding: 0;
-    text-align: left;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-// INVOICE ITEMS
-.invoiceItems {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-}
-
+// ==========================================
+// INVOICE ITEM - PREMIUM SINGLE LINE DISPLAY
+// ==========================================
 .invoiceItem {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-50) 100%);
-    border: 1px solid var(--gray-200);
+    display: grid;
+    grid-template-columns: 90px 1fr 100px 80px auto;
+    gap: $space-md;
+    padding: $space-md $space-lg;
+    background: $background-primary;
+    border: 1px solid $border-color;
     border-radius: 8px;
-    transition: var(--transition-base);
-    cursor: default;
+    transition: $trans-fast;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    height: auto;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, $accent-color, $accent-secondary);
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: $trans-fast;
+    }
 
     &:hover {
-        border-color: var(--primary-color);
-        box-shadow: var(--shadow-sm);
-        transform: translateX(4px);
+        border-color: $accent-color;
+        box-shadow: $shadow-md;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.02), rgba(255, 107, 157, 0.02));
+
+        &::before {
+            transform: scaleY(1);
+        }
+
+        .itemStatusBadge {
+            animation: glowPulse 2s ease-in-out infinite;
+        }
     }
+}
+
+// Status Badge (Sẵn sàng)
+.itemStatusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    padding: $space-xs $space-sm;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    color: $success-color;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 2;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.statusDot {
+    width: 6px;
+    height: 6px;
+    background: $success-color;
+    border-radius: 50%;
+    display: inline-block;
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+.statusText {
+    display: inline;
+}
+
+// Image Wrapper
+.imageWrapper {
+    position: relative;
+    width: 80px;
+    height: 50px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: linear-gradient(135deg, $border-color, $background-secondary);
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.imagePulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(0, 212, 255, 0.2), transparent);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .itemImage {
-    width: 45px;
-    height: 45px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 6px;
-    margin-right: 12px;
-    border: 2px solid var(--gray-200);
+    transition: $trans;
+    position: relative;
+    z-index: 0;
+
+    .invoiceItem:hover & {
+        transform: scale(1.08);
+    }
 }
 
+// Item Content (Name + Description + Specs)
 .itemContent {
-    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: $space-md;
+    align-items: center;
     min-width: 0;
+    flex: 1;
+    z-index: 2;
+    white-space: normal;
+    overflow: hidden;
 }
 
 .itemName {
     font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-800);
-    margin: 0 0 4px;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0;
+    line-height: 1.3;
+    display: inline;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: $trans-fast;
+    flex-shrink: 0;
+
+    .invoiceItem:hover & {
+        color: $accent-color;
+    }
 }
 
-.itemMeta {
-    display: flex;
-    gap: 10px;
+.itemDescription {
     font-size: 11px;
-    color: var(--gray-600);
+    color: $text-light;
     margin: 0;
+    line-height: 1.3;
+    display: inline;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.itemSpecs {
+    display: none;
+    flex-wrap: wrap;
+    gap: $space-md;
+    align-items: center;
+}
+
+.specItem {
+    display: flex;
+    gap: $space-xs;
+    align-items: center;
+    padding: $space-xs $space-sm;
+    background: $background-secondary;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+.specLabel {
+    font-weight: 600;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.specValue {
+    font-weight: 700;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+// Price Container
+.priceContainer {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+    align-items: center;
+    justify-content: center;
+    padding: $space-sm $space-md;
+    background: $background-secondary;
+    border-radius: 6px;
+    min-width: 100px;
+    z-index: 2;
+    white-space: nowrap;
+}
+
+.priceLabel {
+    font-size: 9px;
+    font-weight: 600;
+    color: $text-light;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .itemPrice {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--danger-color);
-    margin-right: 12px;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
 }
 
-.itemQuantity {
-    font-size: 11px;
-    color: var(--gray-600);
-}
-
-.itemActions {
-    display: flex;
-    gap: 8px;
-}
-
+// Delete Button
 .deleteBtn {
-    background: linear-gradient(135deg, var(--danger-color), var(--danger-dark));
-    color: white;
-    border: none;
-    padding: 6px 12px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid $border-color;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 11px;
-    font-weight: 600;
-    transition: var(--transition-fast);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 14px;
+    transition: $trans-fast;
+    color: $text-light;
+    flex-shrink: 0;
+    z-index: 2;
+    white-space: nowrap;
 
     &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        background: rgba(255, 107, 157, 0.1);
+        border-color: $accent-secondary;
+        color: $accent-secondary;
+        transform: rotate(-90deg) scale(1.1);
     }
 
     &:active {
-        transform: translateY(0);
+        transform: rotate(-90deg) scale(0.95);
     }
 }
 
-// EMPTY STATE
-.emptyState {
-    padding: 40px 20px;
-    text-align: center;
-    color: var(--gray-500);
+.deleteIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// Old styles for backward compatibility (if still used)
+.invoiceItemImg {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, $border-color, $background-secondary);
+    border-radius: 6px;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.invoiceItemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+    min-width: 0;
+}
+
+.invoiceItemName {
+    font-size: 12px;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.invoiceItemQty {
+    font-size: 11px;
+    color: $text-light;
+    margin: 0;
+}
+
+.invoiceItemPrice {
     font-size: 14px;
-    font-style: italic;
+    font-weight: 700;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.invoiceItemRemove {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: $accent-secondary;
+    cursor: pointer;
+    font-size: 16px;
+    transition: $trans;
+
+    &:hover {
+        transform: scale(1.15) rotate(90deg);
+    }
 }
 
 // ==========================================
 // VOUCHERS SECTION
 // ==========================================
 .vouchersDetail {
-    padding: 25px;
-    background: white;
+    background: $background-primary;
+    border: 1.5px solid $border-color;
     border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--gray-200);
-    transition: var(--transition-base);
-
-    &:hover {
-        box-shadow: var(--shadow-lg);
-    }
+    padding: $space-xl;
+    animation: slideUp 0.9s ease-out 0.15s both;
+    box-shadow: $shadow-md;
 }
 
 .vouchersTitle {
+    font-family: 'Playfair Display', serif;
     font-size: 16px;
-    font-weight: 600;
-    color: var(--primary-dark);
-    margin: 0 0 15px;
-    padding: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0 0 $space-lg;
+    border-bottom: 2px solid $border-color;
+    padding-bottom: $space-lg;
 }
 
 .voucherToggleBtn {
     width: 100%;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
+    padding: $space-md;
+    background: $background-secondary;
+    border: 1.5px solid $border-color;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: $accent-color;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: var(--transition-base);
-    margin-bottom: 15px;
+    transition: $trans;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 
     &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(245, 87, 108, 0.3);
-    }
-
-    &:active {
-        transform: translateY(0);
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(255, 107, 157, 0.05));
+        border-color: $accent-color;
     }
 }
 
 .voucherList {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-height: 40vh;
+    gap: $space-md;
+    margin-top: $space-md;
+    max-height: 200px;
     overflow-y: auto;
-
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: var(--gray-100);
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
-        border-radius: 3px;
-    }
 }
 
 .voucherItem {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    background: var(--gray-50);
-    border: 2px solid var(--gray-200);
+    padding: $space-md;
+    background: $background-secondary;
+    border: 1.5px solid $border-color;
     border-radius: 8px;
     cursor: pointer;
-    transition: var(--transition-fast);
+    transition: $trans;
 
     &:hover {
-        border-color: var(--primary-color);
-        background: linear-gradient(135deg, var(--gray-100), var(--gray-50));
+        border-color: $accent-color;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(255, 107, 157, 0.05));
     }
 
-    &.selected {
-        border-color: var(--success-color);
-        background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(39, 174, 96, 0.02));
-        box-shadow: inset 0 0 0 1px var(--success-color);
+    &:has(input:checked) {
+        border-color: $accent-color;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 157, 0.1));
+        box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
     }
 }
 
-.voucherRadio {
-    width: 18px;
-    height: 18px;
-    min-width: 18px;
-    margin-right: 12px;
-    cursor: pointer;
-    accent-color: var(--success-color);
-}
-
-.voucherContent {
-    flex: 1;
-    min-width: 0;
+.voucherItemContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $space-md;
 }
 
 .voucherName {
+    font-weight: 700;
+    color: $primary-color;
     font-size: 12px;
-    font-weight: 600;
-    color: var(--gray-800);
-    margin: 0 0 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .voucherDiscount {
-    font-size: 11px;
-    color: var(--success-color);
-    font-weight: 700;
-    margin: 0;
-}
-
-// SELECTED VOUCHER DISPLAY
-.selectedVoucher {
-    margin-top: 15px;
-    padding: 15px;
-    background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
-    border: 2px solid var(--success-color);
-    border-radius: 8px;
-    animation: slideIn 0.3s ease-out;
-}
-
-.selectedVoucherTitle {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--success-color);
-    margin: 0 0 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.selectedVoucherInfo {
     font-size: 12px;
-    color: var(--gray-700);
-    margin: 0;
+    font-weight: 700;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 // ==========================================
-// PAYMENT SECTION (PRICE BREAKDOWN)
+// PAYMENT SUMMARY
 // ==========================================
 .creatInvoice {
-    padding: 25px;
-    background: white;
+    background: linear-gradient(135deg, $primary-color, $primary-light);
+    border: 1.5px solid $border-dark;
     border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--gray-200);
-    transition: var(--transition-base);
+    padding: $space-xl;
+    animation: slideUp 0.9s ease-out 0.2s both;
+    box-shadow: $shadow-lg;
+    position: relative;
+    overflow: hidden;
 
-    &:hover {
-        box-shadow: var(--shadow-lg);
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 212, 255, 0.1), transparent);
+        border-radius: 50%;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 107, 157, 0.1), transparent);
+        border-radius: 50%;
     }
 }
 
 .priceBreakdown {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: $space-md;
+    margin-bottom: $space-xl;
+    padding-bottom: $space-xl;
+    border-bottom: 1px solid $border-dark;
+    position: relative;
+    z-index: 2;
 }
 
 .priceRow {
@@ -1549,81 +1015,66 @@ body {
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
-    color: var(--gray-700);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
 
     &.total {
-        padding-top: 12px;
-        border-top: 2px solid var(--gray-200);
         font-size: 16px;
         font-weight: 700;
-        color: var(--primary-color);
+        color: $background-primary;
+        margin-top: $space-md;
+        padding-top: $space-md;
+        border-top: 1px solid $border-dark;
     }
 
-    &.discount {
-        color: var(--success-color);
-        font-weight: 600;
+    .value {
+        font-weight: 700;
+        color: $background-primary;
+    }
+
+    &.discount .value {
+        background: linear-gradient(135deg, $accent-color, $accent-secondary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 }
 
-.priceLabel {
-    font-weight: 500;
-}
-
-.priceValue {
+.totalAmount {
+    font-size: 28px;
     font-weight: 700;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    z-index: 2;
 }
 
-.totalmoney {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 0;
-    text-align: right;
-}
-
-.totalmoney-original {
-    font-size: 13px;
-    color: var(--gray-500);
-    text-decoration: line-through;
-    margin-right: 8px;
-}
-
-.totalmoney-discounted {
-    font-size: 18px;
-    color: var(--success-color);
-    font-weight: 700;
-}
-
-// PAYMENT BUTTON
 .btnPayment {
     width: 100%;
-    padding: 14px 20px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    color: white;
+    padding: $space-lg;
+    background: linear-gradient(135deg, $accent-color, $accent-secondary);
+    color: $background-primary;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: var(--transition-base);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: var(--shadow-md);
-    margin-top: 20px;
+    cursor: pointer;
+    transition: $trans;
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+    position: relative;
+    z-index: 2;
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 12px 36px rgba(0, 212, 255, 0.5);
     }
 
     &:active {
         transform: translateY(0);
-    }
-
-    &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
     }
 }
 
@@ -1636,74 +1087,78 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     animation: fadeIn 0.3s ease-out;
-    backdrop-filter: blur(4px);
+    padding: $space-lg;
+    backdrop-filter: blur(5px);
 }
 
 .paymentForm {
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: var(--shadow-xl);
-    max-width: 500px;
-    width: 90%;
-    animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    text-align: center;
+    background: $background-primary;
+    border: 2px solid $accent-color;
+    border-radius: 12px;
+    max-width: 480px;
+    width: 100%;
+    padding: $space-2xl;
+    box-shadow: $shadow-xl;
+    animation: scaleUp 0.4s ease-out;
+    position: relative;
 }
 
 .paymentFormTitle {
-    margin: 0 0 30px;
-    font-size: 22px;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
     font-weight: 700;
-    color: var(--gray-800);
+    background: linear-gradient(135deg, $primary-color, $primary-light);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 $space-2xl;
+    text-align: center;
 }
 
 .paymentOptions {
     display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: $space-lg;
 }
 
 .paymentFormBtn {
-    padding: 12px 24px;
-    border: none;
+    padding: $space-lg;
     border-radius: 8px;
+    border: 2px solid transparent;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: var(--transition-base);
+    transition: $trans;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    min-width: 140px;
+    letter-spacing: 1px;
 
     &:first-child {
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-        color: white;
+        background: linear-gradient(135deg, $accent-color, $accent-secondary);
+        color: $background-primary;
+        border-color: transparent;
+        box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
 
         &:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 12px 36px rgba(0, 212, 255, 0.4);
         }
     }
 
     &:last-child {
-        background: linear-gradient(135deg, var(--danger-color), var(--danger-dark));
-        color: white;
+        background: transparent;
+        color: $primary-color;
+        border-color: $primary-color;
 
         &:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            background: $primary-color;
+            color: $background-primary;
         }
-    }
-
-    &:active {
-        transform: translateY(0);
     }
 }
 
@@ -1711,219 +1166,90 @@ body {
 // FOOTER
 // ==========================================
 .footerProducts {
-    margin-top: 40px;
-    width: 100%;
-    padding: 30px 0;
     text-align: center;
-    border-top: 2px solid var(--gray-200);
-    color: var(--gray-600);
-    font-size: 13px;
+    padding: $space-3xl 0;
+    margin-top: $space-3xl;
+    font-size: 12px;
+    color: $text-light;
+    letter-spacing: 1px;
+    border-top: 1px solid $border-color;
+
+    strong {
+        background: linear-gradient(135deg, $accent-color, $accent-secondary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+    }
 }
 
 // ==========================================
-// RESPONSIVE DESIGN
+// EMPTY STATE
+// ==========================================
+.emptyState {
+    text-align: center;
+    padding: $space-3xl $space-2xl;
+    background: linear-gradient(135deg, $background-secondary, $border-color);
+    border: 2px dashed $border-color;
+    border-radius: 12px;
+    animation: slideUp 0.6s ease-out;
+}
+
+.emptyStateIcon {
+    font-size: 56px;
+    margin-bottom: $space-lg;
+}
+
+// ==========================================
+// RESPONSIVE
 // ==========================================
 @media (max-width: 1024px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
-
-    .pageTitle {
-        font-size: 28px;
-    }
-
-    .invoiceDetail,
-    .vouchersDetail,
-    .creatInvoice {
-        max-height: none;
+    .cart-items-container {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     }
 }
 
 @media (max-width: 768px) {
-    .wrapper {
-        padding: 20px 15px;
-    }
-
-    .header {
-        padding: 30px 20px;
-        margin-bottom: 30px;
-
-        &::before {
-            font-size: 36px;
-            right: 20px;
-        }
-    }
-
     .pageTitle {
-        font-size: 24px;
+        font-size: 40px;
     }
 
-    .pageSubtitle {
-        font-size: 12px;
+    .cart-items-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $space-lg;
     }
 
-    .container {
-        grid-template-columns: 1fr;
-        gap: 20px;
+    .cartItemPriceBadge {
+        top: $space-md;
+        right: $space-md;
+        padding: $space-sm $space-md;
+        font-size: 14px;
     }
 
-    .invoiceItem {
-        padding: 12px;
-    }
-
-    .itemImage {
-        width: 40px;
-        height: 40px;
-        margin-right: 10px;
-    }
-
-    .itemName {
-        font-size: 12px;
-    }
-
-    .invoiceItem {
-        flex-direction: row;
-    }
-
-    .voucherToggleBtn {
-        font-size: 13px;
-        padding: 10px 14px;
-    }
-
-    .paymentForm {
-        padding: 30px 20px;
-    }
-
-    .paymentFormTitle {
-        font-size: 18px;
-    }
-
-    .paymentOptions {
-        gap: 10px;
-    }
-
-    .paymentFormBtn {
-        min-width: 120px;
-        padding: 10px 16px;
-        font-size: 12px;
+    .cartItemBtn {
+        padding: $space-md;
+        font-size: 10px;
     }
 }
 
 @media (max-width: 480px) {
-    .wrapper {
-        padding: 15px 10px;
-    }
-
-    .header {
-        padding: 20px 15px;
-        margin-bottom: 20px;
-
-        &::before {
-            font-size: 28px;
-            right: 15px;
-        }
-    }
-
     .pageTitle {
-        font-size: 20px;
-        margin-bottom: 5px;
+        font-size: 28px;
     }
 
-    .pageSubtitle {
-        font-size: 11px;
+    .cart-items-container {
+        grid-template-columns: 1fr;
     }
 
-    .invoiceDetail,
-    .vouchersDetail,
-    .creatInvoice {
-        padding: 15px;
+    .container {
+        grid-template-columns: 1fr;
     }
 
-    .invoiceTitle,
-    .vouchersTitle {
-        font-size: 14px;
-        margin-bottom: 12px;
-    }
-
-    .invoiceItem {
-        padding: 10px;
-    }
-
-    .itemImage {
-        width: 35px;
-        height: 35px;
-        margin-right: 8px;
-    }
-
-    .itemName {
-        font-size: 11px;
-    }
-
-    .itemMeta {
-        font-size: 10px;
-        gap: 8px;
-    }
-
-    .itemPrice {
-        margin-right: 8px;
-        font-size: 12px;
-    }
-
-    .deleteBtn {
-        padding: 5px 8px;
-        font-size: 10px;
-    }
-
-    .voucherToggleBtn {
-        font-size: 12px;
-        padding: 10px 12px;
-    }
-
-    .voucherItem {
-        padding: 10px;
-    }
-
-    .voucherRadio {
-        width: 16px;
-        height: 16px;
-        margin-right: 10px;
-    }
-
-    .voucherName {
-        font-size: 11px;
-    }
-
-    .voucherDiscount {
-        font-size: 10px;
-    }
-
-    .totalmoney {
-        font-size: 20px;
-    }
-
-    .btnPayment {
-        padding: 12px 16px;
-        font-size: 13px;
-        margin-top: 15px;
-    }
-
-    .paymentForm {
-        padding: 25px 15px;
-        width: 95%;
-    }
-
-    .paymentFormTitle {
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-
-    .paymentOptions {
+    .cartItemActions {
         flex-direction: column;
     }
 
-    .paymentFormBtn {
+    .cartItemBtn {
         width: 100%;
-        min-width: 100%;
-        padding: 12px 16px;
     }
 }

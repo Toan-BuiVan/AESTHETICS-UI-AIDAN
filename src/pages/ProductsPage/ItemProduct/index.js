@@ -31,32 +31,30 @@ function ItemProduct({ product, onSuccess, onClick }) {
 
     const handleAddToCart = async (e) => {
         e.stopPropagation();
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
-        const userID = localStorage.getItem('userID') || '';
+        const customerId = localStorage.getItem('customerId');
+        const token = localStorage.getItem('token');
 
-        if (!userID) {
+        if (!customerId) {
             onSuccess('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
             return;
         }
 
-        const productID = product.id || product.productID;
+        const productId = product.id || product.productID;
+        const priceAtAdd = product.sellingPrice || 0;
+
         const requestData = {
-            userID: userID,
-            productID: productID,
+            customerId: customerId,
+            productId: productId,
             quantity: 1,
+            priceAtAdd: priceAtAdd,
         };
 
         const headers = {
             'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
             Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
         };
 
-        const apiUrl = 'http://localhost:5262/api/CartProduct/Insert_CartProduct';
+        const apiUrl = 'http://localhost:5122/api/CartProduct/createcartproduct';
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -65,16 +63,11 @@ function ItemProduct({ product, onSuccess, onClick }) {
             });
 
             const responseData = await response.json();
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
 
             if (response.ok) {
                 onSuccess(responseData.resposeMessage || 'Thêm vào giỏ hàng thành công!');
             } else {
-                throw new Error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                throw new Error(responseData.resposeMessage || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
             }
         } catch (error) {
             console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);

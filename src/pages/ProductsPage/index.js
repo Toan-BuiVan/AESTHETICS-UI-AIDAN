@@ -21,9 +21,9 @@ function ProductsPage() {
     const [suppliers, setSuppliers] = useState([]);
     const pageSize = 12;
 
-    const debouncedProductName = useDebounce(productName, 300);
-    const debouncedSelectedServiceTypeId = useDebounce(selectedServiceTypeId, 300);
-    const debouncedSelectedSupplierId = useDebounce(selectedSupplierId, 300);
+    const debouncedProductName = useDebounce(productName, 3000);
+    const debouncedSelectedServiceTypeId = useDebounce(selectedServiceTypeId, 3000);
+    const debouncedSelectedSupplierId = useDebounce(selectedSupplierId, 3000);
 
     // Fetch service types and suppliers on component mount
     useEffect(() => {
