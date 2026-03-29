@@ -10,43 +10,118 @@ const cx = classNames.bind(styles);
 function CartProduct() {
     const [invoiceItems, setInvoiceItems] = useState([]);
     const [vouchers, setVouchers] = useState([]);
+    const [loadingVouchers, setLoadingVouchers] = useState(true);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
+    const [expandedVoucherId, setExpandedVoucherId] = useState(null);
     const [isVouchersVisible, setIsVouchersVisible] = useState(false);
     const [successMessage, setSuccessMessage] = useState(null);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(null);
     const [checkoutType, setCheckoutType] = useState(null);
     const [discountInfo, setDiscountInfo] = useState({ discountAmount: 0, finalTotal: 0 });
+    const [hoveredVoucherId, setHoveredVoucherId] = useState(null);
     const navigate = useNavigate();
+
+    // ✅ Fetch vouchers from API when component mounts
+    useEffect(() => {
+        const fetchWalletList = async () => {
+            try {
+                const customerId = localStorage.getItem('customerId');
+                const token = localStorage.getItem('token') || '';
+                const refreshToken = localStorage.getItem('refreshToken') || '';
+
+                if (!customerId) {
+                    setLoadingVouchers(false);
+                    return;
+                }
+
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : '',
+                    'RefreshToken': refreshToken,
+                };
+
+                const response = await fetch('http://localhost:5122/api/Wallet/getwalletlist', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        customerId: parseInt(customerId),
+                    }),
+                });
+
+                // Handle token refresh
+                const newAccessToken = response.headers.get('New-AccessToken');
+                const newRefreshToken = response.headers.get('New-RefreshToken');
+                if (newAccessToken) localStorage.setItem('token', newAccessToken);
+                if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setVouchers(data.baseDatas || []);
+                } else {
+                    console.error('Failed to fetch vouchers');
+                    setVouchers([]);
+                }
+            } catch (error) {
+                console.error('Error fetching vouchers:', error);
+                setVouchers([]);
+            } finally {
+                setLoadingVouchers(false);
+            }
+        };
+
+        fetchWalletList();
+    }, []);
 
 
 
     const handleAddToInvoice = (item) => {
+        // Validate item has required properties
+        if (!item.productName || !item.sellingPrice) {
+            setSuccessMessage('❌ Lỗi: Dữ liệu sản phẩm không hợp lệ');
+            setTimeout(() => setSuccessMessage(null), 2000);
+            return;
+        }
+
+        // Ensure all required properties exist
+        const normalizedItem = {
+            ...item,
+            productID: item.productID || item.id,
+            cartProductID: item.cartProductID || item.id,
+            quantity: item.quantity || 1,
+            sellingPrice: parseFloat(item.sellingPrice) || 0,
+            productName: item.productName || 'Sản phẩm',
+            productImages: item.productImages || '',
+        };
+
         setInvoiceItems((prevItems) => {
-            // Use productID as unique identifier (standard approach)
-            const itemId = item.productID || item.id || item.cartProductID;
+            // Use productID as unique identifier
+            const itemId = normalizedItem.productID || normalizedItem.cartProductID;
             const existingItem = prevItems.find((i) => {
-                const prevItemId = i.productID || i.id || i.cartProductID;
+                const prevItemId = i.productID || i.cartProductID;
                 return prevItemId === itemId;
             });
             
             if (existingItem) {
-                // Nếu sản phẩm đã tồn tại, tăng quantity
+                // If product exists, increase quantity
                 return prevItems.map((i) => {
-                    const prevItemId = i.productID || i.id || i.cartProductID;
-                    const currentItemId = item.productID || item.id || item.cartProductID;
+                    const prevItemId = i.productID || i.cartProductID;
+                    const currentItemId = normalizedItem.productID || normalizedItem.cartProductID;
                     return prevItemId === currentItemId
-                        ? { ...i, quantity: (i.quantity || 1) + (item.quantity || 1) }
+                        ? { ...i, quantity: (i.quantity || 1) + (normalizedItem.quantity || 1) }
                         : i;
                 });
             }
             
-            // Nếu là sản phẩm mới, thêm vào
-            return [...prevItems, { ...item, quantity: item.quantity || 1 }];
+            // If new product, add to list
+            return [...prevItems, normalizedItem];
         });
         
-        // Hiển thị thông báo thêm thành công
-        setSuccessMessage(`✓ Thêm "${item.productName}" vào chi tiết đơn hàng`);
+        // Call update API for new items
+        handleUpdateCartProduct(normalizedItem);
+        
+        // Show success message
+        setSuccessMessage(`✓ Thêm "${normalizedItem.productName}" vào chi tiết đơn hàng`);
         setTimeout(() => setSuccessMessage(null), 2000);
     };
 
@@ -58,7 +133,97 @@ function CartProduct() {
     };
 
     const handleRemoveFromInvoice = (index) => {
+        const itemToDelete = invoiceItems[index];
+        
+        // Call delete API
+        handleDeleteCartProduct(itemToDelete);
+        
+        // Remove from local state
         setInvoiceItems((prevItems) => prevItems.filter((_, i) => i !== index));
+        setSuccessMessage(`✓ Xóa "${itemToDelete.productName}" khỏi chi tiết đơn hàng`);
+        setTimeout(() => setSuccessMessage(null), 2000);
+    };
+
+    // ✅ Delete CartProduct API
+    const handleDeleteCartProduct = async (item) => {
+        try {
+            const customerId = localStorage.getItem('customerId');
+            const token = localStorage.getItem('token') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+            
+            if (!customerId || !item.cartProductID) return;
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
+            };
+
+            const response = await fetch(
+                `http://localhost:5122/api/CartProduct/delete?cartProductID=${item.cartProductID}`,
+                {
+                    method: 'DELETE',
+                    headers: headers,
+                }
+            );
+
+            const newAccessToken = response.headers.get('New-AccessToken');
+            const newRefreshToken = response.headers.get('New-RefreshToken');
+            if (newAccessToken) localStorage.setItem('token', newAccessToken);
+            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+            if (!response.ok) {
+                console.error('Failed to delete cart product');
+            }
+        } catch (error) {
+            console.error('Error deleting cart product:', error);
+        }
+    };
+
+    // ✅ Update CartProduct API
+    const handleUpdateCartProduct = async (item) => {
+        try {
+            const customerId = localStorage.getItem('customerId');
+            const token = localStorage.getItem('token') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+            
+            if (!customerId || !item.cartProductID) return;
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
+            };
+
+            const body = {
+                cartProductID: item.cartProductID,
+                productID: item.productID || item.id,
+                customerId: parseInt(customerId),
+                quantity: item.quantity,
+                sellingPrice: item.sellingPrice,
+            };
+
+            const response = await fetch(
+                'http://localhost:5122/api/CartProduct/update',
+                {
+                    method: 'PUT',
+                    headers: headers,
+                    body: JSON.stringify(body),
+                }
+            );
+
+            const newAccessToken = response.headers.get('New-AccessToken');
+            const newRefreshToken = response.headers.get('New-RefreshToken');
+            if (newAccessToken) localStorage.setItem('token', newAccessToken);
+            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Failed to update cart product:', errorData);
+            }
+        } catch (error) {
+            console.error('Error updating cart product:', error);
+        }
     };
 
     const handleCheckout = (index) => {
@@ -124,15 +289,15 @@ function CartProduct() {
             const item = invoiceItems[0];
             body = {
                 customerID: userID,
-                voucherID: selectedVoucher ? selectedVoucher.voucherID : null,
-                productIDs: [item.productID],
+                voucherID: selectedVoucher ? (selectedVoucher.voucherID || selectedVoucher.id) : null,
+                productIDs: [item.productID || item.id],
                 quantityProduct: [item.quantity],
             };
         } else {
             body = {
                 customerID: userID,
-                voucherID: selectedVoucher ? selectedVoucher.voucherID : null,
-                productIDs: invoiceItems.map((item) => item.productID),
+                voucherID: selectedVoucher ? (selectedVoucher.voucherID || selectedVoucher.id) : null,
+                productIDs: invoiceItems.map((item) => item.productID || item.id),
                 quantityProduct: invoiceItems.map((item) => item.quantity),
             };
         }
@@ -289,58 +454,202 @@ function CartProduct() {
                                 </div>
                             ) : (
                                 <div className={cx('emptyState')}>
-                                    <p>🛍️ Giỏ hàng của bạn trống</p>
+                                    <p>🛍️ Đơn hàng của bạn trống</p>
                                 </div>
                             )}
                         </div>
 
                         {/* Vouchers */}
-                        <div className={cx('vouchersDetail')}>
-                            <h2 className={cx('vouchersTitle')}>ĐIỀU KIỆN ĐẶC BIỆT</h2>
-                            <button
-                                className={cx('voucherToggleBtn')}
-                                onClick={toggleVouchersVisibility}
-                            >
-                                {isVouchersVisible ? '▼ ẨN ĐỀ XUẤT' : '▶ XEM ĐỀ XUẤT'}
-                            </button>
+                        <div className={cx('vouchersDetail', {
+                            'expanded': expandedVoucherId !== null
+                        })}>
+                            <div className={cx('voucherHeader')}>
+                                <h2 className={cx('vouchersTitle')}>🎁 ĐIỀU KIỆN ĐẶC BIỆT</h2>
+                                <span className={cx('voucherCountBadge')}>
+                                    {vouchers.filter(v => !v.isUsed).length} khả dụng
+                                </span>
+                            </div>
 
-                            {isVouchersVisible && (
-                                <div className={cx('voucherList')}>
-                                    {Array.isArray(vouchers) && vouchers.length > 0 ? (
-                                        vouchers.map((voucher) => (
-                                            <label 
-                                                key={voucher.voucherID} 
-                                                className={cx('voucherItem', {
-                                                    selected: selectedVoucher?.voucherID === voucher.voucherID
-                                                })}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    className={cx('voucherRadio')}
-                                                    name="voucher"
-                                                    value={voucher.voucherID}
-                                                    checked={selectedVoucher?.voucherID === voucher.voucherID}
-                                                    onChange={() => setSelectedVoucher(voucher)}
-                                                />
-                                                <div className={cx('voucherContent')}>
-                                                    <h4 className={cx('voucherName')}>{voucher.code}</h4>
-                                                    <p className={cx('voucherDiscount')}>Tiết kiệm {voucher.discountValue}%</p>
-                                                </div>
-                                            </label>
-                                        ))
-                                    ) : (
-                                        <p className={cx('emptyState')}>Không có đề xuất nào khả dụng</p>
+                            {!loadingVouchers && vouchers.length > 0 && (
+                                <>
+                                    <button
+                                        className={cx('voucherToggleBtn')}
+                                        onClick={toggleVouchersVisibility}
+                                    >
+                                        {isVouchersVisible ? '▼ ẨN ĐỀ XUẤT' : '▶ XEM ĐỀ XUẤT'}
+                                    </button>
+
+                                    {isVouchersVisible && (
+                                        <div className={cx('voucherPillsList')}>
+                                            {Array.isArray(vouchers) && vouchers.length > 0 ? (
+                                                vouchers.map((voucher) => {
+                                                    // Map API field names
+                                                    const voucherId = voucher.voucherId || voucher.id || voucher.voucherID;
+                                                    const voucherCode = voucher.voucherCode || voucher.code || 'N/A';
+                                                    const discountValue = voucher.discountValue || 0;
+                                                    const minimumOrder = voucher.minimumOrderValue || 0;
+                                                    const maxValue = voucher.maxValue || 0;
+                                                    const rankMember = voucher.rankMember || 'Member';
+                                                    const isActive = voucher.isActive !== false;
+                                                    const isUsed = voucher.isUsed === true;
+
+                                                    if (!isActive || isUsed) return null;
+
+                                                    const voucherDescription = voucher.voucherDescription || 'Khuyến mãi đặc biệt';
+                                                    const voucherImage = voucher.voucherImage;
+                                                    const startDate = voucher.startDate ? new Date(voucher.startDate).toLocaleDateString('vi-VN') : 'N/A';
+                                                    const endDate = voucher.endDate ? new Date(voucher.endDate).toLocaleDateString('vi-VN') : 'N/A';
+
+                                                    const isSelected = selectedVoucher?.voucherId === voucherId || 
+                                                                    selectedVoucher?.id === voucherId ||
+                                                                    selectedVoucher?.voucherID === voucherId;
+
+                                                    return (
+                                                        <>
+                                                        <div 
+                                                            key={voucherId} 
+                                                            className={cx('voucherPill', {
+                                                                selected: isSelected,
+                                                                expanded: expandedVoucherId === voucherId
+                                                            })}
+                                                            onClick={() => setExpandedVoucherId(expandedVoucherId === voucherId ? null : voucherId)}
+                                                            onMouseEnter={() => setHoveredVoucherId(voucherId)}
+                                                            onMouseLeave={() => setHoveredVoucherId(null)}
+                                                        >
+                                                            {/* Discount Badge */}
+                                                            <div className={cx('pillDiscount')}>
+                                                                {voucherImage ? (
+                                                                    <img 
+                                                                        src={`http://localhost:5122/Images/${voucherImage}`} 
+                                                                        alt="voucher"
+                                                                        className={cx('discountImage')}
+                                                                        onError={(e) => e.target.style.display = 'none'}
+                                                                    />
+                                                                ) : (
+                                                                    <div style={{
+                                                                        background: 'linear-gradient(135deg, #00d4ff, #ff6b9d)',
+                                                                        width: '100%',
+                                                                        height: '100%',
+                                                                    }} />
+                                                                )}
+                                                                <span className={cx('discountPercent')}>
+                                                                    {discountValue}%
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Voucher Info */}
+                                                            <div className={cx('pillInfo')}>
+                                                                <span className={cx('pillCode')}>
+                                                                    {voucherCode}
+                                                                </span>
+                                                                <span className={cx('pillRank')}>
+                                                                    {rankMember}
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Min Order */}
+                                                            <div className={cx('pillDetails')}>
+                                                                <span className={cx('minOrder')}>
+                                                                    Tối thiểu: {(minimumOrder / 1000).toLocaleString()}K
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Select Button */}
+                                                            <button
+                                                                className={cx('selectBtn')}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedVoucher(voucher);
+                                                                }}
+                                                                type="button"
+                                                            >
+                                                                {isSelected ? '✓' : '+'}
+                                                            </button>
+
+                                                        </div>
+
+                                                        {/* Expanded Details Panel - Shows below voucher when clicked */}
+                                                        {expandedVoucherId === voucherId && (
+                                                        <div className={cx('voucherExpandedDetails')}>
+                                                            <div className={cx('expandDetailHeader')}>
+                                                                {voucherImage && (
+                                                                    <div className={cx('expandDetailImage')}>
+                                                                        <img 
+                                                                            src={`http://localhost:5122/Images/${voucherImage}`} 
+                                                                            alt={voucherCode}
+                                                                            onError={(e) => e.target.src = 'https://via.placeholder.com/80?text=Voucher'}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                                <div className={cx('expandDetailInfo')}>
+                                                                    <h3 className={cx('expandDetailCode')}>{voucherCode}</h3>
+                                                                    <p className={cx('expandDetailDesc')}>{voucherDescription}</p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className={cx('expandDetailMeta')}>
+                                                                <div className={cx('metaRow')}>
+                                                                    <span className={cx('metaLabel')}>Giảm tối đa:</span>
+                                                                    <span className={cx('metaValue')}>{(maxValue).toLocaleString()}₫</span>
+                                                                </div>
+                                                                <div className={cx('metaRow')}>
+                                                                    <span className={cx('metaLabel')}>Áp dụng cho:</span>
+                                                                    <span className={cx('metaValue')}>{rankMember}</span>
+                                                                </div>
+                                                                <div className={cx('metaRow')}>
+                                                                    <span className={cx('metaLabel')}>Đơn tối thiểu:</span>
+                                                                    <span className={cx('metaValue')}>{(minimumOrder / 1000).toLocaleString()}K</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className={cx('expandDetailFooter')}>
+                                                                <span className={cx('expandDetailDate')}>📅 Từ {startDate} đến {endDate}</span>
+                                                                <button
+                                                                    className={cx('useVoucherBtn')}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedVoucher(voucher);
+                                                                        setSuccessMessage('✓ Voucher đã được áp dụng');
+                                                                        setTimeout(() => setSuccessMessage(null), 2000);
+                                                                    }}
+                                                                    type="button"
+                                                                >
+                                                                    SỬ DỤNG
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        )}
+                                                        </>
+                                                    );
+                                                }).filter(Boolean)
+                                            ) : (
+                                                <p className={cx('emptyState')}>Không có đề xuất nào khả dụng</p>
+                                            )}
+                                        </div>
                                     )}
-                                </div>
+
+                                    {selectedVoucher && (
+                                        <div className={cx('selectedVoucher')}>
+                                            <div className={cx('selectedVoucherContent')}>
+                                                <span className={cx('selectedLabel')}>✓ Đã áp dụng</span>
+                                                <strong className={cx('selectedCode')}>
+                                                    {selectedVoucher.voucherCode || selectedVoucher.code}
+                                                </strong>
+                                                <span className={cx('selectedSaving')}>
+                                                    Tiết kiệm {discountInfo.discountAmount.toLocaleString()} VND
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
 
-                            {selectedVoucher && (
-                                <div className={cx('selectedVoucher')}>
-                                    <p className={cx('selectedVoucherTitle')}>ĐÃ ÁP DỤNG ĐỀ XUẤT</p>
-                                    <p className={cx('selectedVoucherInfo')}>
-                                        {selectedVoucher.code} • Bạn tiết kiệm {discountInfo.discountAmount.toLocaleString()} VND
-                                    </p>
-                                </div>
+                            {!loadingVouchers && vouchers.length === 0 && (
+                                <p className={cx('emptyState')}>Không có đề xuất nào khả dụng</p>
+                            )}
+
+                            {loadingVouchers && (
+                                <p className={cx('emptyState')}>Đang tải đề xuất...</p>
                             )}
                         </div>
 

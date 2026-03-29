@@ -28,6 +28,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [deleteConfirmingCommentId, setDeleteConfirmingCommentId] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [imageChanged, setImageChanged] = useState(false);
 
     useEffect(() => {
         const customerId = localStorage.getItem('customerId');
@@ -291,26 +292,42 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
         setEditingCommentImage(null);
         setEditingCommentImagePreview('');
         setEditingRating(0);
+        setImageChanged(false);
     };
 
     const handleEditComment = (comment) => {
         setEditingCommentId(comment.id);
         setEditingCommentContent(comment.commentContent);
         const imageUrl = comment.commentImage ? `http://localhost:5122/Images/${comment.commentImage}` : '';
-        setEditingCommentImage(imageUrl);
-        setEditingCommentImagePreview(imageUrl);
+        setEditingCommentImage(null);  // ✅ Don't set URL, keep null
+        setEditingCommentImagePreview(imageUrl);  // ✅ Show existing image in preview
         setEditingRating(comment.rating || 0);
+        setImageChanged(false);  // ✅ Mark image as unchanged
         setShowEditModal(true);
     };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Validate file size (max 5MB)
+            const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+            if (file.size > MAX_SIZE) {
+                setSuccessMessage('Ảnh quá lớn (tối đa 5MB)');
+                setTimeout(() => setSuccessMessage(null), 2000);
+                return;
+            }
+
             const reader = new FileReader();
             reader.onloadend = () => {
-                const base64Data = reader.result;
-                setEditingCommentImage(base64Data);
-                setEditingCommentImagePreview(base64Data);
+                const fullBase64 = reader.result;
+                // ✅ Extract only base64 part (remove "data:image/...;base64," prefix)
+                const base64Data = fullBase64.includes(',') 
+                    ? fullBase64.split(',')[1] 
+                    : fullBase64;
+                
+                setEditingCommentImage(base64Data); // Store pure base64 for API
+                setEditingCommentImagePreview(fullBase64); // Keep full URL for preview
+                setImageChanged(true);  // ✅ Mark that image has been changed
             };
             reader.readAsDataURL(file);
         }
@@ -337,12 +354,31 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
         };
 
         try {
+            // ✅ Only send commentImage if it was actually changed
             const requestBody = {
                 id: editingCommentId,
                 commentContent: editingCommentContent,
-                commentImage: editingCommentImage,
                 rating: editingRating,
             };
+
+            // ✅ Only add commentImage if user uploaded a NEW image
+            if (imageChanged && editingCommentImage && editingCommentImage.trim()) {
+                // Validate base64 format (should not contain data: prefix)
+                if (editingCommentImage.includes(',')) {
+                    console.warn('Warning: Base64 contains data URL prefix, extracting...');
+                    requestBody.commentImage = editingCommentImage.split(',')[1];
+                } else {
+                    requestBody.commentImage = editingCommentImage;
+                }
+            }
+
+            console.log('Update comment payload:', {
+                id: editingCommentId,
+                contentLength: editingCommentContent.length,
+                imageIncluded: imageChanged && editingCommentImage ? true : false,
+                imageLength: (imageChanged && editingCommentImage) ? editingCommentImage.length : 0,
+                rating: editingRating,
+            });
 
             const response = await fetch('http://localhost:5122/api/Comment/updatecomment', {
                 method: 'POST',
@@ -365,12 +401,14 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                 closeEditModal();
                 setTimeout(() => setSuccessMessage(null), 2000);
             } else {
+                const errorData = await response.json();
+                console.error('API error response:', errorData);
                 setSuccessMessage('Có lỗi xảy ra khi cập nhật bình luận');
                 setTimeout(() => setSuccessMessage(null), 2000);
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật bình luận:', error);
-            setSuccessMessage('Lỗi khi cập nhật bình luận');
+            setSuccessMessage('Lỗi khi cập nhật bình luận: ' + error.message);
             setTimeout(() => setSuccessMessage(null), 2000);
         }
     };
@@ -488,6 +526,8 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                     )}
                 </div>
             </div>
+
+            {/* ĐIỀU KIỆN ĐẶC BIỆT / Vouchers Section - REMOVED (Only show at checkout) */}
 
             {/* Comments Section */}
             {!loadingComments && comments.length > 0 && (

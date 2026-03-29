@@ -8,13 +8,121 @@ const cx = classNames.bind(styles);
 
 function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
     const [quantity, setQuantity] = useState(item.quantity);
-    const debouncedQuantity = useDebounce(quantity, 500);
+    const [statusMessage, setStatusMessage] = useState(null);
+    const debouncedQuantity = useDebounce(quantity, 2000); // 2 seconds debounce
 
     useEffect(() => {
         if (debouncedQuantity !== item.quantity) {
+            // Call update API
+            handleUpdateQuantity(debouncedQuantity);
             onQuantityChange(item.id, debouncedQuantity);
         }
     }, [debouncedQuantity, item.id, item.quantity, onQuantityChange]);
+
+    // ✅ Update CartProduct API
+    const handleUpdateQuantity = async (newQuantity) => {
+        try {
+            const token = localStorage.getItem('token') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+            
+            const cartProductId = item.cartProductID || item.id;
+            if (!cartProductId) {
+                setStatusMessage('❌ Lỗi: ID sản phẩm không hợp lệ');
+                setTimeout(() => setStatusMessage(null), 2000);
+                return;
+            }
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
+            };
+
+            const response = await fetch(
+                'http://localhost:5122/api/CartProduct/updatecartproduct',
+                {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        cartProductId: parseInt(cartProductId),
+                        quantity: newQuantity,
+                    }),
+                }
+            );
+
+            const newAccessToken = response.headers.get('New-AccessToken');
+            const newRefreshToken = response.headers.get('New-RefreshToken');
+            if (newAccessToken) localStorage.setItem('token', newAccessToken);
+            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+            const data = await response.json();
+            
+            if (data.success) {
+                setStatusMessage(`✓ Cập nhật số lượng thành công`);
+            } else {
+                setStatusMessage('❌ Cập nhật số lượng thất bại');
+            }
+            setTimeout(() => setStatusMessage(null), 2000);
+        } catch (error) {
+            console.error('Error updating cart product:', error);
+            setStatusMessage('❌ Lỗi khi cập nhật: ' + error.message);
+            setTimeout(() => setStatusMessage(null), 2000);
+        }
+    };
+
+    // ✅ Delete CartProduct API
+    const handleDeleteItem = async () => {
+        try {
+            const token = localStorage.getItem('token') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+            
+            const cartProductId = item.cartProductID || item.id;
+            if (!cartProductId) {
+                setStatusMessage('❌ Lỗi: ID sản phẩm không hợp lệ');
+                setTimeout(() => setStatusMessage(null), 2000);
+                return;
+            }
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
+            };
+
+            const response = await fetch(
+                'http://localhost:5122/api/CartProduct/deletecartproduct',
+                {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        cartProductId: parseInt(cartProductId),
+                    }),
+                }
+            );
+
+            const newAccessToken = response.headers.get('New-AccessToken');
+            const newRefreshToken = response.headers.get('New-RefreshToken');
+            if (newAccessToken) localStorage.setItem('token', newAccessToken);
+            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+            const data = await response.json();
+            
+            if (data.success) {
+                setStatusMessage(`✓ Xóa "${item.productName}" thành công`);
+                setTimeout(() => {
+                    onDelete(item.id);
+                    setStatusMessage(null);
+                }, 1500);
+            } else {
+                setStatusMessage('❌ Xóa sản phẩm thất bại');
+                setTimeout(() => setStatusMessage(null), 2000);
+            }
+        } catch (error) {
+            console.error('Error deleting cart product:', error);
+            setStatusMessage('❌ Lỗi khi xóa: ' + error.message);
+            setTimeout(() => setStatusMessage(null), 2000);
+        }
+    };
 
     const handleIncrease = () => setQuantity(quantity + 1);
     const handleDecrease = () => {
@@ -97,7 +205,7 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
                 <div className={cx('btn-actions')}>
                     <button 
                         className={cx('delete-button')} 
-                        onClick={() => onDelete(item.id)}
+                        onClick={handleDeleteItem}
                         title="Xóa khỏi giỏ"
                         aria-label="Delete from cart"
                     >
@@ -114,6 +222,13 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
                         <span>Thanh Toán</span>
                     </button>
                 </div>
+
+                {/* Status Message */}
+                {statusMessage && (
+                    <div className={cx('status-message', statusMessage.includes('✓') ? 'success' : 'error')}>
+                        {statusMessage}
+                    </div>
+                )}
             </div>
         </div>
     );
