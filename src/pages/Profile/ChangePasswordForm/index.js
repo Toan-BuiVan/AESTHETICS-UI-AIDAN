@@ -115,26 +115,29 @@ function ChangePasswordForm() {
         };
 
         const data = {
-            userID: parseInt(userID),
-            passWord: newPassword,
+            id: parseInt(userID),
+            originPassWord: currentPassword,
+            newPassWord: newPassword,
         };
 
         try {
-            const response = await fetch('http://localhost:5262/api/Users/ChangePassword', {
+            const response = await fetch('http://localhost:5122/api/Account/updateaccount', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(data),
             });
 
             const result = await response.json();
-            if (response.ok) {
-                setSuccessMessage(result.returnMessage || 'Đổi mật khẩu thành công!');
+            
+            // API trả về true/false
+            if (result === true || result.success === true) {
+                setSuccessMessage('Đổi mật khẩu thành công!');
                 setCurrentPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
                 setPasswordStrength(0);
             } else {
-                setError(result.returnMessage || 'Đổi mật khẩu thất bại!');
+                setError(result.returnMessage || result.message || 'Đổi mật khẩu thất bại!');
             }
 
             const newAccessToken = response.headers.get('New-AccessToken');

@@ -1,3 +1,7 @@
+// ==========================================
+// USE VOUCHER - RESPONSIVE DESIGN SYSTEM
+// ==========================================
+
 // Colors & Gradients
 $color-primary: #4299e1;
 $color-accent: #f5576c;
@@ -6,6 +10,10 @@ $color-text-light: #718096;
 $color-bg-light: #f7fafc;
 $color-white: #ffffff;
 $color-border: #e2e8f0;
+
+// ==========================================
+// ANIMATIONS
+// ==========================================
 
 @keyframes slideUp {
     from {
@@ -36,50 +44,320 @@ $color-border: #e2e8f0;
     }
 }
 
+// ==========================================
+// MAIN CONTAINER
+// ==========================================
+
 .voucher-section {
-    padding: 32px 20px;
+    padding: clamp(20px, 5vw, 32px) clamp(12px, 4vw, 20px);
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     animation: fadeIn 0.3s ease-in;
+}
 
-    h2 {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: $color-text;
-        margin-bottom: 32px;
+// ==========================================
+// SECTION HEADER
+// ==========================================
+
+.section-header {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 3vw, 20px);
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: clamp(24px, 5vw, 40px);
+    animation: slideUp 0.5s ease-out;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.3));
+    backdrop-filter: blur(10px);
+    padding: clamp(16px, 4vw, 22px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+    .header-content {
+        flex: 1;
+        width: 100%;
+
+        h2 {
+            font-size: clamp(1.6rem, 6vw, 2.8rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 clamp(8px, 2vw, 12px) 0;
+            display: flex;
+            align-items: center;
+            gap: clamp(10px, 3vw, 16px);
+            letter-spacing: -0.5px;
+            line-height: 1.3;
+            flex-wrap: wrap;
+
+            .header-icon {
+                font-size: clamp(1.2rem, 5vw, 2.4rem);
+                color: #667eea;
+                filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.3));
+                flex-shrink: 0;
+            }
+        }
+
+        .header-subtitle {
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            color: #718096;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+    }
+
+    .voucher-count {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: clamp(8px, 2vw, 12px);
+        padding: clamp(10px, 2.5vw, 14px) clamp(14px, 3vw, 20px);
+        background: linear-gradient(135deg, rgba(66, 153, 225, 0.1), rgba(246, 87, 108, 0.1));
+        border: 1.5px solid rgba(66, 153, 225, 0.2);
+        border-radius: 12px;
+        font-weight: 700;
+        color: $color-text;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        line-height: 1.4;
+        white-space: nowrap;
 
-        .header-icon {
-            color: $color-primary;
-            font-size: 2rem;
+        .count-number {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .count-label {
+            color: $color-text-light;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
         }
     }
 }
 
-.section-header {
-    margin-bottom: 32px;
-    animation: slideUp 0.5s ease-out;
+// ==========================================
+// VOUCHER LIST - RESPONSIVE ROW LAYOUT
+// ==========================================
+
+.voucher-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2.5vw, 12px);
+    animation: slideUp 0.6s ease-out;
 }
+
+.voucher-row {
+    display: grid;
+    grid-template-columns: 0.6fr 1.5fr 2fr 1.5fr 0.8fr 1fr;
+    align-items: center;
+    gap: clamp(10px, 2.5vw, 12px);
+    padding: clamp(12px, 3vw, 14px) clamp(14px, 3vw, 16px);
+    background: $color-white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border-left: 4px solid transparent;
+    animation: slideUp 0.5s ease-out;
+
+    &:hover {
+        transform: translateX(4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        border-left-color: #667eea;
+
+        .row-discount {
+            transform: scale(1.05);
+        }
+    }
+
+    &.used {
+        opacity: 0.7;
+        filter: grayscale(50%) brightness(0.98);
+        border-left-color: #4caf50;
+
+        .status-badge.used {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+        }
+    }
+
+    .row-discount {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(50px, 10vw, 70px);
+        height: clamp(50px, 10vw, 70px);
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border-radius: 10px;
+        color: $color-white;
+        box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+        transition: transform 0.3s ease;
+        position: relative;
+        flex-shrink: 0;
+
+        .discount-percent {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+    }
+
+    .row-code {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(2px, 0.5vw, 4px);
+        min-width: 0;
+
+        .code-text {
+            font-size: clamp(0.85rem, 2.5vw, 1.2rem);
+            font-weight: 900;
+            color: $color-text;
+            margin: 0;
+            letter-spacing: 0.8px;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #2d3748 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            user-select: all;
+            line-height: 1.3;
+        }
+
+        .code-desc {
+            font-size: clamp(0.65rem, 2vw, 0.75rem);
+            color: $color-text-light;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.4;
+        }
+    }
+
+    .row-details {
+        display: flex;
+        gap: clamp(8px, 2vw, 12px);
+        align-items: center;
+        flex-wrap: wrap;
+
+        .detail-item {
+            display: flex;
+            gap: clamp(3px, 1vw, 5px);
+            align-items: center;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            color: $color-text;
+            white-space: nowrap;
+            line-height: 1.4;
+
+            strong {
+                color: #f5576c;
+                font-weight: 700;
+            }
+        }
+    }
+
+    .row-expiry {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1px, 0.5vw, 2px);
+
+        .expiry-label {
+            font-size: clamp(0.65rem, 1.5vw, 0.7rem);
+            font-weight: 600;
+            color: $color-text-light;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .expiry-date {
+            font-size: clamp(0.85rem, 2vw, 0.9rem);
+            font-weight: 700;
+            color: $color-text;
+            line-height: 1.3;
+        }
+    }
+
+    .row-rank {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(5px, 1.5vw, 6px) clamp(8px, 2vw, 10px);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(102, 126, 234, 0.05));
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        border-radius: 8px;
+        font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+        font-weight: 700;
+        color: #667eea;
+        white-space: nowrap;
+        line-height: 1.3;
+
+        span {
+            display: flex;
+            align-items: center;
+            gap: clamp(2px, 1vw, 4px);
+        }
+    }
+
+    .row-status {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .status-badge {
+            padding: clamp(5px, 1.5vw, 6px) clamp(10px, 2vw, 12px);
+            border-radius: 8px;
+            font-size: clamp(0.65rem, 1.8vw, 0.75rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            line-height: 1.3;
+
+            &.active {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: $color-white;
+                box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+            }
+
+            &.used {
+                background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08));
+                color: #4caf50;
+                border: 1px solid rgba(76, 175, 80, 0.3);
+                box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+            }
+        }
+    }
+}
+
+// ==========================================
+// LOADING & ERROR STATES
+// ==========================================
 
 .loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80px 20px;
-    gap: 16px;
+    padding: clamp(40px, 10vw, 80px) clamp(12px, 4vw, 20px);
+    gap: clamp(12px, 3vw, 16px);
 
     .spinner-icon {
-        font-size: 3rem;
+        font-size: clamp(2rem, 6vw, 3rem);
         color: $color-primary;
         animation: spin 1s linear infinite;
     }
 
     p {
-        font-size: 1.1rem;
+        font-size: clamp(0.95rem, 3vw, 1.1rem);
         color: $color-text-light;
+        line-height: 1.5;
     }
 }
 
@@ -88,343 +366,268 @@ $color-border: #e2e8f0;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 20px;
-    gap: 16px;
+    padding: clamp(40px, 10vw, 60px) clamp(12px, 4vw, 20px);
+    gap: clamp(12px, 3vw, 16px);
     background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
     border-radius: 16px;
     border: 2px solid #f56565;
 
     .error-icon {
-        font-size: 3rem;
+        font-size: clamp(2rem, 6vw, 3rem);
         color: #f56565;
     }
 
     p {
-        font-size: 1.1rem;
+        font-size: clamp(0.95rem, 3vw, 1.1rem);
         color: $color-text;
         text-align: center;
+        line-height: 1.5;
     }
 }
 
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 20px;
-    background: $color-white;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    gap: 16px;
+// ==========================================
+// RESPONSIVE BREAKPOINTS
+// ==========================================
 
-    .empty-icon {
-        font-size: 4rem;
-        color: $color-text-light;
-        opacity: 0.5;
-    }
+@media (min-width: 993px) and (max-width: 1199px) {
+    .voucher-row {
+        grid-template-columns: 0.55fr 1.3fr 1.8fr 1.3fr 0.75fr 0.9fr;
+        gap: 10px;
+        padding: 12px 13px;
 
-    .empty-text {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: $color-text;
-    }
-
-    .empty-subtext {
-        font-size: 1rem;
-        color: $color-text-light;
-    }
-}
-
-.voucher-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
-    animation: slideUp 0.6s ease-out;
-}
-
-.voucher-card {
-    background: linear-gradient(135deg, $color-white 0%, #fafbfc 100%);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    animation: slideUp 0.5s ease-out;
-    border: 2px solid transparent;
-    position: relative;
-
-    &:hover {
-        transform: translateY(-12px) scale(1.02);
-        box-shadow: 0 24px 56px rgba(80, 120, 200, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
-        border-color: rgba(66, 153, 225, 0.3);
-
-        .card-header {
-            .voucher-image {
-                transform: scale(1.15);
-                filter: brightness(1.1);
-            }
+        .row-code .code-text {
+            font-size: 1.05rem;
         }
 
-        .discount-section {
-            transform: scale(1.08);
-            filter: brightness(1.15);
-        }
-    }
-
-    &.used {
-        opacity: 0.7;
-        filter: grayscale(60%);
-
-        .voucher-image {
-            filter: brightness(0.9);
-        }
-    }
-
-    .card-header {
-        position: relative;
-        width: 100%;
-        height: 160px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        overflow: hidden;
-
-        .voucher-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .voucher-image-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-            opacity: 0.5;
-        }
-
-        .rank-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #764ba2;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 10;
-            backdrop-filter: blur(10px);
-            letter-spacing: 0.5px;
-        }
-
-        .used-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(72, 187, 120, 0.9);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
+        .row-details, .row-rank {
             font-size: 0.8rem;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
-            z-index: 10;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-    }
-
-    .card-body {
-        flex: 1;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-
-        .discount-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            padding: 12px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 12px;
-            color: $color-white;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.2);
-
-            .discount-value {
-                font-size: 2.2rem;
-                font-weight: 900;
-                line-height: 1;
-            }
-
-            .discount-label {
-                font-size: 0.9rem;
-                font-weight: 800;
-                margin-bottom: 2px;
-            }
-        }
-
-        .details-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-
-            .voucher-code-box {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 12px;
-                background: linear-gradient(135deg, rgba(66, 153, 225, 0.1), rgba(245, 87, 108, 0.05));
-                border-radius: 8px;
-                border: 1px solid rgba(66, 153, 225, 0.15);
-
-                .voucher-code-label {
-                    font-size: 0.8rem;
-                    color: #718096;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 0.3px;
-                }
-
-                .voucher-code-value {
-                    font-size: 1rem;
-                    font-weight: 900;
-                    color: #4299e1;
-                    font-family: 'Monaco', 'Courier New', monospace;
-                    letter-spacing: 1px;
-                }
-            }
-
-            .detail-item {
-                font-size: 0.85rem;
-                color: $color-text;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                line-height: 1.4;
-
-                .detail-icon {
-                    color: $color-primary;
-                    min-width: 14px;
-                    flex-shrink: 0;
-                }
-
-                &.end-date {
-                    color: #ed8936;
-                    font-weight: 600;
-                }
-            }
-
-            .details-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-
-                .detail-box {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 3px;
-                    padding: 10px;
-                    background: linear-gradient(135deg, rgba(66, 153, 225, 0.08), rgba(245, 87, 108, 0.04));
-                    border-radius: 8px;
-                    border: 1px solid rgba(66, 153, 225, 0.12);
-
-                    .detail-label {
-                        font-size: 0.75rem;
-                        color: #718096;
-                        font-weight: 600;
-                        text-transform: uppercase;
-                        letter-spacing: 0.3px;
-                    }
-
-                    .detail-value {
-                        font-size: 0.95rem;
-                        font-weight: 800;
-                        color: #f5576c;
-                        font-family: 'Monaco', 'Courier New', monospace;
-                    }
-                }
-            }
-        }
-    }
-
-    .card-status {
-        padding: 12px 20px;
-        background: linear-gradient(135deg, #f7fafc 0%, rgba(102, 126, 234, 0.03) 100%);
-        border-top: 1px solid rgba(66, 153, 225, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .status-badge {
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-
-            &.active {
-                background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(72, 187, 120, 0.1));
-                color: #22543d;
-                border: 1px solid rgba(72, 187, 120, 0.3);
-                box-shadow: 0 2px 8px rgba(72, 187, 120, 0.1);
-            }
-
-            &.used {
-                background: linear-gradient(135deg, rgba(160, 174, 192, 0.2), rgba(160, 174, 192, 0.1));
-                color: #4a5568;
-                border: 1px solid rgba(160, 174, 192, 0.3);
-            }
         }
     }
 }
 
-@media (max-width: 767px) {
-    .voucher-section {
-        padding: 20px 16px;
+@media (max-width: 1200px) {
+    .voucher-row {
+        grid-template-columns: 0.6fr 1.2fr 1.5fr 1.2fr 0.7fr 0.9fr;
+        gap: 10px;
+        padding: 12px 14px;
 
-        h2 {
-            font-size: 1.6rem;
-            margin-bottom: 20px;
+        .row-discount {
+            width: 60px;
+            height: 60px;
+
+            .discount-percent {
+                font-size: 1.6rem;
+            }
+        }
+
+        .row-code .code-text {
+            font-size: 1rem;
+        }
+
+        .row-details .detail-item {
+            font-size: 0.8rem;
         }
     }
+}
 
-    .voucher-grid {
-        grid-template-columns: 1fr;
+@media (max-width: 992px) {
+    .section-header {
+        flex-direction: column;
         gap: 16px;
     }
 
-    .voucher-card .card-body {
-        flex-direction: column;
-        gap: 12px;
+    .voucher-row {
+        grid-template-columns: 0.5fr 1fr 1.2fr 1fr 0.6fr 0.8fr;
+        gap: 8px;
+        padding: 10px 12px;
 
-        .discount-section {
-            width: 100%;
+        .row-discount {
+            width: 55px;
+            height: 55px;
+
+            .discount-percent {
+                font-size: 1.5rem;
+            }
+        }
+
+        .row-code .code-text {
+            font-size: 0.95rem;
+        }
+
+        .row-details .detail-item {
+            font-size: 0.75rem;
+        }
+
+        .row-expiry .expiry-date {
+            font-size: 0.85rem;
+        }
+
+        .row-rank {
+            font-size: 0.75rem;
+            padding: 4px 8px;
         }
     }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-    .voucher-grid {
-        grid-template-columns: repeat(2, 1fr);
+@media (max-width: 768px) {
+    .voucher-section {
+        padding: 20px 12px;
+    }
+
+    .section-header {
+        padding: 20px;
+        margin-bottom: 24px;
+
+        .header-content h2 {
+            font-size: 1.8rem;
+        }
+
+        .voucher-count {
+            width: 100%;
+        }
+    }
+
+    .voucher-row {
+        grid-template-columns: 0.5fr 1fr 1fr 0.8fr 0.6fr;
+        gap: 6px;
+        padding: 10px 10px;
+        border-radius: 8px;
+
+        .row-discount {
+            width: 50px;
+            height: 50px;
+
+            .discount-percent {
+                font-size: 1.4rem;
+            }
+        }
+
+        .row-code .code-text {
+            font-size: 0.9rem;
+        }
+
+        .row-details {
+            display: none;
+        }
+
+        .row-expiry .expiry-date {
+            font-size: 0.8rem;
+        }
+
+        .row-rank {
+            font-size: 0.7rem;
+            padding: 4px 6px;
+        }
+
+        .row-status .status-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+        }
     }
 }
 
-@media (min-width: 1024px) {
-    .voucher-grid {
-        grid-template-columns: repeat(3, 1fr);
+@media (max-width: 640px) {
+    .voucher-section {
+        padding: 16px 8px;
+    }
+
+    .section-header {
+        padding: 16px;
+        margin-bottom: 16px;
+
+        .header-content h2 {
+            font-size: 1.5rem;
+            gap: 8px;
+
+            .header-icon {
+                font-size: 1.4rem;
+            }
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem;
+        }
+
+        .voucher-count {
+            font-size: 0.85rem;
+            padding: 10px 14px;
+            min-width: auto;
+        }
+    }
+
+    .voucher-row {
+        grid-template-columns: 0.4fr 1fr 1fr 0.5fr;
+        gap: 4px;
+        padding: 8px 8px;
+        border-left-width: 3px;
+
+        .row-discount {
+            width: 45px;
+            height: 45px;
+
+            .discount-percent {
+                font-size: 1.2rem;
+            }
+        }
+
+        .row-code .code-text {
+            font-size: 0.85rem;
+        }
+
+        .row-expiry .expiry-date {
+            font-size: 0.75rem;
+        }
+
+        .row-rank {
+            display: none;
+        }
+
+        .row-status .status-badge {
+            font-size: 0.65rem;
+            padding: 4px 6px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .voucher-row {
+        grid-template-columns: 0.35fr 1fr 0.6fr;
+        gap: 3px;
+        padding: 6px 6px;
+
+        .row-discount {
+            width: 40px;
+            height: 40px;
+
+            .discount-percent {
+                font-size: 1rem;
+            }
+        }
+
+        .row-code .code-text {
+            font-size: 0.8rem;
+        }
+
+        .row-code .code-desc {
+            display: none;
+        }
+
+        .row-details {
+            display: none;
+        }
+
+        .row-expiry {
+            display: none;
+        }
+
+        .row-rank {
+            display: none;
+        }
+
+        .row-status .status-badge {
+            font-size: 0.6rem;
+            padding: 3px 6px;
+        }
     }
 }
 

@@ -5,6 +5,7 @@ import classNames from 'classnames/bind';
 import ServicePackageCard from './ServicePackageCard';
 import DoctorCard from './DoctorCard';
 import BookingSummary from './BookingSummary';
+import BookingSuccessNotification from './BookingSuccessNotification';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -14,7 +15,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter, faTimes, faCheckCircle, faClock, faCalendarAlt, faGift, faStar, faUsers, faFlask, faUserMd, faArrowRight, faSearch, faTrophy, faBriefcase, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
@@ -53,6 +53,7 @@ function ServicesPage() {
     const [inlineBookings, setInlineBookings] = useState({}); // { sessionKey: { planIndex, sessionIndex, date, time, planName, sessionNumber, sessionName } }
     const [selectedTreatmentSessions, setSelectedTreatmentSessions] = useState([]); // Array of { planIndex, sessionIndex, planName, sessionNumber, sessionName }
     const [deleteConfirmation, setDeleteConfirmation] = useState({ open: false, sessionId: null, sessionNumber: null });
+    const [treatmentPlanDeleteConfirmation, setTreatmentPlanDeleteConfirmation] = useState({ open: false, planId: null, planName: null, planIndex: null });
 
     useEffect(() => {
         fetchCustomerTreatmentPlans();
@@ -108,7 +109,7 @@ function ServicesPage() {
                                     staffId: doctor.id,
                                     doctorID: doctor.id, // For backward compatibility
                                     doctorName: doctorName,
-                                    image: doctor.staffImage || 'https://via.placeholder.com/200?text=Doctor',
+                                    image: doctor.staffImage ? `http://localhost:5122/Images/${doctor.staffImage}` : 'https://via.placeholder.com/200?text=Doctor',
                                     specialty: doctor.specialization || 'Bác sĩ chuyên khoa',
                                     rating: 4.8, // Default rating
                                     reviews: 120, // Default reviews count
@@ -262,7 +263,7 @@ function ServicesPage() {
                     doctorId: selectedDoctor.doctorID
                 });
             }
-            setSuccessMessage('Đặt lịch thành công!');
+            setSuccessMessage('Đặt lịch thành công! Vui lòng kiểm tra lịch đặt của bạn.');
             setTreatmentBooking({ planIndex: null, planData: null, sessionIds: [], sessionDates: {}, doctorId: null });
             setSelectedSessions({});
             fetchCustomerTreatmentPlans(); // Refresh
@@ -308,6 +309,41 @@ function ServicesPage() {
 
     const cancelDeleteSession = () => {
         setDeleteConfirmation({ open: false, sessionId: null, sessionNumber: null });
+    };
+
+    const handleDeleteTreatmentPlan = (planId, planName, planIndex) => {
+        setTreatmentPlanDeleteConfirmation({ open: true, planId, planName, planIndex });
+    };
+
+    const confirmDeleteTreatmentPlan = async () => {
+        const { planId, planName, planIndex } = treatmentPlanDeleteConfirmation;
+        setTreatmentPlanDeleteConfirmation({ open: false, planId: null, planName: null, planIndex: null });
+
+        try {
+            setIsLoading(true);
+            const response = await axios.post(
+                'http://localhost:5122/api/CustomerTreatmentPlans/deletecustomertreatmentplan',
+                { id: planId }
+            );
+            console.log('Delete treatment plan response:', response.data);
+            
+            setSuccessMessage(`Xóa gói liệu trình thành công!`);
+            
+            // Refresh treatment plans
+            await fetchCustomerTreatmentPlans();
+            
+            setTimeout(() => setSuccessMessage(null), 3000);
+        } catch (error) {
+            console.error('Delete treatment plan error:', error);
+            setSuccessMessage('Lỗi khi xóa gói liệu trình: ' + error.message);
+            setTimeout(() => setSuccessMessage(null), 3000);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const cancelDeleteTreatmentPlan = () => {
+        setTreatmentPlanDeleteConfirmation({ open: false, planId: null, planName: null, planIndex: null });
     };
 
     const handleSessionDateTimeChange = (planIndex, sessionIndex, dateTimeString) => {
@@ -601,7 +637,13 @@ function ServicesPage() {
 
     return (
         <div className={cx('wrapper')}>
-            {successMessage && <SuccessMessage message={successMessage} />}
+            {successMessage && (
+                <BookingSuccessNotification 
+                    message={successMessage}
+                    onClose={() => setSuccessMessage(null)}
+                    duration={4000}
+                />
+            )}
             <div className={cx('container')}>
                 {/* LEFT PANEL - Treatment Plans + Date Selection */}
                 <div className={cx('leftPanel')}>
@@ -623,14 +665,27 @@ function ServicesPage() {
                                         {/* Card Header */}
                                         <div className={cx('planCardHeader')}>
                                             <div className={cx('planTitleSection')}>
-                                                <h3 className={cx('planTitle')}>
-                                                    {plan.treatmentPlanInformation?.planName}
-                                                </h3>
-                                                <span className={cx('statusBadge', plan.customerTreatmentPlanInformation?.status?.toLowerCase())}>
-                                                    {plan.customerTreatmentPlanInformation?.status === 'ChoDatLich' && '⏳ Chờ đặt lịch'}
-                                                    {plan.customerTreatmentPlanInformation?.status === 'DangThucHien' && '🔄 Đang thực hiện'}
-                                                    {plan.customerTreatmentPlanInformation?.status === 'HoanTat' && '✓ Hoàn tất'}
-                                                </span>
+                                                <div className={cx('planTitleWrapper')}>
+                                                    <h3 className={cx('planTitle')}>
+                                                        {plan.treatmentPlanInformation?.planName}
+                                                    </h3>
+                                                    <span className={cx('statusBadge', plan.customerTreatmentPlanInformation?.status?.toLowerCase())}>
+                                                        {plan.customerTreatmentPlanInformation?.status === 'ChoDatLich' && '⏳ Chờ đặt lịch'}
+                                                        {plan.customerTreatmentPlanInformation?.status === 'DangThucHien' && '🔄 Đang thực hiện'}
+                                                        {plan.customerTreatmentPlanInformation?.status === 'HoanTat' && '✓ Hoàn tất'}
+                                                    </span>
+                                                </div>
+                                                <button 
+                                                    className={cx('deletePlanBtn')}
+                                                    onClick={() => handleDeleteTreatmentPlan(
+                                                        plan.customerTreatmentPlanInformation?.id, 
+                                                        plan.treatmentPlanInformation?.planName,
+                                                        index
+                                                    )}
+                                                    title="Xóa gói liệu trình"
+                                                >
+                                                    <FontAwesomeIcon icon={faTimes} />
+                                                </button>
                                             </div>
                                             <div className={cx('serviceName')}>
                                                 {plan.serviceInformation?.serviceName}
@@ -984,6 +1039,7 @@ function ServicesPage() {
                                                 <img
                                                     src={doctor.image}
                                                     alt={doctor.doctorName}
+                                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=Doctor'; }}
                                                 />
                                                 <div className={cx('doctorCardOverlay')}></div>
                                                 {!canSelect && (
@@ -1167,6 +1223,147 @@ function ServicesPage() {
                         disabled={isLoading}
                     >
                         {isLoading ? 'Đang xóa...' : 'Xóa buổi'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Confirmation Modal for Treatment Plan */}
+            <Dialog
+                open={treatmentPlanDeleteConfirmation.open}
+                onClose={cancelDeleteTreatmentPlan}
+                maxWidth="sm"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: '16px',
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                    }
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
+                        color: 'white',
+                        fontSize: '20px',
+                        fontWeight: '700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '24px'
+                    }}
+                >
+                    <FontAwesomeIcon icon={faExclamationTriangle} style={{ fontSize: '22px' }} />
+                    Xác nhận xóa gói liệu trình
+                </DialogTitle>
+                <DialogContent
+                    sx={{
+                        padding: '24px',
+                        background: 'linear-gradient(135deg, #fff5f5 0%, #fffbfb 100%)',
+                    }}
+                >
+                    <div style={{ marginTop: '12px' }}>
+                        <p style={{
+                            fontSize: '16px',
+                            color: '#333',
+                            lineHeight: '1.6',
+                            margin: '0 0 16px 0'
+                        }}>
+                            Bạn có chắc chắn muốn xóa gói liệu trình <strong>"{treatmentPlanDeleteConfirmation.planName}"</strong>?
+                        </p>
+                        <div style={{
+                            background: 'rgba(255, 107, 107, 0.1)',
+                            border: '1px solid rgba(255, 107, 107, 0.2)',
+                            borderRadius: '10px',
+                            padding: '12px 16px',
+                            marginTop: '16px'
+                        }}>
+                            <p style={{
+                                margin: '0 0 8px 0',
+                                fontSize: '13px',
+                                color: '#666',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span style={{
+                                    width: '6px',
+                                    height: '6px',
+                                    background: '#ff6b6b',
+                                    borderRadius: '50%',
+                                    display: 'inline-block'
+                                }}></span>
+                                Hành động này không thể hoàn tác
+                            </p>
+                            <p style={{
+                                margin: '0',
+                                fontSize: '13px',
+                                color: '#666',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span style={{
+                                    width: '6px',
+                                    height: '6px',
+                                    background: '#ff6b6b',
+                                    borderRadius: '50%',
+                                    display: 'inline-block'
+                                }}></span>
+                                Tất cả buổi điều trị sẽ bị xóa
+                            </p>
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions
+                    sx={{
+                        padding: '20px 24px',
+                        borderTop: '1px solid #eee',
+                        gap: '12px',
+                        background: '#fafafa'
+                    }}
+                >
+                    <Button
+                        onClick={cancelDeleteTreatmentPlan}
+                        variant="outlined"
+                        sx={{
+                            borderColor: '#ddd',
+                            color: '#666',
+                            borderRadius: '10px',
+                            textTransform: 'none',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            padding: '10px 24px',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                                background: '#f5f5f5',
+                                borderColor: '#ccc'
+                            }
+                        }}
+                    >
+                        Hủy
+                    </Button>
+                    <Button
+                        onClick={confirmDeleteTreatmentPlan}
+                        variant="contained"
+                        sx={{
+                            background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
+                            color: 'white',
+                            borderRadius: '10px',
+                            textTransform: 'none',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            padding: '10px 28px',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #ff5252 0%, #ee3d5f 100%)',
+                                boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                                transform: 'translateY(-2px)'
+                            }
+                        }}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Đang xóa...' : 'Xóa gói'}
                     </Button>
                 </DialogActions>
             </Dialog>

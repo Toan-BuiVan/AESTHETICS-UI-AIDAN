@@ -117,6 +117,12 @@ function Login({ onClose, setSuccessMessage }) {
                     if (data.customerId) localStorage.setItem('customerId', data.customerId);
                     if (data.staffId) localStorage.setItem('staffId', data.staffId);
                     
+                    // Dispatch custom event to notify all components of user authentication change
+                    window.dispatchEvent(new Event('userAuthenticated'));
+                    
+                    // Dispatch custom event to notify all components of user authentication change
+                    window.dispatchEvent(new Event('userAuthenticated'));
+                    
                     console.warn('Fallback to data object for IDs:', { 
                         userID: fallbackId,
                         customerId: data.customerId,
@@ -148,6 +154,9 @@ function Login({ onClose, setSuccessMessage }) {
                 localStorage.removeItem('typePerson');
                 localStorage.removeItem('deviceName');
 
+                // Dispatch custom event to notify all components of user authentication change
+                window.dispatchEvent(new Event('userAuthenticated'));
+
                 setTimeout(() => {
                     setSuccessMessage(null);
                     onClose();
@@ -165,6 +174,9 @@ function Login({ onClose, setSuccessMessage }) {
                 localStorage.removeItem('typePerson');
                 localStorage.removeItem('deviceName');
                 
+                // Dispatch custom event to notify all components of user authentication change
+                window.dispatchEvent(new Event('userLoggedOut'));
+                
                 setTimeout(() => {
                     setSuccessMessage(null);
                 }, 2000);
@@ -181,6 +193,9 @@ function Login({ onClose, setSuccessMessage }) {
             localStorage.removeItem('role');
             localStorage.removeItem('typePerson');
             localStorage.removeItem('deviceName');
+            
+            // Dispatch custom event to notify all components of user authentication change
+            window.dispatchEvent(new Event('userLoggedOut'));
             
             setTimeout(() => {
                 setSuccessMessage(null);
@@ -207,23 +222,23 @@ function Login({ onClose, setSuccessMessage }) {
         }
 
         try {
-            const response = await axios.post('http://localhost:5262/api/Users/Create_Account', {
+            const response = await axios.post('http://localhost:5122/api/Account/createaccount', {
                 userName,
                 passWord,
                 referralCode,
-                typePerson: 'Customer',
+                accountType: 0,
             });
             const data = response.data;
             console.log('Phản hồi từ API:', data);
-            if (data.responseCode === 1) {
-                const message = data.responseMessage || 'Đăng ký thành công!';
+            if (data === true || data.success === true) {
+                const message = 'Đăng ký thành công!';
                 setSuccessMessage(message);
                 setTimeout(() => {
                     setSuccessMessage(null);
                     loginFunction();
                 }, 3500);
             } else {
-                const message = data.responseMessage || 'Đăng ký thất bại.';
+                const message = 'Đăng ký thất bại.';
                 setSuccessMessage(message);
             }
         } catch (err) {

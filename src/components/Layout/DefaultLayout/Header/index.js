@@ -91,6 +91,7 @@ function Header() {
             localStorage.removeItem('typePerson');
             localStorage.removeItem('userID');
             localStorage.removeItem('userName');
+            localStorage.removeItem('role');
             if (response.data.responseCode === 1) {
                 setSuccessMessage(response.data.resposeMessage);
                 setTimeout(() => {
@@ -105,6 +106,10 @@ function Header() {
             }
 
             localStorage.clear();
+            
+            // Dispatch custom event to notify components of logout
+            window.dispatchEvent(new Event('userLoggedOut'));
+            
             setIsMenuVisible(false);
             window.location.href = '/';
         } catch (error) {
@@ -142,6 +147,10 @@ function Header() {
             localStorage.removeItem('typePerson');
             localStorage.removeItem('userID');
             localStorage.removeItem('userName');
+            localStorage.removeItem('role');
+            
+            // Dispatch custom event to notify components of logout
+            window.dispatchEvent(new Event('userLoggedOut'));
 
             setIsMenuVisible(false);
             window.location.href = '/';

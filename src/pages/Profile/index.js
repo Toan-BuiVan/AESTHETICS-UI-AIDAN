@@ -8,6 +8,7 @@ import PaymentCanceled from './PaymentCanceled';
 import PaymentOrder from './PaymentOrder';
 import UseVoucher from './UseVoucher';
 import CustomerForm from './CustomerForm';
+import StaffForm from './StaffForm';
 import MyBookings from './MyBookings';
 
 import React, { useState, useEffect } from 'react';
@@ -35,6 +36,11 @@ function Profile() {
         }
     }, [location]);
 
+    // Reset menu when user role changes (indicates login/logout)
+    useEffect(() => {
+        setSelectedMenu('account');
+    }, [userRole]);
+
     useEffect(() => {
         const storedUserName = localStorage.getItem('userName');
         const role = localStorage.getItem('role');
@@ -48,6 +54,43 @@ function Profile() {
         if (role) {
             setUserRole(parseInt(role));
         }
+
+        // Function to update user info from localStorage
+        const updateUserInfo = () => {
+            const storedUserName = localStorage.getItem('userName');
+            const role = localStorage.getItem('role');
+            
+            if (storedUserName) {
+                setUserName(storedUserName);
+            } else {
+                setUserName('Guest');
+            }
+
+            if (role) {
+                setUserRole(parseInt(role));
+            }
+        };
+
+        // Listen for storage changes from the same tab (custom event)
+        const handleUserChange = () => {
+            updateUserInfo();
+        };
+
+        // Listen for custom event dispatched on logout/login
+        window.addEventListener('userAuthenticated', handleUserChange);
+        window.addEventListener('userLoggedOut', handleUserChange);
+
+        // Also listen for storage changes (when user logs in/out from another tab)
+        const handleStorageChange = () => {
+            updateUserInfo();
+        };
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('userAuthenticated', handleUserChange);
+            window.removeEventListener('userLoggedOut', handleUserChange);
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const handleAwaitingPaymentCount = (count) => {
@@ -80,7 +123,7 @@ function Profile() {
                         <FontAwesomeIcon icon={faUser} />
                         <span>Hồ Sơ Của Tôi</span>
                     </li>
-                    {userRole === 0 && (
+                    {(userRole === 0 || userRole === 1 || userRole === 2  ) && (
                         <li
                             className={cx('menuItem', 'myBookings', { active: selectedMenu === 'myBookings' })}
                             onClick={() => setSelectedMenu('myBookings')}
@@ -103,7 +146,7 @@ function Profile() {
                         <FontAwesomeIcon icon={faHistory} />
                         <span>Lịch Sử Đăng Nhập</span>
                     </li>
-                    {userRole === 0 && (
+                    {( userRole === 0 || userRole === 1 || userRole === 2  ) && (
                         <li
                             className={cx('menuItem', 'voucher', { active: selectedMenu === 'voucher' })}
                             onClick={() => setSelectedMenu('voucher')}
@@ -116,7 +159,7 @@ function Profile() {
             </div>
             <div className={cx('content')}>
                 <div className={cx('header-content')}>
-                    {userRole === 0 && (
+                    {( userRole === 0 || userRole === 1 || userRole === 2  ) && (
                         <ul className={cx('status-tabs')}>
                             <li
                                 className={cx('tab', { active: selectedMenu === 'voucher' })}
@@ -158,10 +201,11 @@ function Profile() {
                     )}
                 </div>
                 <div className={cx('content-content')}>
-                    {selectedMenu === 'account' && <CustomerForm />}
+                    {selectedMenu === 'account' && userRole === 0 && <CustomerForm />}
+                    {selectedMenu === 'account' && (userRole === 1 || userRole === 2) && <StaffForm />}
                     {selectedMenu === 'myBookings' && <MyBookings />}
                     {selectedMenu === 'changePassword' && <ChangePasswordForm />}
-                    {selectedMenu === 'voucher' && userRole === 0 && <VoucherSection />}
+                    {selectedMenu === 'voucher' && (userRole === 0 || userRole === 1 || userRole === 2  ) && <VoucherSection />}
                     {selectedMenu === 'deviceHistory' && <DeviceHistory />}
                     {selectedMenu === 'awaitingPayment' && (
                         <AwaitingPayment onCountChange={handleAwaitingPaymentCount} />

@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 import styles from './ProductDetailsPage.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruck, faTag, faBox, faArrowLeft, faHeart, faShoppingCart, faStar, faCheck, faThumbsUp, faExpand, faPen, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
+import NotificationToast from './NotificationToast';
 
 const cx = classNames.bind(styles);
 
@@ -12,7 +12,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [loadingComments, setLoadingComments] = useState(true);
     const [loadingProducts, setLoadingProducts] = useState(true);
-    const [successMessage, setSuccessMessage] = useState(null);
+    const [notification, setNotification] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [isFavorite, setIsFavorite] = useState(false);
     const [imageZoom, setImageZoom] = useState({ x: 0, y: 0 });
@@ -66,10 +66,11 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
         const token = localStorage.getItem('token');
 
         if (!customerId) {
-            setSuccessMessage('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
-            setTimeout(() => {
-                setSuccessMessage(null);
-            }, 2000);
+            setNotification({
+                type: 'error',
+                title: 'Thông báo',
+                message: 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.'
+            });
             return;
         }
 
@@ -99,19 +100,21 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
             const data = await response.json();
 
             if (response.ok) {
-                setSuccessMessage(data.resposeMessage || 'Thêm vào giỏ hàng thành công!');
-                setTimeout(() => {
-                    setSuccessMessage(null);
-                }, 2000);
+                setNotification({
+                    type: 'success',
+                    title: 'Thành công!',
+                    message: data.resposeMessage || 'Thêm vào giỏ hàng thành công!'
+                });
             } else {
                 throw new Error(data.resposeMessage || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
             }
         } catch (error) {
             console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
-            setSuccessMessage('Có lỗi xảy ra. Vui lòng thử lại!');
-            setTimeout(() => {
-                setSuccessMessage(null);
-            }, 2000);
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Có lỗi xảy ra. Vui lòng thử lại!'
+            });
         }
     };
 
@@ -154,10 +157,11 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
 
             const data = await response.json();
             if (response.ok) {
-                setSuccessMessage('Tạo hóa đơn thành công!');
-                setTimeout(() => {
-                    setSuccessMessage(null);
-                }, 2000);
+                setNotification({
+                    type: 'success',
+                    title: 'Thành công!',
+                    message: 'Tạo hóa đơn thành công!'
+                });
             } else {
                 console.error('Có lỗi xảy ra: ' + data.message);
             }
@@ -211,6 +215,47 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
         fetchComments();
     }, [product.id, product.productID]);
 
+    // Fetch related products by serviceTypeName
+    useEffect(() => {
+        const fetchRelatedProducts = async () => {
+            try {
+                const serviceTypeName = product.serviceTypeName || product.productsOfServicesName || '';
+                if (!serviceTypeName) {
+                    setRelatedProducts([]);
+                    setLoadingProducts(false);
+                    return;
+                }
+
+                const response = await fetch('http://localhost:5122/api/Product/getproductlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        serviceTypeName: serviceTypeName,
+                    }),
+                });
+
+                const data = await response.json();
+                if (data.baseDatas && Array.isArray(data.baseDatas)) {
+                    // Filter out the current product from related products
+                    const currentProductId = product.id || product.productID;
+                    const filtered = data.baseDatas.filter(
+                        (p) => (p.id || p.productID) !== currentProductId
+                    );
+                    setRelatedProducts(filtered);
+                } else {
+                    setRelatedProducts([]);
+                }
+            } catch (error) {
+                console.error('Error fetching related products:', error);
+                setRelatedProducts([]);
+            } finally {
+                setLoadingProducts(false);
+            }
+        };
+        fetchRelatedProducts();
+    }, [product.id, product.productID, product.serviceTypeName, product.productsOfServicesName]);
 
 
     const handleViewDetails = (relatedProduct) => {
@@ -262,19 +307,28 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
             if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
 
             if (response.ok) {
-                setSuccessMessage('Xóa bình luận thành công!');
+                setNotification({
+                    type: 'success',
+                    title: 'Thành công!',
+                    message: 'Xóa bình luận thành công!'
+                });
                 setComments(comments.filter(c => c.id !== commentId));
                 setShowDeleteConfirmModal(false);
                 setDeleteConfirmingCommentId(null);
-                setTimeout(() => setSuccessMessage(null), 2000);
             } else {
-                setSuccessMessage('Có lỗi xảy ra khi xóa bình luận');
-                setTimeout(() => setSuccessMessage(null), 2000);
+                setNotification({
+                    type: 'error',
+                    title: 'Lỗi',
+                    message: 'Có lỗi xảy ra khi xóa bình luận'
+                });
             }
         } catch (error) {
-            console.error('Lỗi khi xóa bình luận:', error);
-            setSuccessMessage('Lỗi khi xóa bình luận');
-            setTimeout(() => setSuccessMessage(null), 2000);
+            console.error('Lỗi xóa bình luận:', error);
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Lỗi khi xóa bình luận'
+            });
         } finally {
             setIsDeleting(false);
         }
@@ -312,8 +366,11 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
             // Validate file size (max 5MB)
             const MAX_SIZE = 5 * 1024 * 1024; // 5MB
             if (file.size > MAX_SIZE) {
-                setSuccessMessage('Ảnh quá lớn (tối đa 5MB)');
-                setTimeout(() => setSuccessMessage(null), 2000);
+                setNotification({
+                    type: 'error',
+                    title: 'Lỗi',
+                    message: 'Ảnh quá lớn (tối đa 5MB)'
+                });
                 return;
             }
 
@@ -335,8 +392,11 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
 
     const handleUpdateComment = async () => {
         if (!editingCommentContent.trim()) {
-            setSuccessMessage('Vui lòng nhập nội dung bình luận');
-            setTimeout(() => setSuccessMessage(null), 2000);
+            setNotification({
+                type: 'error',
+                title: 'Thông báo',
+                message: 'Vui lòng nhập nội dung bình luận'
+            });
             return;
         }
 
@@ -392,34 +452,45 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
             if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
 
             if (response.ok) {
-                setSuccessMessage('Cập nhật bình luận thành công!');
+                setNotification({
+                    type: 'success',
+                    title: 'Thành công!',
+                    message: 'Cập nhật bình luận thành công!'
+                });
                 setComments(comments.map(c => 
                     c.id === editingCommentId 
                         ? { ...c, commentContent: editingCommentContent, rating: editingRating }
                         : c
                 ));
                 closeEditModal();
-                setTimeout(() => setSuccessMessage(null), 2000);
             } else {
                 const errorData = await response.json();
                 console.error('API error response:', errorData);
-                setSuccessMessage('Có lỗi xảy ra khi cập nhật bình luận');
-                setTimeout(() => setSuccessMessage(null), 2000);
+                setNotification({
+                    type: 'error',
+                    title: 'Lỗi',
+                    message: 'Có lỗi xảy ra khi cập nhật bình luận'
+                });
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật bình luận:', error);
-            setSuccessMessage('Lỗi khi cập nhật bình luận: ' + error.message);
-            setTimeout(() => setSuccessMessage(null), 2000);
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Lỗi khi cập nhật bình luận: ' + error.message
+            });
         }
     };
 
     return (
         <div className={cx('wrapper')}>
-            {successMessage && (
-                <SuccessMessage 
-                    message={successMessage} 
-                    type={successMessage.includes('Lỗi') || successMessage.includes('lỗi') || successMessage.includes('Có') ? 'error' : 'success'}
-                    duration={3000}
+            {notification && (
+                <NotificationToast
+                    message={notification.message}
+                    type={notification.type}
+                    title={notification.title}
+                    onClose={() => setNotification(null)}
+                    duration={3500}
                 />
             )}
             
@@ -428,115 +499,120 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
             </button>
 
             <div className={cx('container')}>
-                <div className={cx('product-gallery')}>
-                    <div className={cx('main-image')} onMouseMove={handleMouseMove}>
-                        <img
-                            src={`http://localhost:5122/Images/${product.productImages}`}
-                            alt={product.productName}
-                            style={{
-                                transformOrigin: `${imageZoom.x}% ${imageZoom.y}%`,
-                            }}
-                        />
-                        <div className={cx('quick-features')}>
-                            <span className={cx('feature')}>
-                                <FontAwesomeIcon icon={faTruck} /> Giao hàng nhanh
-                            </span>
-                            <span className={cx('feature')}>
-                                <FontAwesomeIcon icon={faCheck} /> Hàng chính hãng
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className={cx('product-info-section')}>
-                    {/* Header */}
-                    <div className={cx('info-header')}>
-                        <div>
-                            <h1 className={cx('product-name')}>{product.productName}</h1>
-                        </div>
-                        <button className={cx('favorite-btn', isFavorite ? 'active' : '')} onClick={() => setIsFavorite(!isFavorite)}>
-                            <FontAwesomeIcon icon={faHeart} />
-                        </button>
-                    </div>
-
-                    {/* Price Section */}
-                    <div className={cx('price-section')}>
-                        <div className={cx('current-price')}>
-                            {formatPrice(product.sellingPrice || 0)}₫
-                        </div>
-                    </div>
-
-                    {/* Description */}
-                    {product.description && (
-                        <p className={cx('product-description')}>{product.description}</p>
-                    )}
-
-                    {/* Product Details */}
-                    <div className={cx('product-details')}>
-                        <div className={cx('detail-item')}>
-                            <span className={cx('detail-label')}>
-                                <FontAwesomeIcon icon={faBox} /> Nhà cung cấp:
-                            </span>
-                            <span className={cx('detail-value')}>{product.supplierName || 'N/A'}</span>
-                        </div>
-                        <div className={cx('detail-item')}>
-                            <span className={cx('detail-label')}>
-                                <FontAwesomeIcon icon={faTag} /> Loại:
-                            </span>
-                            <span className={cx('detail-value')}>{product.serviceTypeName || product.productsOfServicesName || 'N/A'}</span>
-                        </div>
-                        <div className={cx('detail-item')}>
-                            <span className={cx('detail-label')}>
-                                <FontAwesomeIcon icon={faBox} /> Đơn vị:
-                            </span>
-                            <span className={cx('detail-value')}>{product.unit || 'N/A'}</span>
-                        </div>
-                    </div>
-
-                    {/* Stock Status */}
-                    <div className={cx('stock-status', product.quantity > 0 ? 'in-stock' : 'out-of-stock')}>
-                        <FontAwesomeIcon icon={faBox} />
-                        {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
-                    </div>
-
-                    {/* Quantity Selector */}
-                    {product.quantity > 0 && (
-                        <div className={cx('quantity-section')}>
-                            <label className={cx('quantity-label')}>Số lượng:</label>
-                            <div className={cx('quantity-selector')}>
-                                <button onClick={() => handleQuantityChange(-1)} className={cx('qty-btn')}>−</button>
-                                <input type="number" value={quantity} readOnly className={cx('qty-input')} />
-                                <button onClick={() => handleQuantityChange(1)} className={cx('qty-btn')}>+</button>
+                <div className={cx('detailsWithComments')}>
+                <div className={cx('left-section')}>
+                    <div className={cx('product-gallery')} style={{ display: 'flex', flexDirection: 'column', gap: '25px', alignItems: 'center' }}>
+                        <div className={cx('main-image')} onMouseMove={handleMouseMove} style={{ width: '60%', maxWidth: '500px', height: 'auto', aspectRatio: '3/4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+                            <img
+                                src={`http://localhost:5122/Images/${product.productImages}`}
+                                alt={product.productName}
+                                style={{
+                                    transformOrigin: `${imageZoom.x}% ${imageZoom.y}%`,
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    display: 'block'
+                                }}
+                            />
+                            <div className={cx('quick-features')}>
+                                <span className={cx('feature')}>
+                                    <FontAwesomeIcon icon={faTruck} /> Giao hàng nhanh
+                                </span>
+                                <span className={cx('feature')}>
+                                    <FontAwesomeIcon icon={faCheck} /> Hàng chính hãng
+                                </span>
                             </div>
                         </div>
-                    )}
+                    </div>
 
-                    {/* Action Buttons */}
-                    {product.quantity > 0 ? (
-                        <div className={cx('action-buttons')}>
-                            <button className={cx('add-to-cart')} onClick={handleAddToCart}>
-                                <FontAwesomeIcon icon={faShoppingCart} /> Thêm vào giỏ
-                            </button>
-                            <button className={cx('buy-now')} onClick={handlePayment}>
-                                Mua ngay
+                    <div className={cx('product-info-section')}>
+                        {/* Header */}
+                        <div className={cx('info-header')}>
+                            <div>
+                                <h1 className={cx('product-name')}>{product.productName}</h1>
+                            </div>
+                            <button className={cx('favorite-btn', isFavorite ? 'active' : '')} onClick={() => setIsFavorite(!isFavorite)}>
+                                <FontAwesomeIcon icon={faHeart} />
                             </button>
                         </div>
-                    ) : (
-                        <div className={cx('out-of-stock-banner')}>Sản phẩm này hiện đã hết hàng</div>
-                    )}
+
+                        {/* Price Section */}
+                        <div className={cx('price-section')}>
+                            <div className={cx('current-price')}>
+                                {formatPrice(product.sellingPrice || 0)}₫
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        {product.description && (
+                            <p className={cx('product-description')}>{product.description}</p>
+                        )}
+
+                        {/* Product Details */}
+                        <div className={cx('product-details')}>
+                            <div className={cx('detail-item')}>
+                                <span className={cx('detail-label')}>
+                                    <FontAwesomeIcon icon={faBox} /> Nhà cung cấp:
+                                </span>
+                                <span className={cx('detail-value')}>{product.supplierName || 'N/A'}</span>
+                            </div>
+                            <div className={cx('detail-item')}>
+                                <span className={cx('detail-label')}>
+                                    <FontAwesomeIcon icon={faTag} /> Loại:
+                                </span>
+                                <span className={cx('detail-value')}>{product.serviceTypeName || product.productsOfServicesName || 'N/A'}</span>
+                            </div>
+                            <div className={cx('detail-item')}>
+                                <span className={cx('detail-label')}>
+                                    <FontAwesomeIcon icon={faBox} /> Đơn vị:
+                                </span>
+                                <span className={cx('detail-value')}>{product.unit || 'N/A'}</span>
+                            </div>
+                        </div>
+
+                        {/* Stock Status */}
+                        <div className={cx('stock-status', product.quantity > 0 ? 'in-stock' : 'out-of-stock')}>
+                            <FontAwesomeIcon icon={faBox} />
+                            {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
+                        </div>
+
+                        {/* Quantity Selector */}
+                        {product.quantity > 0 && (
+                            <div className={cx('quantity-section')}>
+                                <label className={cx('quantity-label')}>Số lượng:</label>
+                                <div className={cx('quantity-selector')}>
+                                    <button onClick={() => handleQuantityChange(-1)} className={cx('qty-btn')}>−</button>
+                                    <input type="number" value={quantity} readOnly className={cx('qty-input')} />
+                                    <button onClick={() => handleQuantityChange(1)} className={cx('qty-btn')}>+</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        {product.quantity > 0 ? (
+                            <div className={cx('action-buttons')}>
+                                <button className={cx('add-to-cart')} onClick={handleAddToCart}>
+                                    <FontAwesomeIcon icon={faShoppingCart} /> Thêm vào giỏ
+                                </button>
+                                <button className={cx('buy-now')} onClick={handlePayment}>
+                                    Mua ngay
+                                </button>
+                            </div>
+                        ) : (
+                            <div className={cx('out-of-stock-banner')}>Sản phẩm này hiện đã hết hàng</div>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {/* ĐIỀU KIỆN ĐẶC BIỆT / Vouchers Section - REMOVED (Only show at checkout) */}
-
-            {/* Comments Section */}
-            {!loadingComments && comments.length > 0 && (
-                <div className={cx('reviews-section')}>
-                    <h2 className={cx('section-title')}>Đánh giá từ khách hàng ({totalComments})</h2>
-                    <div className={cx('comment-list')}>
-                        {comments.slice(0, 5).map((comment, index) => (
+                {/* Comments Section - Right Side */}
+                <div className={cx('comments-container')}>
+                    {!loadingComments && comments.length > 0 ? (
+                        <>
+                            <h2 className={cx('comments-title')}>Đánh giá từ khách hàng ({totalComments})</h2>
+                            <div className={cx('comment-list')}>
+                                {comments.slice(0, 5).map((comment, index) => (
                             <div key={index} className={cx('comment-item')}>
-                                    <div className={cx('comment-top')}>
+                                    <div className={cx('comment-header')}>
                                         <div className={cx('user-meta')}>
                                             <div className={cx('user-avatar')}>
                                                 {comment.customerName ? comment.customerName.charAt(0).toUpperCase() : '?'}
@@ -549,6 +625,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                                                 <span className={cx('comment-date')}>{formatDate(comment.creationDate)}</span>
                                             </div>
                                         </div>
+                                        <p className={cx('comment-content')}>{comment.commentContent}</p>
                                         <div className={cx('comment-rating')}>
                                             {[...Array(5)].map((_, i) => (
                                                 <FontAwesomeIcon 
@@ -576,24 +653,69 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                                         </div>
                                     </div>
                                 )}
-                                <p className={cx('comment-content')}>{comment.commentContent}</p>
+                                {currentCustomerId === comment.customerId && (
+                                            <div className={cx('comment-actions')}>
+                                                <button className={cx('action-btn', 'edit-btn')} title="Chỉnh sửa" onClick={() => handleEditComment(comment)}>
+                                                    <FontAwesomeIcon icon={faPen} />
+                                                    Sửa
+                                                </button>
+                                                <button className={cx('action-btn', 'delete-btn')} title="Xóa" onClick={() => handleDeleteComment(comment.id)}>
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                    Xóa
+                                                </button>
+                                            </div>
+                                        )}
                                 <div className={cx('comment-footer')}>
                                     <button className={cx('helpful-btn')}>
                                         <FontAwesomeIcon icon={faThumbsUp} />
                                         <span>Hữu ích ({comment.likeCount || 0})</span>
                                     </button>
-                                    {currentCustomerId === comment.customerId && (
-                                        <div className={cx('comment-actions')}>
-                                            <button className={cx('action-btn', 'edit-btn')} title="Chỉnh sửa" onClick={() => handleEditComment(comment)}>
-                                                <FontAwesomeIcon icon={faPen} />
-                                                <span>Sửa</span>
-                                            </button>
-                                            <button className={cx('action-btn', 'delete-btn')} title="Xóa" onClick={() => handleDeleteComment(comment.id)}>
-                                                <FontAwesomeIcon icon={faTrash} />
-                                                <span>Xóa</span>
-                                            </button>
-                                        </div>
-                                    )}
+                                </div>
+                            </div>
+                        ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className={cx('no-comments')}>
+                            <p>Chưa có nhận xét nào</p>
+                        </div>
+                    )}
+                </div>
+                </div>
+
+            {/* Related Products Section - Full Width Below */}
+            {!loadingProducts && relatedProducts.length > 0 && (
+                <div className={cx('related-products-section')}>
+                    <h2 className={cx('section-title')}>Sản phẩm liên quan</h2>
+                    <div className={cx('related-products-grid')}>
+                        {relatedProducts.map((relatedProduct, index) => (
+                            <div key={index} className={cx('related-product-card')}>
+                                <div className={cx('product-image-wrapper')}>
+                                    <img 
+                                        src={`http://localhost:5122/Images/${relatedProduct.productImages}`}
+                                        alt={relatedProduct.productName}
+                                        className={cx('product-image')}
+                                        onError={(e) => e.target.src = 'https://via.placeholder.com/200?text=No+Image'}
+                                    />
+                                </div>
+                                <div className={cx('product-info')}>
+                                    <h3 className={cx('product-title')}>{relatedProduct.productName}</h3>
+                                    <p className={cx('product-description')}>
+                                        {relatedProduct.description?.substring(0, 100) || 'N/A'}
+                                        {relatedProduct.description?.length > 100 ? '...' : ''}
+                                    </p>
+                                    <div className={cx('product-meta')}>
+                                        <span className={cx('supplier')}>{relatedProduct.supplierName || 'N/A'}</span>
+                                    </div>
+                                    <div className={cx('product-footer')}>
+                                        <span className={cx('price')}>{formatPrice(relatedProduct.sellingPrice || 0)}₫</span>
+                                        <button 
+                                            className={cx('view-btn')}
+                                            onClick={() => handleViewDetails(relatedProduct)}
+                                        >
+                                            Xem chi tiết
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -692,6 +814,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 }

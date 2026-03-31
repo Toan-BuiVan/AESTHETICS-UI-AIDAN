@@ -94,28 +94,22 @@ function CartProduct() {
             productImages: item.productImages || '',
         };
 
-        setInvoiceItems((prevItems) => {
-            // Use productID as unique identifier
-            const itemId = normalizedItem.productID || normalizedItem.cartProductID;
-            const existingItem = prevItems.find((i) => {
-                const prevItemId = i.productID || i.cartProductID;
-                return prevItemId === itemId;
-            });
-            
-            if (existingItem) {
-                // If product exists, increase quantity
-                return prevItems.map((i) => {
-                    const prevItemId = i.productID || i.cartProductID;
-                    const currentItemId = normalizedItem.productID || normalizedItem.cartProductID;
-                    return prevItemId === currentItemId
-                        ? { ...i, quantity: (i.quantity || 1) + (normalizedItem.quantity || 1) }
-                        : i;
-                });
-            }
-            
-            // If new product, add to list
-            return [...prevItems, normalizedItem];
+        // Check if product already exists in invoice
+        const itemId = normalizedItem.productID || normalizedItem.cartProductID;
+        const alreadyExists = invoiceItems.some((i) => {
+            const prevItemId = i.productID || i.cartProductID;
+            return prevItemId === itemId;
         });
+
+        if (alreadyExists) {
+            // If product exists, show warning message and don't add
+            setSuccessMessage(`⚠️ "${normalizedItem.productName}" đã tồn tại trong chi tiết đơn hàng`);
+            setTimeout(() => setSuccessMessage(null), 2000);
+            return;
+        }
+        
+        // If new product, add to list
+        setInvoiceItems((prevItems) => [...prevItems, normalizedItem]);
         
         // Call update API for new items
         handleUpdateCartProduct(normalizedItem);
@@ -459,7 +453,8 @@ function CartProduct() {
                             )}
                         </div>
 
-                        {/* Vouchers */}
+                        {/* Vouchers - Only show when there are items in invoice */}
+                        {invoiceItems.length > 0 && (
                         <div className={cx('vouchersDetail', {
                             'expanded': expandedVoucherId !== null
                         })}>
@@ -495,6 +490,10 @@ function CartProduct() {
 
                                                     if (!isActive || isUsed) return null;
 
+                                                    // Check if current order meets minimum requirement
+                                                    const meetsMinimum = totalPrice >= minimumOrder;
+                                                    const isDisabled = !meetsMinimum;
+
                                                     const voucherDescription = voucher.voucherDescription || 'Khuyến mãi đặc biệt';
                                                     const voucherImage = voucher.voucherImage;
                                                     const startDate = voucher.startDate ? new Date(voucher.startDate).toLocaleDateString('vi-VN') : 'N/A';
@@ -510,11 +509,25 @@ function CartProduct() {
                                                             key={voucherId} 
                                                             className={cx('voucherPill', {
                                                                 selected: isSelected,
-                                                                expanded: expandedVoucherId === voucherId
+                                                                expanded: expandedVoucherId === voucherId,
+                                                                disabled: isDisabled
                                                             })}
-                                                            onClick={() => setExpandedVoucherId(expandedVoucherId === voucherId ? null : voucherId)}
-                                                            onMouseEnter={() => setHoveredVoucherId(voucherId)}
-                                                            onMouseLeave={() => setHoveredVoucherId(null)}
+                                                            onClick={() => {
+                                                                if (!isDisabled) {
+                                                                    setExpandedVoucherId(expandedVoucherId === voucherId ? null : voucherId);
+                                                                }
+                                                            }}
+                                                            onMouseEnter={() => {
+                                                                if (!isDisabled) {
+                                                                    setHoveredVoucherId(voucherId);
+                                                                }
+                                                            }}
+                                                            onMouseLeave={() => {
+                                                                if (!isDisabled) {
+                                                                    setHoveredVoucherId(null);
+                                                                }
+                                                            }}
+                                                            title={isDisabled ? `Đơn hàng phải đạt tối thiểu ${(minimumOrder / 1000).toLocaleString()}K` : ''}
                                                         >
                                                             {/* Discount Badge */}
                                                             <div className={cx('pillDiscount')}>
@@ -559,8 +572,12 @@ function CartProduct() {
                                                                 className={cx('selectBtn')}
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    setSelectedVoucher(voucher);
+                                                                    if (!isDisabled) {
+                                                                        setSelectedVoucher(voucher);
+                                                                    }
                                                                 }}
+                                                                disabled={isDisabled}
+                                                                title={isDisabled ? `Đơn hàng phải đạt tối thiểu ${(minimumOrder / 1000).toLocaleString()}K` : ''}
                                                                 type="button"
                                                             >
                                                                 {isSelected ? '✓' : '+'}
@@ -652,6 +669,7 @@ function CartProduct() {
                                 <p className={cx('emptyState')}>Đang tải đề xuất...</p>
                             )}
                         </div>
+                        )}
 
                         {/* Payment Summary */}
                         <div className={cx('creatInvoice')}>

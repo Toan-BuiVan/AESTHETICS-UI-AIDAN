@@ -6,9 +6,8 @@ import { useDebounce } from '~/hooks';
 
 const cx = classNames.bind(styles);
 
-function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
+function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice, onStatusMessage }) {
     const [quantity, setQuantity] = useState(item.quantity);
-    const [statusMessage, setStatusMessage] = useState(null);
     const debouncedQuantity = useDebounce(quantity, 2000); // 2 seconds debounce
 
     useEffect(() => {
@@ -27,8 +26,8 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
             
             const cartProductId = item.cartProductID || item.id;
             if (!cartProductId) {
-                setStatusMessage('❌ Lỗi: ID sản phẩm không hợp lệ');
-                setTimeout(() => setStatusMessage(null), 2000);
+                onStatusMessage('❌ Lỗi: ID sản phẩm không hợp lệ');
+                setTimeout(() => onStatusMessage(null), 2000);
                 return;
             }
 
@@ -58,15 +57,15 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
             const data = await response.json();
             
             if (data.success) {
-                setStatusMessage(`✓ Cập nhật số lượng thành công`);
+                onStatusMessage(`✓ Cập nhật số lượng thành công`);
             } else {
-                setStatusMessage('❌ Cập nhật số lượng thất bại');
+                onStatusMessage('❌ Cập nhật số lượng thất bại');
             }
-            setTimeout(() => setStatusMessage(null), 2000);
+            setTimeout(() => onStatusMessage(null), 2000);
         } catch (error) {
             console.error('Error updating cart product:', error);
-            setStatusMessage('❌ Lỗi khi cập nhật: ' + error.message);
-            setTimeout(() => setStatusMessage(null), 2000);
+            onStatusMessage('❌ Lỗi khi cập nhật: ' + error.message);
+            setTimeout(() => onStatusMessage(null), 2000);
         }
     };
 
@@ -78,8 +77,8 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
             
             const cartProductId = item.cartProductID || item.id;
             if (!cartProductId) {
-                setStatusMessage('❌ Lỗi: ID sản phẩm không hợp lệ');
-                setTimeout(() => setStatusMessage(null), 2000);
+                onStatusMessage('❌ Lỗi: ID sản phẩm không hợp lệ');
+                setTimeout(() => onStatusMessage(null), 2000);
                 return;
             }
 
@@ -108,19 +107,19 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
             const data = await response.json();
             
             if (data.success) {
-                setStatusMessage(`✓ Xóa "${item.productName}" thành công`);
+                onStatusMessage(`✓ Xóa "${item.productName}" thành công`);
                 setTimeout(() => {
                     onDelete(item.id);
-                    setStatusMessage(null);
+                    onStatusMessage(null);
                 }, 1500);
             } else {
-                setStatusMessage('❌ Xóa sản phẩm thất bại');
-                setTimeout(() => setStatusMessage(null), 2000);
+                onStatusMessage('❌ Xóa sản phẩm thất bại');
+                setTimeout(() => onStatusMessage(null), 2000);
             }
         } catch (error) {
             console.error('Error deleting cart product:', error);
-            setStatusMessage('❌ Lỗi khi xóa: ' + error.message);
-            setTimeout(() => setStatusMessage(null), 2000);
+            onStatusMessage('❌ Lỗi khi xóa: ' + error.message);
+            setTimeout(() => onStatusMessage(null), 2000);
         }
     };
 
@@ -223,12 +222,6 @@ function CartItem({ item, onQuantityChange, onDelete, onAddToInvoice }) {
                     </button>
                 </div>
 
-                {/* Status Message */}
-                {statusMessage && (
-                    <div className={cx('status-message', statusMessage.includes('✓') ? 'success' : 'error')}>
-                        {statusMessage}
-                    </div>
-                )}
             </div>
         </div>
     );
@@ -376,6 +369,7 @@ function ItemCartproduct({ onAddToInvoice, onCheckoutAll }) {
                                 onQuantityChange={handleUpdateQuantity}
                                 onDelete={handleDeleteItem}
                                 onAddToInvoice={onAddToInvoice}
+                                onStatusMessage={setSuccessMessage}
                             />
                         ))}
                     </div>

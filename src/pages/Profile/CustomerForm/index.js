@@ -4,7 +4,7 @@ import styles from './CustomerForm.module.scss';
 import axios from 'axios';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faEnvelope, faBirthdayCake, faPhone, faMapMarker, faIdCard, faTrophy, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEnvelope, faBirthdayCake, faPhone, faMapMarker, faIdCard, faTrophy, faStar, faShieldAlt, faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -22,6 +22,10 @@ function CustomerForm() {
     const [referralCode, setReferralCode] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [role, setRole] = useState(null);
+    const [userName, setUserName] = useState('');
+    const [creationDate, setCreationDate] = useState('');
+    const [accountId, setAccountId] = useState(null);
 
     useEffect(() => {
         fetchCustomerData();
@@ -29,28 +33,34 @@ function CustomerForm() {
 
     const fetchCustomerData = async () => {
         const token = localStorage.getItem('token') || '';
-        const userID = localStorage.getItem('userID') || '';
-        const deviceName = localStorage.getItem('deviceName') || '';
+        const customerId = localStorage.getItem('userID');
         const refreshToken = localStorage.getItem('refreshToken') || '';
 
-        if (!userID) return;
+        if (!customerId) return;
+
+        setAccountId(customerId);
 
         const headers = {
             'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
-            Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
+            'Authorization': token ? `Bearer ${token}` : '',
+            'RefreshToken': refreshToken,
         };
 
         try {
-            const response = await axios.post(
-                'http://localhost:5262/api/Users/GetList_SearchUser',
-                { userID: parseInt(userID) },
-                { headers },
+            const response = await fetch(
+                `http://localhost:5122/api/Account/getprofileaccount?accountId=${customerId}`,
+                { 
+                    method: 'POST',
+                    headers 
+                }
             );
 
-            let userData = response.data.data?.[0] || response.data[0];
+            const newAccessToken = response.headers.get('New-AccessToken');
+            const newRefreshToken = response.headers.get('New-RefreshToken');
+            if (newAccessToken) localStorage.setItem('token', newAccessToken);
+            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+            const userData = await response.json();
 
             if (userData) {
                 setFullName(userData.fullName || '');
@@ -58,12 +68,15 @@ function CustomerForm() {
                 setDateBirth(userData.dateBirth ? new Date(userData.dateBirth).toISOString().split('T')[0] : '');
                 setSex(userData.sex || '');
                 setPhone(userData.phone || '');
-                setAddress(userData.addres || userData.address || '');
+                setAddress(userData.address || '');
                 setIdCard(userData.idCard || '');
-                setRankMember(userData.rankMember || 'Thành Viên Mới');
+                setRankMember(userData.rankMember || 'Bronze');
                 setAccumulatedPoints(userData.accumulatedPoints || 0);
                 setRatingPoints(userData.ratingPoints || 0);
                 setReferralCode(userData.referralCode || '');
+                setRole(userData.role || 0);
+                setUserName(userData.userName || '');
+                setCreationDate(userData.creationDate ? new Date(userData.creationDate).toLocaleDateString('vi-VN') : '');
             }
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu khách hàng:', error);
@@ -87,19 +100,47 @@ function CustomerForm() {
             UserID: userID,
         };
 
-        const data = {
-            userID: parseInt(userID),
+        // Prepare common data
+        const commonData = {
+            searchRequest: {}, // Required by updatestaff API
+            accountId: parseInt(userID),
             fullName,
             email,
             dateBirth: dateBirth ? new Date(dateBirth).toISOString() : null,
-            sex,
+            sex: sex ? parseInt(sex) : null, // Convert string to int (0=Nam, 1=Nữ, 2=Khác)
             phone,
             addres: address,
             idCard,
         };
 
         try {
-            const response = await fetch('http://localhost:5262/api/Users/Update_User', {
+            // Determine API endpoint and payload based on role
+            let apiUrl, data;
+            
+            if (role === 0) {
+                // Customer role - call updatecustomer API (no searchRequest needed)
+                apiUrl = 'http://localhost:5122/api/Customer/updatecustomer';
+                data = {
+                    accountId: parseInt(userID),
+                    fullName,
+                    email,
+                    dateBirth: dateBirth ? new Date(dateBirth).toISOString() : null,
+                    sex: sex ? parseInt(sex) : null, // Convert string to int
+                    phone,
+                    address: address,
+                    idCard,
+                };
+            } else if (role === 1 || role === 2) {
+                // Staff or Admin role - call updatestaff API (requires searchRequest)
+                apiUrl = 'http://localhost:5122/api/Staff/updatestaff';
+                data = commonData;
+            } else {
+                // Fallback to updatestaff if role is undefined
+                apiUrl = 'http://localhost:5122/api/Staff/updatestaff';
+                data = commonData;
+            }
+
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(data),
@@ -159,8 +200,30 @@ function CustomerForm() {
             {successMessage && <SuccessMessage message={successMessage} />}
             
             <div className={cx('form-header')}>
-                <h1>Hồ Sơ Khách Hàng</h1>
+                <h1>Hồ Sơ Tài Khoản</h1>
                 <p>Quản lý thông tin cá nhân để bảo mật tài khoản của bạn</p>
+            </div>
+
+            {/* Account Type & Role Badge */}
+            <div className={cx('account-type-section')}>
+                <div className={cx('role-badge', role === 0 ? 'customer' : 'staff')}>
+                    <FontAwesomeIcon icon={role === 0 ? faUser : faBriefcase} />
+                    <span>{role === 0 ? '👤 Khách Hàng' : role === 1 ? '💼 Nhân Viên' : '👨‍💼 Quản Lý'}</span>
+                </div>
+                <div className={cx('account-meta')}>
+                    <div className={cx('meta-item')}>
+                        <span className={cx('meta-label')}>ID Tài Khoản:</span>
+                        <span className={cx('meta-value')}>{accountId}</span>
+                    </div>
+                    <div className={cx('meta-item')}>
+                        <span className={cx('meta-label')}>Tên Đăng Nhập:</span>
+                        <span className={cx('meta-value')}>{userName}</span>
+                    </div>
+                    <div className={cx('meta-item')}>
+                        <span className={cx('meta-label')}>Ngày Tham Gia:</span>
+                        <span className={cx('meta-value')}>{creationDate}</span>
+                    </div>
+                </div>
             </div>
 
             <div className={cx('stats-container')}>
@@ -168,7 +231,7 @@ function CustomerForm() {
                     <FontAwesomeIcon icon={faTrophy} />
                     <div>
                         <p className={cx('stat-value')}>{rankMember}</p>
-                        <p className={cx('stat-label')}>Thứ Hạng</p>
+                        <p className={cx('stat-label')}>Thứ Hạng Thành Viên</p>
                     </div>
                 </div>
                 <div className={cx('stat-card')}>
@@ -193,7 +256,16 @@ function CustomerForm() {
                     {renderInput(faUser, 'Họ và Tên', fullName, (e) => setFullName(e.target.value), 'text', true)}
                     {renderInput(faEnvelope, 'Email', email, (e) => setEmail(e.target.value), 'email', true)}
                     {renderInput(faBirthdayCake, 'Ngày Sinh', dateBirth, (e) => setDateBirth(e.target.value), 'date')}
-                    {renderSelect(faUser, 'Giới Tính', sex, (e) => setSex(e.target.value), ['Nam', 'Nữ', 'Khác'])}
+                    {/* Sex select with numeric values */}
+                    <div className={cx('form-group')}>
+                        <label><FontAwesomeIcon icon={faUser} /> Giới Tính</label>
+                        <select value={sex} onChange={(e) => setSex(e.target.value)}>
+                            <option value="">Chọn giới tính</option>
+                            <option value="0">Nam</option>
+                            <option value="1">Nữ</option>
+                            <option value="2">Khác</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

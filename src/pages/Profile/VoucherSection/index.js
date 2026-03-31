@@ -1,220 +1,149 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './VoucherSection.module.scss';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGift, faCheckCircle, faTimes, faTag, faCalendarAlt, faStar, faSpinner, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { faGift, faStar, faSpinner, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import useDebounce from '~/hooks/useDebounce';
 
 const cx = classNames.bind(styles);
+
+// Mapping Vietnamese ranks to English for API
+const rankMapping = {
+    'Kim Cương': 'Diamond',
+    'Vàng': 'Gold',
+    'Bạc': 'Silver',
+    'Đồng': 'Bronze',
+};
 
 function VoucherSection() {
     const [vouchers, setVouchers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [voucherCode, setVoucherCode] = useState('');
-    const [showExchangeOptions, setShowExchangeOptions] = useState({});
-    const [selectedOptions, setSelectedOptions] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
-    const timeoutRefs = useRef({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const pageSize = 8;
+    const [filterCode, setFilterCode] = useState('');
+    const [filterStartDate, setFilterStartDate] = useState('');
+    const [filterEndDate, setFilterEndDate] = useState('');
+    const [filterRankMember, setFilterRankMember] = useState('');
+
+    // Debounced filter values (2 seconds delay)
+    const debouncedFilterCode = useDebounce(filterCode, 2000);
+    const debouncedFilterStartDate = useDebounce(filterStartDate, 2000);
+    const debouncedFilterEndDate = useDebounce(filterEndDate, 2000);
+    const debouncedFilterRankMember = useDebounce(filterRankMember, 2000);
 
     useEffect(() => {
         const fetchVouchers = async () => {
-            const deviceName = localStorage.getItem('deviceName') || '';
-            const refreshToken = localStorage.getItem('refreshToken') || '';
-            const token = localStorage.getItem('token') || '';
-            const userID = localStorage.getItem('userID') || '';
-
-            if (!userID) {
-                setError('Không tìm thấy userID trong localStorage');
-                setLoading(false);
-                return;
-            }
-
-            const headers = {
-                'Content-Type': 'application/json',
-                DeviceName: deviceName,
-                RefreshToken: refreshToken,
-                Authorization: token ? `Bearer ${token}` : '',
-                UserID: userID,
-            };
-
-            const data = {
-                voucherID: null,
-                startDate: null,
-                endDate: null,
-                rankMember: null,
-            };
-
             try {
-                const response = await fetch('http://localhost:5262/api/Vouchers/GetList_SearchVouchers', {
+                const data = {
+                    pageNo: currentPage,
+                    pageSize: pageSize,
+                    code: debouncedFilterCode,
+                    startDate: debouncedFilterStartDate ? new Date(debouncedFilterStartDate).toISOString() : null,
+                    endDate: debouncedFilterEndDate ? new Date(debouncedFilterEndDate).toISOString() : null,
+                    rankMember: debouncedFilterRankMember ? rankMapping[debouncedFilterRankMember] : '',
+                };
+
+                const response = await fetch('http://localhost:5122/api/Voucher/getvoucherlist', {
                     method: 'POST',
-                    headers,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify(data),
                 });
 
-                const result = await response.json();
-
                 if (!response.ok) {
-                    setError(result.returnMessage || 'Không thể tải danh sách voucher. Vui lòng thử lại sau.');
-                    setLoading(false);
-                    return;
+                    throw new Error('Lỗi khi gọi API');
                 }
 
-                const voucherData = result.data || result;
+                const result = await response.json();
+                const voucherData = result.baseDatas || [];
+                
                 if (Array.isArray(voucherData)) {
                     setVouchers(voucherData);
+                    setTotalPages(result.pageCount || 1);
+                    setTotalRecords(result.totalRecordCount || 0);
+                    setLoading(false);
                 } else {
-                    setVouchers([]);  
-                    setError('Dữ liệu voucher không hợp lệ hoặc không phải mảng.');
-                    console.warn('Dữ liệu từ API không phải array:', voucherData);  
+                    throw new Error('Dữ liệu voucher không hợp lệ');
                 }
-                setLoading(false);
-
-                const newAccessToken = response.headers.get('New-AccessToken');
-                const newRefreshToken = response.headers.get('New-RefreshToken');
-                if (newAccessToken) localStorage.setItem('token', newAccessToken);
-                if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
             } catch (err) {
-                setError('Không thể tải danh sách voucher. Vui lòng thử lại sau.');
+                setError('Không thể tải kho voucher. Vui lòng thử lại sau.');
                 setLoading(false);
                 console.error('Lỗi khi lấy voucher:', err);
             }
         };
 
         fetchVouchers();
-    }, []);
+    }, [currentPage, debouncedFilterCode, debouncedFilterStartDate, debouncedFilterEndDate, debouncedFilterRankMember]);
 
-    const handleSaveVoucher = async (voucher) => {
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
-        const userID = localStorage.getItem('userID') || '';
-
-        if (!userID) {
-            alert('Không tìm thấy userID trong localStorage');
+    const handleClaimVoucher = async (voucher) => {
+        const customerId = localStorage.getItem('customerId');
+        if (!customerId) {
+            setSuccessMessage('Không tìm thấy customerId trong localStorage');
             return;
         }
 
-        const headers = {
-            'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
-            Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
-        };
-
         const data = {
-            userID: parseInt(userID),
-            voucherID: voucher.voucherID,
+            customerId: parseInt(customerId),
+            voucherId: voucher.id,
         };
 
         try {
-            const response = await fetch('http://localhost:5262/api/Wallets/Insert_Wallets', {
+            const response = await fetch('http://localhost:5122/api/Wallet/createwallet', {
                 method: 'POST',
-                headers,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify(data),
             });
 
             const result = await response.json();
 
-            if (response.ok) {
-                setSuccessMessage(result.responseMessage); 
+            if (result.success) {
+                setSuccessMessage('Lưu thành công!');
             } else {
-                setSuccessMessage(result.responseMessage);  
+                setSuccessMessage('Lưu thất bại');
             }
-
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
         } catch (err) {
-            setSuccessMessage('Không thể lưu voucher. Vui lòng thử lại sau.');
+            setSuccessMessage('Lưu thất bại');
             console.error('Lỗi khi lưu voucher:', err);
         }
     };
 
-    const handleExchangeHover = (voucher, show) => {
-        if (show) {
-            if (timeoutRefs.current[voucher.voucherID]) {
-                clearTimeout(timeoutRefs.current[voucher.voucherID]);
-                delete timeoutRefs.current[voucher.voucherID];
-            }
-            setShowExchangeOptions((prev) => ({
-                ...prev,
-                [voucher.voucherID]: true,
-            }));
-        } else {
-            timeoutRefs.current[voucher.voucherID] = setTimeout(() => {
-                setShowExchangeOptions((prev) => ({
-                    ...prev,
-                    [voucher.voucherID]: false,
-                }));
-                delete timeoutRefs.current[voucher.voucherID];
-            }, 200);
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
         }
     };
 
-    const handleOptionChange = (voucherID, value) => {
-        setSelectedOptions((prev) => ({
-            ...prev,
-            [voucherID]: value,
-        }));
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
     };
 
-    const handleExchangeClick = async (voucher) => {
-        const pointType = selectedOptions[voucher.voucherID];
-        if (!pointType) {
-            setSuccessMessage('Vui lòng chọn loại điểm trước khi đổi.');
-            return;
+    const goToPage = (page) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
         }
+    };
 
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
-        const userID = localStorage.getItem('userID') || '';
+    const handleFilterChange = () => {
+        // Reset to page 1 when filter changes (will wait for debounce before API call)
+        setCurrentPage(1);
+    };
 
-        if (!userID) {
-            setSuccessMessage('Không tìm thấy userID trong localStorage');
-            return;
-        }
-
-        const headers = {
-            'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
-            Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
-        };
-
-        const data = {
-            userID: parseInt(userID),
-            voucherID: voucher.voucherID,
-            pointType: pointType,
-        };
-
-        try {
-            const response = await fetch('http://localhost:5262/api/Wallets/RedeemPointsForVoucher', {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                setSuccessMessage(result.responseMessage);  
-            } else {
-                setSuccessMessage(result.responseMessage);  
-            }
-
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-        } catch (err) {
-            setSuccessMessage('Không thể đổi voucher. Vui lòng thử lại sau.');
-            console.error('Lỗi khi đổi voucher:', err);
-        }
+    const handleClearFilters = () => {
+        setFilterCode('');
+        setFilterStartDate('');
+        setFilterEndDate('');
+        setFilterRankMember('');
+        setCurrentPage(1);
     };
 
     useEffect(() => {
@@ -249,113 +178,155 @@ function VoucherSection() {
     return (
         <div className={cx('voucher-section')}>
             {successMessage && <SuccessMessage message={successMessage} />}
+            
             <div className={cx('section-header')}>
-                <h2><FontAwesomeIcon icon={faGift} className={cx('header-icon')} /> Kho Voucher</h2>
+                <div className={cx('header-content')}>
+                    <h2><FontAwesomeIcon icon={faGift} className={cx('header-icon')} /> Kho Voucher</h2>
+                    <p className={cx('header-subtitle')}>Khám phá và nhận các voucher khuyến mãi</p>
+                </div>
+                {totalRecords > 0 && (
+                    <div className={cx('voucher-count')}>
+                        <span>{totalRecords}</span> Voucher
+                    </div>
+                )}
             </div>
             
-            {Array.isArray(vouchers) && vouchers.length > 0 ? (
-                <div className={cx('voucher-grid')}>
+            {/* Filter Section */}
+            <div className={cx('filter-section')}>
+                <div className={cx('filter-group')}>
+                    <input 
+                        type="text" 
+                        placeholder="Tìm kiếm mã voucher..."
+                        value={filterCode}
+                        onChange={(e) => {
+                            setFilterCode(e.target.value);
+                            handleFilterChange();
+                        }}
+                        className={cx('filter-input')}
+                    />
+                </div>
+                <div className={cx('filter-group')}>
+                    <label className={cx('filter-label')}>Từ ngày:</label>
+                    <input 
+                        type="date" 
+                        value={filterStartDate}
+                        onChange={(e) => {
+                            setFilterStartDate(e.target.value);
+                            handleFilterChange();
+                        }}
+                        className={cx('filter-input')}
+                    />
+                </div>
+                <div className={cx('filter-group')}>
+                    <label className={cx('filter-label')}>Đến ngày:</label>
+                    <input 
+                        type="date" 
+                        value={filterEndDate}
+                        onChange={(e) => {
+                            setFilterEndDate(e.target.value);
+                            handleFilterChange();
+                        }}
+                        className={cx('filter-input')}
+                    />
+                </div>
+                <div className={cx('filter-group')}>
+                    <label className={cx('filter-label')}>Hạng hội viên:</label>
+                    <select 
+                        value={filterRankMember}
+                        onChange={(e) => {
+                            setFilterRankMember(e.target.value);
+                            handleFilterChange();
+                        }}
+                        className={cx('filter-select')}
+                    >
+                        <option value="">Tất cả hạng</option>
+                        <option value="Kim Cương">Kim Cương</option>
+                        <option value="Vàng">Vàng</option>
+                        <option value="Bạc">Bạc</option>
+                        <option value="Đồng">Đồng</option>
+                    </select>
+                </div>
+                <button className={cx('btn-clear-filter')} onClick={handleClearFilters}>
+                    Xóa bộ lọc
+                </button>
+            </div>
+            
+                <div className={cx('voucher-list')}>
                     {vouchers.map((voucher) => (
-                        <div key={voucher.voucherID} className={cx('voucher-card')}>
-                            <div className={cx('card-header')}>
-                                <img
-                                    src={`http://localhost:5262/Images/${voucher.voucherImage}`}
-                                    alt={voucher.code}
-                                    className={cx('voucher-image')}
-                                />
-                                <span className={cx('rank-badge')}>
-                                    <FontAwesomeIcon icon={faStar} /> {voucher.rankMember}
-                                </span>
+                        <div key={voucher.id} className={cx('voucher-row')}>
+                            {/* Discount Badge */}
+                            <div className={cx('row-discount')}>
+                                <span className={cx('discount-percent')}>{voucher.discountValue}%</span>
                             </div>
-                            <div className={cx('card-body')}>
-                                <div className={cx('discount-section')}>
-                                    <span className={cx('discount-value')}>{voucher.discountValue}%</span>
-                                    <p className={cx('discount-label')}>Giảm tối đa</p>
-                                </div>
-                                <div className={cx('details-section')}>
-                                    <p className={cx('detail-item')}>
-                                        <FontAwesomeIcon icon={faTag} className={cx('detail-icon')} />
-                                        Tối đa: {voucher.maxValue?.toLocaleString('vi-VN') || '0'}đ
-                                    </p>
-                                    <p className={cx('detail-item')}>
-                                        <FontAwesomeIcon icon={faTag} className={cx('detail-icon')} />
-                                        Đơn tối thiểu: {voucher.minimumOrderValue?.toLocaleString('vi-VN') || '0'}đ
-                                    </p>
-                                    <p className={cx('detail-item')}>
-                                        <FontAwesomeIcon icon={faCalendarAlt} className={cx('detail-icon')} />
-                                        Hết hạn: {voucher.endDate ? new Date(voucher.endDate).toLocaleDateString('vi-VN') : 'Không xác định'}
-                                    </p>
-                                </div>
+
+                            {/* Code and Description */}
+                            <div className={cx('row-code-description')}>
+                                <h4 className={cx('code-text')}>{voucher.code}</h4>
+                                <p className={cx('description')}>{voucher.description}</p>
                             </div>
-                            <div className={cx('card-footer')}>
-                                <button className={cx('btn-save')} onClick={() => handleSaveVoucher(voucher)} title="Lưu voucher này vào ví">
-                                    <FontAwesomeIcon icon={faCheckCircle} /> Lưu
+
+                            {/* Details */}
+                            <div className={cx('row-details')}>
+                                <span className={cx('detail-item')}>Giảm tối đa: <strong>{voucher.maxValue?.toLocaleString('vi-VN') || '0'}đ</strong></span>
+                                <span className={cx('detail-item')}>Đơn tối thiểu: <strong>{voucher.minimumOrderValue?.toLocaleString('vi-VN') || '0'}đ</strong></span>
+                            </div>
+
+                            {/* Dates and Rank */}
+                            <div className={cx('row-meta')}>
+                                <span className={cx('meta-item')}>Hết hạn: <strong>{new Date(voucher.endDate).toLocaleDateString('vi-VN')}</strong></span>
+                                <span className={cx('meta-item', 'rank')}><FontAwesomeIcon icon={faStar} /> {voucher.rankMember}</span>
+                            </div>
+
+                            {/* Claim Button */}
+                            <div className={cx('row-action')}>
+                                <button 
+                                    className={cx('btn-claim')} 
+                                    onClick={() => handleClaimVoucher(voucher)}
+                                >
+                                    Nhận
                                 </button>
-                                <div className={cx('exchange-container')}>
-                                    <button
-                                        className={cx('btn-exchange')}
-                                        onMouseEnter={() => handleExchangeHover(voucher, true)}
-                                        onMouseLeave={() => handleExchangeHover(voucher, false)}
-                                        onClick={() => handleExchangeClick(voucher)}
-                                        title="Đổi điểm lấy voucher"
-                                    >
-                                        <FontAwesomeIcon icon={faGift} /> Đổi
-                                    </button>
-                                    {showExchangeOptions[voucher.voucherID] && (
-                                        <div
-                                            className={cx('exchange-dropdown')}
-                                            onMouseEnter={() => {
-                                                if (timeoutRefs.current[voucher.voucherID]) {
-                                                    clearTimeout(timeoutRefs.current[voucher.voucherID]);
-                                                    delete timeoutRefs.current[voucher.voucherID];
-                                                }
-                                            }}
-                                            onMouseLeave={() => {
-                                                timeoutRefs.current[voucher.voucherID] = setTimeout(() => {
-                                                    setShowExchangeOptions((prev) => ({
-                                                        ...prev,
-                                                        [voucher.voucherID]: false,
-                                                    }));
-                                                    delete timeoutRefs.current[voucher.voucherID];
-                                                }, 200);
-                                            }}
-                                        >
-                                            <label className={cx('option-item')}>
-                                                <input
-                                                    type="radio"
-                                                    value="Accumulated"
-                                                    checked={selectedOptions[voucher.voucherID] === 'Accumulated'}
-                                                    onChange={(e) =>
-                                                        handleOptionChange(voucher.voucherID, e.target.value)
-                                                    }
-                                                />
-                                                <span>Điểm tích lũy</span>
-                                            </label>
-                                            <label className={cx('option-item')}>
-                                                <input
-                                                    type="radio"
-                                                    value="Rating"
-                                                    checked={selectedOptions[voucher.voucherID] === 'Rating'}
-                                                    onChange={(e) =>
-                                                        handleOptionChange(voucher.voucherID, e.target.value)
-                                                    }
-                                                />
-                                                <span>Điểm đánh giá</span>
-                                            </label>
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     ))}
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className={cx('pagination-container')}>
+                            <button 
+                                className={cx('pagination-btn', 'prev-btn')} 
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                            >
+                                ← Trang trước
+                            </button>
+
+                            <div className={cx('pagination-info')}>
+                                Trang <strong>{currentPage}</strong> / {totalPages}
+                            </div>
+
+                            <div className={cx('pagination-pages')}>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        className={cx('page-btn', { active: page === currentPage })}
+                                        onClick={() => goToPage(page)}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button 
+                                className={cx('pagination-btn', 'next-btn')} 
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                            >
+                                Trang sau →
+                            </button>
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <div className={cx('empty-state')}>
-                    <FontAwesomeIcon icon={faGift} className={cx('empty-icon')} />
-                    <p className={cx('empty-text')}>Không có voucher nào để hiển thị</p>
-                    <p className={cx('empty-subtext')}>Hãy quay lại sau để xem các voucher mới</p>
-                </div>
-            )}
+
         </div>
     );
 }

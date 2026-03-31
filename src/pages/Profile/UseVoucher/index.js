@@ -17,7 +17,7 @@ function UseVoucher() {
         const fetchVouchers = async () => {
             try {
                 setLoading(true);
-                const customerId = parseInt(localStorage.getItem('customerId'));
+                const customerId = parseInt(localStorage.getItem('customerId') || localStorage.getItem('staffId'));
                 
                 if (!customerId) {
                     setError('Không tìm thấy customerId trong localStorage');
@@ -91,77 +91,58 @@ function UseVoucher() {
         <div className={cx('voucher-section')}>
             {successMessage && <SuccessMessage message={successMessage} />}
             <div className={cx('section-header')}>
-                <h2><FontAwesomeIcon icon={faWallet} className={cx('header-icon')} /> Voucher Của Bạn</h2>
+                <div className={cx('header-content')}>
+                    <h2><FontAwesomeIcon icon={faWallet} className={cx('header-icon')} /> Kho Voucher Của Bạn</h2>
+                    <p className={cx('header-subtitle')}>Quản lý và sử dụng các ưu đãi đã lưu</p>
+                </div>
+                {Array.isArray(vouchers) && vouchers.length > 0 && (
+                    <div className={cx('voucher-count')}>
+                        <span className={cx('count-number')}>{vouchers.filter(v => !v.isUsed).length}</span>
+                        <span className={cx('count-label')}>Khả dụng</span>
+                    </div>
+                )}
             </div>
             
             {Array.isArray(vouchers) && vouchers.length > 0 ? (
-                <div className={cx('voucher-grid')}>
+                <div className={cx('voucher-list')}>
                     {vouchers.map((voucher) => (
-                        <div key={voucher.id} className={cx('voucher-card', { used: voucher.isUsed })}>
-                            {/* Card Header - Image */}
-                            <div className={cx('card-header')}>
-                                {voucher.voucherImage ? (
-                                    <img
-                                        src={`http://localhost:5122/Images/${voucher.voucherImage}`}
-                                        alt={voucher.voucherCode}
-                                        className={cx('voucher-image')}
-                                        onError={(e) => e.target.src = 'https://via.placeholder.com/300x150?text=Voucher'}
-                                    />
-                                ) : (
-                                    <div className={cx('voucher-image-placeholder')}>
-                                        <FontAwesomeIcon icon={faTag} />
-                                    </div>
+                        <div key={voucher.id} className={cx('voucher-row', { used: voucher.isUsed })}>
+                            {/* Discount Badge */}
+                            <div className={cx('row-discount')}>
+                                <span className={cx('discount-percent')}>{voucher.discountValue}%</span>
+                            </div>
+
+                            {/* Code */}
+                            <div className={cx('row-code')}>
+                                <h4 className={cx('code-text')}>{voucher.voucherCode}</h4>
+                                {voucher.voucherDescription && (
+                                    <span className={cx('code-desc')}>{voucher.voucherDescription.substring(0, 50)}</span>
                                 )}
-                                <span className={cx('rank-badge')}>🌟 {voucher.rankMember}</span>
-                                {voucher.isUsed && <span className={cx('used-badge')}>✓ Đã dùng</span>}
                             </div>
 
-                            {/* Card Body - Content */}
-                            <div className={cx('card-body')}>
-                                {/* Discount Section */}
-                                <div className={cx('discount-section')}>
-                                    <span className={cx('discount-value')}>{voucher.discountValue}</span>
-                                    <p className={cx('discount-label')}>%</p>
-                                </div>
-
-                                {/* Details Section */}
-                                <div className={cx('details-section')}>
-                                    {/* Code */}
-                                    <div className={cx('voucher-code-box')}>
-                                        <span className={cx('voucher-code-label')}>Mã:</span>
-                                        <span className={cx('voucher-code-value')}>{voucher.voucherCode}</span>
-                                    </div>
-
-                                    {/* Description */}
-                                    <p className={cx('detail-item')}>
-                                        <FontAwesomeIcon icon={faTag} className={cx('detail-icon')} />
-                                        <span>{voucher.voucherDescription.substring(0, 50)}</span>
-                                    </p>
-
-                                    {/* Details Grid */}
-                                    <div className={cx('details-grid')}>
-                                        <div className={cx('detail-box')}>
-                                            <span className={cx('detail-label')}>Giảm tối đa</span>
-                                            <span className={cx('detail-value')}>{voucher.maxValue?.toLocaleString('vi-VN')}₫</span>
-                                        </div>
-                                        <div className={cx('detail-box')}>
-                                            <span className={cx('detail-label')}>Tối thiểu</span>
-                                            <span className={cx('detail-value')}>{voucher.minimumOrderValue?.toLocaleString('vi-VN')}₫</span>
-                                        </div>
-                                    </div>
-
-                                    {/* End Date */}
-                                    <p className={cx('detail-item', 'end-date')}>
-                                        <FontAwesomeIcon icon={faCalendarAlt} className={cx('detail-icon')} />
-                                        Hết: {voucher.endDate ? new Date(voucher.endDate).toLocaleDateString('vi-VN') : 'N/A'}
-                                    </p>
-                                </div>
+                            {/* Details */}
+                            <div className={cx('row-details')}>
+                                <span className={cx('detail-item')}>Giảm: <strong>{voucher.maxValue?.toLocaleString('vi-VN') || '0'}đ</strong></span>
+                                <span className={cx('detail-item')}>Min: <strong>{voucher.minimumOrderValue?.toLocaleString('vi-VN') || '0'}đ</strong></span>
                             </div>
 
-                            {/* Status Badge */}
-                            <div className={cx('card-status')}>
+                            {/* Expiry */}
+                            <div className={cx('row-expiry')}>
+                                <span className={cx('expiry-label')}>Hết hạn:</span>
+                                <span className={cx('expiry-date')}>
+                                    {voucher.endDate ? new Date(voucher.endDate).toLocaleDateString('vi-VN') : 'N/A'}
+                                </span>
+                            </div>
+
+                            {/* Rank */}
+                            <div className={cx('row-rank')}>
+                                <span>⭐ {voucher.rankMember}</span>
+                            </div>
+
+                            {/* Status */}
+                            <div className={cx('row-status')}>
                                 <span className={cx('status-badge', voucher.isUsed ? 'used' : 'active')}>
-                                    {voucher.isUsed ? '✓ Đã sử dụng' : '✨ Khả dụng'}
+                                    {voucher.isUsed ? '✓ Đã dùng' : '✨ Khả dụng'}
                                 </span>
                             </div>
                         </div>

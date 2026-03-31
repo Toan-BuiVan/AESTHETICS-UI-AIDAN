@@ -3,6 +3,7 @@ import classNames from 'classnames/bind';
 import styles from './ServiceDetailsPage.module.scss';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import NotificationToast from './NotificationToast';
 import {
     faArrowLeft,
     faClock,
@@ -42,6 +43,7 @@ function ServiceDetailsPage() {
     const [doctors, setDoctors] = useState([]);
     const [loadingDoctors, setLoadingDoctors] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [notification, setNotification] = useState(null);
 
     useEffect(() => {
         fetchTreatmentPlans(serviceId);
@@ -189,6 +191,7 @@ function ServiceDetailsPage() {
 
     const handleCreateCustomerTreatmentPlan = async (isFullPackage = true) => {
         try {
+            console.log('🔔 handleCreateCustomerTreatmentPlan called with isFullPackage:', isFullPackage);
             // Get user info from localStorage
             let customerId = parseInt(localStorage.getItem('customerId') || 0);
             const staffIdFromStorage = parseInt(localStorage.getItem('staffId') || 0);
@@ -234,16 +237,31 @@ function ServiceDetailsPage() {
             );
 
             console.log('Response:', response.data);
-            alert('Đặt lịch thành công! Vui lòng kiểm tra lịch đặt của bạn.');
+            console.log('🎉 Setting notification state:', {
+                type: 'success',
+                title: 'Đặt lịch thành công!',
+                message: 'Vui lòng kiểm tra lịch đặt của bạn.'
+            });
+            setNotification({
+                type: 'success',
+                title: 'Đặt lịch thành công!',
+                message: 'Vui lòng kiểm tra lịch đặt của bạn.'
+            });
             
             // Reset selections
             setCheckedSessions(new Set());
             
-            // Navigate to bookings page
-            navigate('/profile?tab=bookings');
+            // Navigate to bookings page after delay
+            setTimeout(() => {
+                navigate('/profile?tab=bookings');
+            }, 3600);
         } catch (error) {
             console.error('Error creating customer treatment plan:', error);
-            alert('Lỗi khi đặt lịch: ' + (error.response?.data?.message || error.message));
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Lỗi khi đặt lịch: ' + (error.response?.data?.message || error.message)
+            });
         }
     };
 
@@ -275,6 +293,15 @@ function ServiceDetailsPage() {
 
     return (
         <div className={cx('wrapper')}>
+            {notification && (
+                <NotificationToast
+                    message={notification.message}
+                    type={notification.type}
+                    title={notification.title}
+                    onClose={() => setNotification(null)}
+                    duration={3500}
+                />
+            )}
             {/* Hero Header with Social Proof & Benefits */}
             <div className={cx('headerModern')}>
                 <div className={cx('headerBackdrop')}>
@@ -797,7 +824,7 @@ function ServiceDetailsPage() {
                                 {/* Doctor Large Image */}
                                 <div className={cx('doctorDetailImage')}>
                                     {selectedDoctor.staffImage ? (
-                                        <img src={selectedDoctor.staffImage} alt={selectedDoctor.fullName || selectedDoctor.accountName} />
+                                        <img src={`http://localhost:5122/Images/${selectedDoctor.staffImage}`} alt={selectedDoctor.fullName || selectedDoctor.accountName} onError={(e) => { e.target.style.display = 'none'; }} />
                                     ) : (
                                         <div className={cx('doctorImagePlaceholder')}>
                                             <FontAwesomeIcon icon={faUserMd} />
@@ -877,15 +904,6 @@ function ServiceDetailsPage() {
                                             <p>{selectedDoctor.biography}</p>
                                         </div>
                                     )}
-
-                                    {/* Book Appointment Button */}
-                                    <button 
-                                        className={cx('doctorDetailBookBtn')}
-                                        onClick={() => handleCreateCustomerTreatmentPlan(true)}
-                                    >
-                                        <FontAwesomeIcon icon={faCalendarAlt} />
-                                        Đặt lịch với {selectedDoctor.fullName || selectedDoctor.accountName}
-                                    </button>
                                 </div>
                             </div>
                         ) : (
@@ -917,7 +935,7 @@ function ServiceDetailsPage() {
                                                 {/* Doctor Image */}
                                                 <div className={cx('doctorSidebarImage')}>
                                                     {doctor.staffImage ? (
-                                                        <img src={doctor.staffImage} alt={doctor.fullName || doctor.accountName} />
+                                                        <img src={`http://localhost:5122/Images/${doctor.staffImage}`} alt={doctor.fullName || doctor.accountName} onError={(e) => { e.target.style.display = 'none'; }} />
                                                     ) : (
                                                         <div className={cx('doctorImagePlaceholder')}>
                                                             <FontAwesomeIcon icon={faUserMd} />

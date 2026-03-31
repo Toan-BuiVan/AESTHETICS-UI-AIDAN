@@ -93,7 +93,7 @@ function AccountForm() {
         };
 
         const data = {
-            userID: parseInt(userID),
+            accountId: parseInt(userID),
             email,
             dateBirth: dateBirth ? new Date(dateBirth).toISOString() : null,
             sex,
@@ -103,7 +103,7 @@ function AccountForm() {
         };
 
         try {
-            const response = await fetch('http://localhost:5262/api/Users/Update_User', {
+            const response = await fetch('http://localhost:5122/api/Staff/updatestaff', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(data),

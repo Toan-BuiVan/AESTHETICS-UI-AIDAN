@@ -1,9 +1,12 @@
-// Gradients
+// ============================================
+// VOUCHER SECTION - KHO VOUCHER (Repository)
+// ============================================
+
+// Variables
 $gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 $gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 $gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 
-// Colors
 $color-primary: #4299e1;
 $color-accent: #f5576c;
 $color-success: #48bb78;
@@ -15,7 +18,7 @@ $color-bg-light: #f7fafc;
 $color-white: #ffffff;
 $color-border: #e2e8f0;
 
-// Animations
+// Animation Utils
 @keyframes slideUp {
     from {
         opacity: 0;
@@ -45,56 +48,115 @@ $color-border: #e2e8f0;
     }
 }
 
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+// MAIN SECTION
 .voucher-section {
-    padding: 32px 20px;
+    padding: clamp(16px, 5vw, 32px) clamp(12px, 4vw, 20px);
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     animation: fadeIn 0.3s ease-in;
+}
 
-    h2 {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: $color-text;
-        margin-bottom: 32px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
+// SECTION HEADER
+.section-header {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 4vw, 24px);
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: clamp(24px, 5vw, 40px);
+    animation: slideUp 0.5s ease-out;
+
+    .header-content {
+        flex: 1;
+        width: 100%;
+
+        h2 {
+            font-size: clamp(1.6rem, 6vw, 2.5rem);
+            font-weight: 800;
+            color: $color-text;
+            margin: 0 0 clamp(6px, 2vw, 8px) 0;
+            display: flex;
+            align-items: center;
+            gap: clamp(10px, 3vw, 16px);
+            background: $gradient-primary;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
+            flex-wrap: wrap;
+        }
 
         .header-icon {
             color: $color-accent;
-            font-size: 2rem;
+            font-size: clamp(1.4rem, 5vw, 2rem);
+            flex-shrink: 0;
+        }
+
+        .header-subtitle {
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            color: $color-text-light;
+            margin: 0;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+    }
+
+    .voucher-count {
+        display: flex;
+        align-items: center;
+        gap: clamp(6px, 2vw, 8px);
+        padding: clamp(10px, 2.5vw, 12px) clamp(14px, 3vw, 20px);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(246, 87, 108, 0.1));
+        border: 1.5px solid rgba(102, 126, 234, 0.2);
+        border-radius: 12px;
+        font-weight: 700;
+        color: $color-text;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        line-height: 1.4;
+        white-space: nowrap;
+
+        span {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            background: $gradient-accent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     }
 }
 
-// Section Header
-.section-header {
-    margin-bottom: 32px;
-    animation: slideUp 0.5s ease-out;
-}
-
-// Loading State
+// LOADING STATE
 .loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80px 20px;
-    gap: 16px;
+    padding: clamp(40px, 10vw, 80px) clamp(12px, 4vw, 20px);
+    gap: clamp(12px, 3vw, 16px);
 
     .spinner-icon {
-        font-size: 3rem;
+        font-size: clamp(2rem, 6vw, 3rem);
         color: $color-primary;
         animation: spin 1s linear infinite;
     }
 
     p {
-        font-size: 1.1rem;
+        font-size: clamp(0.95rem, 3vw, 1.1rem);
         color: $color-text-light;
+        line-height: 1.5;
     }
 }
 
-// Error State
+// ERROR STATE
 .error-container {
     display: flex;
     flex-direction: column;
@@ -118,7 +180,7 @@ $color-border: #e2e8f0;
     }
 }
 
-// Empty State
+// EMPTY STATE
 .empty-state {
     display: flex;
     flex-direction: column;
@@ -148,269 +210,1102 @@ $color-border: #e2e8f0;
     }
 }
 
-// Voucher Grid
-.voucher-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
-    animation: slideUp 0.6s ease-out;
+// ============================================
+// FILTER SECTION
+// ============================================
+
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px;
+    background: $color-white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    align-items: flex-end;
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+        min-width: 150px;
+
+        .filter-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: $color-text-light;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .filter-input {
+            padding: 10px 12px;
+            border: 1.5px solid $color-border;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: $color-text;
+            transition: all 0.3s ease;
+            font-family: inherit;
+
+            &:focus {
+                outline: none;
+                border-color: $color-primary;
+                box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+            }
+
+            &::placeholder {
+                color: $color-text-light;
+            }
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 1.5px solid $color-border;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: $color-text;
+            background-color: $color-white;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            cursor: pointer;
+
+            &:focus {
+                outline: none;
+                border-color: $color-primary;
+                box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+            }
+
+            option {
+                color: $color-text;
+                background-color: $color-white;
+                padding: 8px;
+            }
+        }
+    }
+
+    .btn-clear-filter {
+        padding: 10px 16px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border: none;
+        border-radius: 8px;
+        color: $color-white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        white-space: nowrap;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
 }
 
-// Voucher Card
-.voucher-card {
-    background: $color-white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+// ============================================
+// VOUCHER LIST - ROW LAYOUT
+// ============================================
+
+.voucher-list {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    gap: 12px;
+    animation: slideUp 0.6s ease-out;
+    margin-bottom: 24px;
+}
+
+.voucher-row {
+    display: grid;
+    grid-template-columns: 0.6fr 2.5fr 2fr 1.2fr 0.8fr;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: $color-white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid $color-border;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     animation: slideUp 0.5s ease-out;
 
     &:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        border-color: rgba(102, 126, 234, 0.3);
     }
 
-    .card-header {
-        position: relative;
-        width: 100%;
-        height: 160px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        overflow: hidden;
-
-        .voucher-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        &:hover .voucher-image {
-            transform: scale(1.1);
-        }
-
-        .rank-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: $color-white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
-        }
-    }
-
-    .card-body {
-        flex: 1;
-        padding: 20px;
+    // DISCOUNT BADGE
+    .row-discount {
         display: flex;
-        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background: $gradient-accent;
+        border-radius: 10px;
+        color: $color-white;
+        box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+        flex-shrink: 0;
 
-        .discount-section {
-            flex-shrink: 0;
+        .discount-percent {
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+    }
+
+    // CODE AND DESCRIPTION
+    .row-code-description {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .code-text {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: $color-text;
+            margin: 0;
+            letter-spacing: 0.8px;
+            font-family: 'Courier New', monospace;
+            user-select: all;
+        }
+
+        .description {
+            font-size: 0.85rem;
+            color: $color-text-light;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+    }
+
+    // DETAILS (Max Value, Min Order)
+    .row-details {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .detail-item {
+            font-size: 0.85rem;
+            color: $color-text;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 12px;
-            color: $color-white;
+            gap: 8px;
 
-            .discount-value {
-                font-size: 2rem;
+            strong {
+                color: $color-accent;
+                font-weight: 700;
+            }
+        }
+    }
+
+    // META (Expiry Date and Rank)
+    .row-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .meta-item {
+            font-size: 0.85rem;
+            color: $color-text;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+
+            strong {
                 font-weight: 700;
             }
 
-            .discount-label {
-                font-size: 0.75rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-        }
+            &.rank {
+                padding: 6px 10px;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(102, 126, 234, 0.05));
+                border: 1px solid rgba(102, 126, 234, 0.3);
+                border-radius: 8px;
+                color: #667eea;
+                font-weight: 700;
 
-        .details-section {
-            flex: 1;
-
-            .detail-item {
-                font-size: 0.9rem;
-                color: $color-text;
-                margin-bottom: 8px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-
-                .detail-icon {
-                    color: $color-primary;
-                    min-width: 16px;
-                }
-
-                &:last-child {
-                    margin-bottom: 0;
+                svg {
+                    font-size: 0.85rem;
                 }
             }
         }
     }
 
-    .card-footer {
-        padding: 16px 20px;
-        border-top: 1px solid $color-border;
+    // ACTION BUTTON
+    .row-action {
         display: flex;
-        gap: 8px;
-        background: $color-bg-light;
+        align-items: center;
+        justify-content: center;
 
-        .btn-save,
-        .btn-exchange {
-            flex: 1;
+        .btn-claim {
+            width: 100%;
             padding: 10px 16px;
+            background: $gradient-primary;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            color: $color-white;
+            font-weight: 700;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.25);
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+        }
+    }
+}
+
+// ============================================
+// PAGINATION CONTROLS
+// ============================================
+
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    background: $color-white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-top: 24px;
+    flex-wrap: wrap;
+
+    .pagination-btn {
+        padding: 10px 16px;
+        background: $color-white;
+        border: 2px solid $color-border;
+        border-radius: 8px;
+        color: $color-text;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        white-space: nowrap;
+
+        &:hover:not(:disabled) {
+            background: $gradient-primary;
+            border-color: transparent;
+            color: $color-white;
+            transform: translateY(-2px);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &.prev-btn {
+            order: 1;
+        }
+
+        &.next-btn {
+            order: 3;
+        }
+    }
+
+    .pagination-info {
+        order: 2;
+        padding: 0 8px;
+        color: $color-text;
+        font-weight: 600;
+        white-space: nowrap;
+        font-size: 0.95rem;
+
+        strong {
+            color: $color-primary;
+            font-weight: 700;
+        }
+    }
+
+    .pagination-pages {
+        order: 4;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 1.5px solid $color-border;
+            background: $color-white;
+            border-radius: 6px;
+            color: $color-text;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
 
-        .btn-save {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: $color-white;
-
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+            &:hover:not(.active) {
+                border-color: $color-primary;
+                color: $color-primary;
             }
 
-            &:active {
-                transform: translateY(0);
-            }
-        }
-
-        .btn-exchange {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: $color-white;
-
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-            }
-
-            &:active {
-                transform: translateY(0);
-            }
-        }
-
-        .exchange-container {
-            position: relative;
-            flex: 1;
-
-            .exchange-dropdown {
-                position: absolute;
-                bottom: 100%;
-                right: 0;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border-radius: 12px;
-                padding: 12px 0;
-                margin-bottom: 8px;
-                box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-                z-index: 100;
-                min-width: 200px;
-                animation: slideUp 0.3s ease-out;
-
-                .option-item {
-                    display: flex;
-                    align-items: center;
-                    padding: 10px 16px;
-                    color: $color-white;
-                    cursor: pointer;
-                    font-size: 0.9rem;
-                    transition: background 0.2s ease;
-
-                    &:hover {
-                        background: rgba(255, 255, 255, 0.1);
-                    }
-
-                    input[type='radio'] {
-                        margin-right: 8px;
-                        cursor: pointer;
-                    }
-                }
+            &.active {
+                background: $gradient-primary;
+                border-color: transparent;
+                color: $color-white;
+                box-shadow: 0 4px 10px rgba(102, 126, 234, 0.25);
             }
         }
     }
 }
 
-// Responsive Design
-@media (max-width: 767px) {
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+
+// 1024px (Tablet to Small Desktop)
+@media (min-width: 993px) and (max-width: 1199px) {
+    .filter-section {
+        gap: 10px;
+        padding: 16px;
+
+        .filter-group {
+            min-width: 130px;
+
+            .filter-input,
+            .filter-select {
+                padding: 9px 11px;
+                font-size: 0.87rem;
+            }
+        }
+
+        .btn-clear-filter {
+            padding: 9px 14px;
+            font-size: 0.82rem;
+        }
+    }
+
+    .voucher-row {
+        grid-template-columns: 0.55fr 2.1fr 1.7fr 1.05fr 0.68fr;
+        gap: 13px;
+        padding: 13px 15px;
+
+        .row-discount {
+            width: 54px;
+            height: 54px;
+
+            .discount-percent {
+                font-size: 1.5rem;
+            }
+        }
+
+        .row-code-description {
+            .code-text {
+                font-size: 0.98rem;
+            }
+
+            .description {
+                font-size: 0.78rem;
+            }
+        }
+
+        .row-details {
+            .detail-item {
+                font-size: 0.78rem;
+                gap: 6px;
+            }
+        }
+
+        .row-meta {
+            .meta-item {
+                font-size: 0.78rem;
+                gap: 6px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                &.rank {
+                    padding: 5px 9px;
+                    font-size: 0.73rem;
+                    white-space: normal;
+                    
+                    svg {
+                        font-size: 0.75rem;
+                        margin-right: 2px;
+                    }
+                }
+            }
+        }
+
+        .row-action {
+            .btn-claim {
+                padding: 8px 12px;
+                font-size: 0.88rem;
+            }
+        }
+    }
+
+    .pagination-container {
+        gap: 10px;
+        padding: 18px;
+
+        .pagination-btn {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .pagination-info {
+            font-size: 0.92rem;
+        }
+
+        .pagination-pages .page-btn {
+            width: 34px;
+            height: 34px;
+            font-size: 0.82rem;
+        }
+    }
+}
+
+@media (max-width: 1200px) {
+    .filter-section {
+        gap: 10px;
+        padding: 16px;
+
+        .filter-group {
+            min-width: 120px;
+
+            .filter-input,
+            .filter-select {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+
+        .btn-clear-filter {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+    }
+
+    .voucher-row {
+        grid-template-columns: 0.6fr 2.2fr 1.8fr 1.1fr 0.7fr;
+        gap: 14px;
+        padding: 14px 16px;
+
+        .row-image {
+            height: 55px;
+
+            .voucher-img-placeholder {
+                width: 55px;
+                height: 55px;
+            }
+        }
+
+        .row-discount {
+            width: 55px;
+            height: 55px;
+
+            .discount-percent {
+                font-size: 1.6rem;
+            }
+        }
+
+        .row-code-description {
+            .code-text {
+                font-size: 1rem;
+            }
+
+            .description {
+                font-size: 0.8rem;
+            }
+        }
+
+        .row-details {
+            .detail-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        .row-meta {
+            .meta-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        .row-action {
+            .btn-claim {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 992px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+
+        .header-content h2 {
+            font-size: 2rem;
+        }
+    }
+
+    .filter-section {
+        gap: 8px;
+        padding: 14px;
+        flex-direction: column;
+
+        .filter-group {
+            width: 100%;
+            min-width: unset;
+
+            .filter-input,
+            .filter-select {
+                width: 100%;
+            }
+        }
+
+        .btn-clear-filter {
+            width: 100%;
+        }
+    }
+
+    .voucher-row {
+        grid-template-columns: 0.6fr 1.8fr 1.6fr 0.95fr 0.65fr;
+        gap: 12px;
+        padding: 12px 14px;
+
+        .row-discount {
+            width: 50px;
+            height: 50px;
+
+            .discount-percent {
+                font-size: 1.4rem;
+            }
+        }
+
+        .row-code-description {
+            .code-text {
+                font-size: 0.95rem;
+            }
+
+            .description {
+                font-size: 0.75rem;
+            }
+        }
+
+        .row-details {
+            .detail-item {
+                font-size: 0.75rem;
+            }
+        }
+
+        .row-meta {
+            .meta-item {
+                font-size: 0.75rem;
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+
+                &.rank {
+                    padding: 4px 8px;
+                    font-size: 0.7rem;
+                }
+            }
+        }
+
+        .row-action {
+            .btn-claim {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+    }
+
+    .pagination-container {
+        gap: 10px;
+        padding: 16px;
+
+        .pagination-btn {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+        }
+
+        .pagination-pages .page-btn {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+    }
+}
+
+@media (max-width: 768px) {
     .voucher-section {
-        padding: 20px 16px;
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-        }
+        padding: 20px 12px;
     }
 
-    .voucher-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
+    .section-header {
+        margin-bottom: 24px;
 
-    .voucher-card {
-        .card-body {
-            flex-direction: column;
+        .header-content h2 {
+            font-size: 1.6rem;
             gap: 12px;
+        }
 
-            .discount-section {
-                width: 100%;
+        .header-subtitle {
+            font-size: 0.9rem;
+        }
+
+        .voucher-count {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+        }
+    }
+
+    .filter-section {
+        gap: 8px;
+        padding: 12px;
+
+        .filter-group {
+            width: 100%;
+
+            .filter-input,
+            .filter-select {
+                padding: 8px 10px;
+                font-size: 0.8rem;
             }
         }
 
-        .card-footer {
-            flex-direction: column;
+        .btn-clear-filter {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 0.75rem;
+        }
+    }
 
-            .btn-save,
-            .btn-exchange {
-                width: 100%;
+    .voucher-row {
+        grid-template-columns: 0.5fr 2fr 1.4fr 0.8fr;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+
+        .row-discount {
+            width: 53px;
+            height: 53px;
+
+            .discount-percent {
+                font-size: 1.3rem;
+            }
+        }
+
+        .row-code-description {
+            .code-text {
+                font-size: 0.9rem;
             }
 
-            .exchange-container {
-                .exchange-dropdown {
-                    width: 100%;
-                    right: auto;
-                    left: 0;
+            .description {
+                font-size: 0.7rem;
+                -webkit-line-clamp: 1;
+            }
+        }
+
+        .row-details {
+            display: none;
+        }
+
+        .row-meta {
+            display: flex;
+            flex-direction: row;
+            gap: 4px;
+
+            .meta-item {
+                font-size: 0.7rem;
+                flex-direction: row;
+                gap: 3px;
+
+                &.rank {
+                    padding: 3px 6px;
+                    font-size: 0.65rem;
+
+                    svg {
+                        font-size: 0.7rem;
+                    }
                 }
             }
         }
+
+        .row-action {
+            .btn-claim {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+        }
+    }
+
+    .pagination-container {
+        gap: 8px;
+        padding: 12px;
+        flex-direction: column;
+
+        .pagination-btn {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            order: unset !important;
+            margin: 0;
+
+            &.prev-btn {
+                order: 1;
+            }
+
+            &.next-btn {
+                order: 3;
+            }
+        }
+
+        .pagination-info {
+            order: 2;
+            padding: 4px 0;
+            font-size: 0.85rem;
+        }
+
+        .pagination-pages {
+            order: 4;
+            width: 100%;
+            gap: 3px;
+
+            .page-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+        }
+    }
+
+    .loading-container,
+    .error-container {
+        padding: 60px 12px;
+
+        .spinner-icon,
+        .error-icon {
+            font-size: 2.5rem;
+        }
+
+        p {
+            font-size: 1rem;
+        }
+    }
+
+    .empty-state {
+        padding: 60px 12px;
+
+        .empty-icon {
+            font-size: 3rem;
+        }
+
+        .empty-text {
+            font-size: 1.1rem;
+        }
+
+        .empty-subtext {
+            font-size: 0.9rem;
+        }
     }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-    .voucher-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+@media (max-width: 640px) {
+    .section-header {
+        margin-bottom: 16px;
+
+        .header-content h2 {
+            font-size: 1.3rem;
+            gap: 10px;
+
+            .header-icon {
+                font-size: 1.3rem;
+            }
+        }
+
+        .header-subtitle {
+            font-size: 0.8rem;
+        }
+
+        .voucher-count {
+            width: 100%;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+        }
+    }
+
+    .filter-section {
+        gap: 6px;
+        padding: 10px;
+
+        .filter-group {
+            width: 100%;
+
+            .filter-label {
+                font-size: 0.75rem;
+            }
+
+            .filter-input,
+            .filter-select {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+            }
+        }
+
+        .btn-clear-filter {
+            width: 100%;
+            padding: 6px 8px;
+            font-size: 0.7rem;
+        }
+    }
+
+    .voucher-row {
+        grid-template-columns: 0.45fr 2fr 0.7fr;
+        gap: 8px;
+        padding: 8px 10px;
+
+        .row-discount {
+            width: 50px;
+            height: 50px;
+            box-shadow: 0 2px 6px rgba(245, 87, 108, 0.2);
+
+            .discount-percent {
+                font-size: 1.2rem;
+            }
+        }
+
+        .row-code-description {
+            .code-text {
+                font-size: 0.85rem;
+            }
+
+            .description {
+                font-size: 0.65rem;
+            }
+        }
+
+        .row-details {
+            display: none;
+        }
+
+        .row-meta {
+            display: none;
+        }
+
+        .row-action {
+            .btn-claim {
+                width: 100%;
+                padding: 6px 8px;
+                font-size: 0.75rem;
+            }
+        }
+    }
+
+    .pagination-container {
+        gap: 6px;
+        padding: 10px;
+
+        .pagination-btn {
+            padding: 6px 8px;
+            font-size: 0.75rem;
+        }
+
+        .pagination-info {
+            font-size: 0.75rem;
+            padding: 2px 0;
+        }
+
+        .pagination-pages {
+            gap: 2px;
+
+            .page-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.65rem;
+            }
+        }
     }
 }
 
-@media (min-width: 1024px) {
-    .voucher-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
+@media (max-width: 480px) {
+    .voucher-section {
+        padding: 12px 6px;
+    }
+
+    .section-header {
+        margin-bottom: 12px;
+
+        .header-content h2 {
+            font-size: 1.1rem;
+            gap: 8px;
+
+            .header-icon {
+                font-size: 1rem;
+            }
+        }
+
+        .header-subtitle {
+            font-size: 0.75rem;
+        }
+
+        .voucher-count {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+        }
+    }
+
+    .filter-section {
+        gap: 4px;
+        padding: 8px;
+
+        .filter-group {
+            width: 100%;
+
+            .filter-label {
+                font-size: 0.7rem;
+            }
+
+            .filter-input,
+            .filter-select {
+                padding: 6px 6px;
+                font-size: 0.7rem;
+            }
+        }
+
+        .btn-clear-filter {
+            width: 100%;
+            padding: 6px 6px;
+            font-size: 0.65rem;
+        }
+    }
+
+    .voucher-row {
+        grid-template-columns: 0.4fr 1.8fr;
+        gap: 6px;
+        padding: 6px 8px;
+
+        .row-discount {
+            width: 45px;
+            height: 45px;
+
+            .discount-percent {
+                font-size: 1rem;
+            }
+        }
+
+        .row-code-description {
+            .code-text {
+                font-size: 0.8rem;
+            }
+
+            .description {
+                font-size: 0.6rem;
+                -webkit-line-clamp: 1;
+            }
+        }
+
+        .row-details {
+            display: none;
+        }
+
+        .row-meta {
+            display: none;
+        }
+
+        .row-action {
+            .btn-claim {
+                padding: 4px 6px;
+                font-size: 0.7rem;
+            }
+        }
+    }
+
+    .pagination-container {
+        gap: 4px;
+        padding: 8px;
+        flex-direction: column;
+
+        .pagination-btn {
+            width: 100%;
+            padding: 6px 6px;
+            font-size: 0.7rem;
+        }
+
+        .pagination-info {
+            font-size: 0.7rem;
+            padding: 2px 0;
+        }
+
+        .pagination-pages {
+            width: 100%;
+            gap: 2px;
+
+            .page-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 0.6rem;
+            }
+        }
+    }
+
+    .loading-container,
+    .error-container {
+        padding: 40px 8px;
+
+        .spinner-icon,
+        .error-icon {
+            font-size: 2rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    }
+
+    .empty-state {
+        padding: 40px 8px;
+
+        .empty-icon {
+            font-size: 2rem;
+        }
+
+        .empty-text {
+            font-size: 0.95rem;
+        }
+
+        .empty-subtext {
+            font-size: 0.8rem;
+        }
     }
 }
 
