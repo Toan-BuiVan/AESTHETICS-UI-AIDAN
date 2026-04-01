@@ -29,6 +29,13 @@ function VoucherSection() {
     const [filterStartDate, setFilterStartDate] = useState('');
     const [filterEndDate, setFilterEndDate] = useState('');
     const [filterRankMember, setFilterRankMember] = useState('');
+    const [pointType, setPointType] = useState(0); // 0 = AccumulatedPoints, 1 = RatingPoints
+    
+    // Track selected point type for each voucher (voucherId -> pointType)
+    const [voucherPointTypes, setVoucherPointTypes] = useState({});
+    
+    // Debounce for individual voucher exchange
+    const debouncedVoucherPointTypes = useDebounce(voucherPointTypes, 3000);
 
     // Debounced filter values (2 seconds delay)
     const debouncedFilterCode = useDebounce(filterCode, 2000);
@@ -46,6 +53,7 @@ function VoucherSection() {
                     startDate: debouncedFilterStartDate ? new Date(debouncedFilterStartDate).toISOString() : null,
                     endDate: debouncedFilterEndDate ? new Date(debouncedFilterEndDate).toISOString() : null,
                     rankMember: debouncedFilterRankMember ? rankMapping[debouncedFilterRankMember] : '',
+                    pointType: pointType, // 0 or 1
                 };
 
                 const response = await fetch('http://localhost:5122/api/Voucher/getvoucherlist', {
@@ -79,7 +87,52 @@ function VoucherSection() {
         };
 
         fetchVouchers();
-    }, [currentPage, debouncedFilterCode, debouncedFilterStartDate, debouncedFilterEndDate, debouncedFilterRankMember]);
+    }, [currentPage, debouncedFilterCode, debouncedFilterStartDate, debouncedFilterEndDate, debouncedFilterRankMember, pointType]);
+
+    // Handle debounced voucher exchange when point type changes
+    useEffect(() => {
+        Object.entries(debouncedVoucherPointTypes).forEach(async ([voucherId, selectedPointType]) => {
+            const customerId = localStorage.getItem('customerId');
+            if (!customerId) {
+                setSuccessMessage('Không tìm thấy customerId trong localStorage');
+                return;
+            }
+
+            const data = {
+                customerId: parseInt(customerId),
+                voucherId: parseInt(voucherId),
+                pointType: selectedPointType,
+            };
+
+            try {
+                const response = await fetch('http://localhost:5122/api/Wallet/exchangevoucher', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    setSuccessMessage(`Đổi voucher thành công!`);
+                } else {
+                    setSuccessMessage('Đổi voucher thất bại');
+                }
+            } catch (err) {
+                setSuccessMessage('Đổi voucher thất bại');
+                console.error('Lỗi khi đổi voucher:', err);
+            }
+        });
+    }, [debouncedVoucherPointTypes]);
+
+    const handleVoucherPointTypeChange = (voucherId, pointType) => {
+        setVoucherPointTypes(prev => ({
+            ...prev,
+            [voucherId]: pointType
+        }));
+    };
 
     const handleClaimVoucher = async (voucher) => {
         const customerId = localStorage.getItem('customerId');
@@ -143,6 +196,7 @@ function VoucherSection() {
         setFilterStartDate('');
         setFilterEndDate('');
         setFilterRankMember('');
+        setPointType(0);
         setCurrentPage(1);
     };
 
@@ -279,12 +333,30 @@ function VoucherSection() {
 
                             {/* Claim Button */}
                             <div className={cx('row-action')}>
-                                <button 
-                                    className={cx('btn-claim')} 
-                                    onClick={() => handleClaimVoucher(voucher)}
-                                >
-                                    Nhận
-                                </button>
+                                <div className={cx('voucher-point-options')}>
+                                    <label className={cx('point-option')}>
+                                        <input 
+                                            type="radio" 
+                                            name={`voucher-${voucher.id}`} 
+                                            value="0"
+                                            checked={(voucherPointTypes[voucher.id] ?? -1) === 0}
+                                            onChange={() => handleVoucherPointTypeChange(voucher.id, 0)}
+                                            className={cx('point-radio')}
+                                        />
+                                        <span className={cx('point-label')}>Giới Thiệu</span>
+                                    </label>
+                                    <label className={cx('point-option')}>
+                                        <input 
+                                            type="radio" 
+                                            name={`voucher-${voucher.id}`} 
+                                            value="1"
+                                            checked={(voucherPointTypes[voucher.id] ?? -1) === 1}
+                                            onChange={() => handleVoucherPointTypeChange(voucher.id, 1)}
+                                            className={cx('point-radio')}
+                                        />
+                                        <span className={cx('point-label')}>Mua Hàng</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     ))}

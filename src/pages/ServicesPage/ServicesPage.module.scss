@@ -1527,6 +1527,57 @@ $text-secondary: #999;
     .emptyState {
         padding: 30px 12px;
 
+// Session DateTime Input Styling
+.sessionDateTimeInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid $gray-border;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    color: $text-primary;
+    background: white;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+        border-color: $primary;
+        background: rgba($primary, 0.02);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+        background: white;
+    }
+
+    // Disable color for invalid time slots (before 08:00, 12:00-13:00, after 17:00)
+    &::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        color: $primary;
+    }
+
+    // For times outside allowed range, show disabled state
+    &[data-invalid="true"] {
+        background: #f0f0f0;
+        color: #999;
+        border-color: #ddd;
+        cursor: not-allowed;
+
+        &:hover {
+            border-color: #ddd;
+            background: #f0f0f0;
+        }
+
+        &:focus {
+            border-color: #ddd;
+            box-shadow: none;
+        }
+    }
+}
+
         p {
             font-size: 13px;
         }

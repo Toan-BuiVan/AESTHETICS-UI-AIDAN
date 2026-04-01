@@ -306,7 +306,71 @@ $color-border: #e2e8f0;
             transform: translateY(0);
         }
     }
+
+    // Point Type Radio Buttons
+    .point-type-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px !important;
+        flex: 0 1 auto;
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+
+            .radio-option {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                padding: 8px 12px;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                border: 2px solid transparent;
+
+                .radio-input {
+                    width: 16px;
+                    height: 16px;
+                    cursor: pointer;
+                    accent-color: $color-primary;
+                    transition: all 0.3s ease;
+
+                    &:checked {
+                        accent-color: #667eea;
+                    }
+                }
+
+                .radio-label {
+                    font-size: clamp(0.8rem, 2vw, 0.95rem);
+                    font-weight: 600;
+                    color: $color-text;
+                    user-select: none;
+                    cursor: pointer;
+                    white-space: nowrap;
+                }
+
+                &:has(.radio-input:checked) {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border-color: #667eea;
+
+                    .radio-label {
+                        color: $color-white;
+                        font-weight: 700;
+                    }
+                }
+
+                &:hover:not(:has(.radio-input:checked)) {
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+                    border-color: #667eea;
+                }
+            }
+        }
+    }
 }
+
 
 // ============================================
 // VOUCHER LIST - ROW LAYOUT
@@ -447,6 +511,62 @@ $color-border: #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: center;
+
+        .voucher-point-options {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+
+            .point-option {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+                padding: 8px 12px;
+                border-radius: 8px;
+                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                border: 2px solid transparent;
+                user-select: none;
+
+                .point-radio {
+                    width: 16px;
+                    height: 16px;
+                    cursor: pointer;
+                    accent-color: #667eea;
+                }
+
+                .point-label {
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: $color-text;
+                    white-space: nowrap;
+                }
+
+                &:hover {
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+                    border-color: #667eea;
+                }
+
+                &:has(.point-radio:checked) {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border-color: #667eea;
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+                    .point-label {
+                        color: $color-white;
+                        font-weight: 700;
+                    }
+
+                    .point-radio {
+                        accent-color: #ffffff;
+                    }
+                }
+            }
+        }
 
         .btn-claim {
             width: 100%;
@@ -663,6 +783,24 @@ $color-border: #e2e8f0;
                 padding: 8px 12px;
                 font-size: 0.88rem;
             }
+
+            .voucher-point-options {
+                gap: 6px;
+
+                .point-option {
+                    padding: 6px 10px;
+                    font-size: 0.8rem;
+
+                    .point-radio {
+                        width: 14px;
+                        height: 14px;
+                    }
+
+                    .point-label {
+                        font-size: 0.8rem;
+                    }
+                }
+            }
         }
     }
 
@@ -758,6 +896,24 @@ $color-border: #e2e8f0;
                 padding: 8px 12px;
                 font-size: 0.9rem;
             }
+
+            .voucher-point-options {
+                gap: 6px;
+
+                .point-option {
+                    padding: 6px 10px;
+                    font-size: 0.8rem;
+
+                    .point-radio {
+                        width: 14px;
+                        height: 14px;
+                    }
+
+                    .point-label {
+                        font-size: 0.8rem;
+                    }
+                }
+            }
         }
     }
 }
@@ -842,6 +998,24 @@ $color-border: #e2e8f0;
                 padding: 8px 10px;
                 font-size: 0.85rem;
             }
+
+            .voucher-point-options {
+                gap: 6px;
+
+                .point-option {
+                    padding: 6px 10px;
+                    font-size: 0.75rem;
+
+                    .point-radio {
+                        width: 13px;
+                        height: 13px;
+                    }
+
+                    .point-label {
+                        font-size: 0.75rem;
+                    }
+                }
+            }
         }
     }
 
@@ -900,6 +1074,25 @@ $color-border: #e2e8f0;
             .filter-select {
                 padding: 8px 10px;
                 font-size: 0.8rem;
+            }
+
+            &.point-type-group {
+                width: 100%;
+
+                .radio-group {
+                    gap: 8px;
+
+                    .radio-option {
+                        flex: 1;
+                        min-width: 140px;
+                        padding: 6px 8px;
+                        font-size: 0.75rem;
+
+                        .radio-label {
+                            font-size: 0.75rem;
+                        }
+                    }
+                }
             }
         }
 
@@ -965,6 +1158,24 @@ $color-border: #e2e8f0;
             .btn-claim {
                 padding: 6px 10px;
                 font-size: 0.8rem;
+            }
+
+            .voucher-point-options {
+                gap: 5px;
+
+                .point-option {
+                    padding: 5px 8px;
+                    font-size: 0.7rem;
+
+                    .point-radio {
+                        width: 12px;
+                        height: 12px;
+                    }
+
+                    .point-label {
+                        font-size: 0.7rem;
+                    }
+                }
             }
         }
     }
@@ -1080,6 +1291,31 @@ $color-border: #e2e8f0;
                 padding: 6px 8px;
                 font-size: 0.75rem;
             }
+
+            &.point-type-group {
+                width: 100%;
+
+                .radio-group {
+                    gap: 6px;
+                    flex-wrap: wrap;
+
+                    .radio-option {
+                        flex: 1;
+                        min-width: 120px;
+                        padding: 5px 8px;
+                        font-size: 0.7rem;
+
+                        .radio-input {
+                            width: 14px;
+                            height: 14px;
+                        }
+
+                        .radio-label {
+                            font-size: 0.7rem;
+                        }
+                    }
+                }
+            }
         }
 
         .btn-clear-filter {
@@ -1127,6 +1363,26 @@ $color-border: #e2e8f0;
                 width: 100%;
                 padding: 6px 8px;
                 font-size: 0.75rem;
+            }
+
+            .voucher-point-options {
+                gap: 4px;
+                width: 100%;
+
+                .point-option {
+                    flex: 1;
+                    padding: 4px 6px;
+                    font-size: 0.65rem;
+
+                    .point-radio {
+                        width: 11px;
+                        height: 11px;
+                    }
+
+                    .point-label {
+                        font-size: 0.65rem;
+                    }
+                }
             }
         }
     }
@@ -1200,6 +1456,31 @@ $color-border: #e2e8f0;
                 padding: 6px 6px;
                 font-size: 0.7rem;
             }
+
+            &.point-type-group {
+                width: 100%;
+
+                .radio-group {
+                    gap: 4px;
+                    flex-wrap: wrap;
+
+                    .radio-option {
+                        flex: 1;
+                        min-width: 100px;
+                        padding: 4px 6px;
+                        border-radius: 6px;
+
+                        .radio-input {
+                            width: 13px;
+                            height: 13px;
+                        }
+
+                        .radio-label {
+                            font-size: 0.65rem;
+                        }
+                    }
+                }
+            }
         }
 
         .btn-clear-filter {
@@ -1246,6 +1527,26 @@ $color-border: #e2e8f0;
             .btn-claim {
                 padding: 4px 6px;
                 font-size: 0.7rem;
+            }
+
+            .voucher-point-options {
+                gap: 3px;
+                width: 100%;
+
+                .point-option {
+                    flex: 1;
+                    padding: 3px 4px;
+                    font-size: 0.6rem;
+
+                    .point-radio {
+                        width: 10px;
+                        height: 10px;
+                    }
+
+                    .point-label {
+                        font-size: 0.6rem;
+                    }
+                }
             }
         }
     }

@@ -21,9 +21,12 @@ import { faFilter, faTimes, faCheckCircle, faClock, faCalendarAlt, faGift, faSta
 const cx = classNames.bind(styles);
 
 const APPOINTMENT_TIMES = [
+    // Morning: 08:00 - 12:00
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:30', '13:00', '13:30', '14:00', '14:30',
-    '15:00', '15:30', '16:00', '16:30'
+    '11:00', '11:30', '12:00',
+    // Afternoon: 13:00 - 18:00
+    '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+    '16:00', '16:30', '17:00', '17:30', '18:00'
 ];
 
 function ServicesPage() {
@@ -358,9 +361,9 @@ function ServicesPage() {
             return;
         }
 
-        // Validate if time is within business hours (08:00 - 16:30)
+        // Validate if time is within business hours (08:00-12:00 or 13:00-18:00)
         if (!isDateTimeInBusinessHours(dateTimeString)) {
-            setSuccessMessage('⚠️ Vui lòng chọn giờ từ 08:00 đến 16:30');
+            setSuccessMessage('⚠️ Vui lòng chọn giờ từ 08:00-12:00 hoặc 13:00-18:00');
             return;
         }
 
@@ -491,16 +494,13 @@ function ServicesPage() {
     const isTimeInBusinessHours = (timeString) => {
         const [hours, minutes] = timeString.split(':');
         const hour = parseInt(hours);
-        const minute = parseInt(minutes);
         
-        // Before 08:00 → not allowed
-        if (hour < 8) return false;
-        // After 16:30 → not allowed
-        if (hour > 16) return false;
-        // At 16:xx but after 16:30 → not allowed
-        if (hour === 16 && minute > 30) return false;
+        // Morning: 08:00 - 12:00
+        if (hour >= 8 && hour < 12) return true;
+        // Afternoon: 13:00 - 18:00
+        if (hour >= 13 && hour < 18) return true;
         
-        return true;
+        return false;
     };
 
     // Check if a datetime string is within business hours
@@ -788,6 +788,7 @@ function ServicesPage() {
                                                                                 onClick={(e) => e.stopPropagation()}
                                                                                 placeholder="Chọn ngày/giờ"
                                                                                 min={getMinDateTime()}
+                                                                                step="1800"
                                                                             />
                                                                             {inlineBookings[sessionKey] && (
                                                                                 <button
