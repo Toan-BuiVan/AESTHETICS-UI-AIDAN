@@ -4,6 +4,9 @@ import classNames from 'classnames/bind';
 import { useNavigate } from 'react-router-dom';
 import ItemCartproduct from './ItemCartproduct';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { PLACEHOLDER_IMAGE_120, PLACEHOLDER_IMAGE_80 } from '~/utils/placeholderImage';
 
 const cx = classNames.bind(styles);
 
@@ -86,8 +89,8 @@ function CartProduct() {
         // Ensure all required properties exist
         const normalizedItem = {
             ...item,
-            productID: item.productID || item.id,
-            cartProductID: item.cartProductID || item.id,
+            productID: item.productId,
+            cartProductID: item.id,
             quantity: item.quantity || 1,
             sellingPrice: parseFloat(item.sellingPrice) || 0,
             productName: item.productName || 'Sản phẩm',
@@ -110,9 +113,6 @@ function CartProduct() {
         
         // If new product, add to list
         setInvoiceItems((prevItems) => [...prevItems, normalizedItem]);
-        
-        // Call update API for new items
-        handleUpdateCartProduct(normalizedItem);
         
         // Show success message
         setSuccessMessage(`✓ Thêm "${normalizedItem.productName}" vào chi tiết đơn hàng`);
@@ -174,52 +174,6 @@ function CartProduct() {
         }
     };
 
-    // ✅ Update CartProduct API
-    const handleUpdateCartProduct = async (item) => {
-        try {
-            const customerId = localStorage.getItem('customerId');
-            const token = localStorage.getItem('token') || '';
-            const refreshToken = localStorage.getItem('refreshToken') || '';
-            
-            if (!customerId || !item.cartProductID) return;
-
-            const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': token ? `Bearer ${token}` : '',
-                'RefreshToken': refreshToken,
-            };
-
-            const body = {
-                cartProductID: item.cartProductID,
-                productID: item.productID || item.id,
-                customerId: parseInt(customerId),
-                quantity: item.quantity,
-                sellingPrice: item.sellingPrice,
-            };
-
-            const response = await fetch(
-                'http://localhost:5122/api/CartProduct/update',
-                {
-                    method: 'PUT',
-                    headers: headers,
-                    body: JSON.stringify(body),
-                }
-            );
-
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Failed to update cart product:', errorData);
-            }
-        } catch (error) {
-            console.error('Error updating cart product:', error);
-        }
-    };
-
     const handleCheckout = (index) => {
         setCheckoutType('single');
         setShowPaymentForm(true);
@@ -234,6 +188,7 @@ function CartProduct() {
             return;
         }
         setCheckoutType('all');
+        setPaymentMethod(null);
         setShowPaymentForm(true);
     };
 
@@ -261,46 +216,60 @@ function CartProduct() {
         setDiscountInfo({ discountAmount, finalTotal });
     }, [selectedVoucher, invoiceItems]);
 
-    const handlePaymentSelection = async (method) => {
-        setShowPaymentForm(false); // Đóng form thanh toán
-        setPaymentMethod(method);
-
-        const userID = localStorage.getItem('userID') || localStorage.getItem('customerId') || '';
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
-
-        const headers = {
-            'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
-            Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
-        };
-
-        let body;
-        if (checkoutType === 'single') {
-            const item = invoiceItems[0];
-            body = {
-                customerID: userID,
-                voucherID: selectedVoucher ? (selectedVoucher.voucherID || selectedVoucher.id) : null,
-                productIDs: [item.productID || item.id],
-                quantityProduct: [item.quantity],
-            };
-        } else {
-            body = {
-                customerID: userID,
-                voucherID: selectedVoucher ? (selectedVoucher.voucherID || selectedVoucher.id) : null,
-                productIDs: invoiceItems.map((item) => item.productID || item.id),
-                quantityProduct: invoiceItems.map((item) => item.quantity),
-            };
+    // Debounce payment method selection - wait 3 seconds then call API
+    useEffect(() => {
+        if (!paymentMethod || !showPaymentForm) {
+            return;
         }
 
+        const debounceTimer = setTimeout(() => {
+            handleCreateInvoice(paymentMethod);
+        }, 3000);
+
+        return () => clearTimeout(debounceTimer);
+    }, [paymentMethod]);
+
+    const handleCreateInvoice = async (method) => {
         try {
-            const response = await fetch('http://localhost:5262/api/Invoice/Insert_Invoice', {
+            const customerId = localStorage.getItem('customerId');
+            const token = localStorage.getItem('token') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+
+            if (!customerId || invoiceItems.length === 0) {
+                setSuccessMessage('❌ Thông tin không đủ để tạo hóa đơn');
+                return;
+            }
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
+            };
+
+            // Build lineItems from invoiceItems
+            const lineItems = invoiceItems.map((item) => ({
+                productId: item.productID,
+                quantity: item.quantity,
+            }));
+
+            const requestBody = {
+                customerId: parseInt(customerId),
+                staffId: null,
+                lineItems: lineItems,
+                voucherId: selectedVoucher ? selectedVoucher.voucherId : 0,
+                paidAmount: 0,
+                paymentMethod: method,
+                typeInvoice: 0,
+                type: "BanHang",
+                notes: null,
+            };
+
+            console.log('Creating invoice with request:', requestBody);
+
+            const response = await fetch('http://localhost:5122/api/Invoice/createinvoice', {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify(body),
+                body: JSON.stringify(requestBody),
             });
 
             const newAccessToken = response.headers.get('New-AccessToken');
@@ -310,33 +279,60 @@ function CartProduct() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Thanh toán thành công:', data);
-                setInvoiceItems([]); // Xóa các mục trong giỏ hàng
+                console.log('✓ Tạo hóa đơn thành công:', data);
+                
+                // Check if API returns success: true
+                if (data.success === true) {
+                    setInvoiceItems([]); // Xóa các mục trong giỏ hàng
+                    setPaymentMethod(null);
+                    setShowPaymentForm(false); // Đóng form thanh toán
 
-                if (method === 'now') {
-                    // Điều hướng đến Profile với section AwaitingPayment
-                    navigate('/profile', { state: { section: 'awaitingPayment' } });
-                } else if (method === 'later') {
-                    setSuccessMessage(data.resposeMessage || 'Thanh toán thành công!');
+                    const paymentMethodText = {
+                        'ThanhToanOnline': 'Thanh toán ngay',
+                        'ThanhToanOnline': 'Thanh toán sau'
+                    };
+
+                    if (method === 'now') {
+                        // Điều hướng đến Profile với section AwaitingPayment
+                        setSuccessMessage(`✓ Tạo hóa đơn thành công! Phương thức: ${paymentMethodText[method]}`);
+                        setTimeout(() => {
+                            navigate('/profile', { state: { section: 'awaitingPayment' } });
+                        }, 2000);
+                    } else if (method === 'later') {
+                        setSuccessMessage(`✓ Tạo hóa đơn thành công! Phương thức: ${paymentMethodText[method]}`);
+                        setTimeout(() => {
+                            setSuccessMessage(null);
+                        }, 2000);
+                    }
+                } else {
+                    setPaymentMethod(null);
+                    setSuccessMessage('❌ Tạo hóa đơn thất bại: ' + (data.message || 'Lỗi không xác định'));
                     setTimeout(() => {
                         setSuccessMessage(null);
-                    }, 2000);
+                    }, 3000);
                 }
             } else {
                 const errorData = await response.json();
-                console.error('Thanh toán thất bại:', errorData);
-                setSuccessMessage('Thanh toán thất bại: ' + (errorData.message || 'Lỗi không xác định'));
+                console.error('❌ Tạo hóa đơn thất bại:', errorData);
+                setSuccessMessage('❌ Tạo hóa đơn thất bại: ' + (errorData.message || 'Lỗi không xác định'));
+                setPaymentMethod(null);
                 setTimeout(() => {
                     setSuccessMessage(null);
-                }, 2000);
+                }, 3000);
             }
         } catch (error) {
-            console.error('Lỗi khi gọi API thanh toán:', error);
-            setSuccessMessage('Lỗi khi thanh toán: ' + error.message);
+            console.error('❌ Lỗi khi tạo hóa đơn:', error);
+            setSuccessMessage('❌ Lỗi: ' + error.message);
+            setPaymentMethod(null);
             setTimeout(() => {
                 setSuccessMessage(null);
-            }, 2000);
+            }, 3000);
         }
+    };
+
+    const handlePaymentSelection = (method) => {
+        setShowPaymentForm(false); // Đóng form thanh toán
+        setPaymentMethod(method); // Kích hoạt useEffect với debounce
     };
 
     const toggleVouchersVisibility = () => {
@@ -394,7 +390,7 @@ function CartProduct() {
                                                     src={`http://localhost:5122/Images/${item.productImages}`}
                                                     alt={item.productName}
                                                     className={cx('itemImage')}
-                                                    onError={(e) => e.target.src = 'https://via.placeholder.com/120?text=No+Image'}
+                                                    onError={(e) => e.target.src = PLACEHOLDER_IMAGE_120}
                                                 />
                                             </div>
 
@@ -594,7 +590,7 @@ function CartProduct() {
                                                                         <img 
                                                                             src={`http://localhost:5122/Images/${voucherImage}`} 
                                                                             alt={voucherCode}
-                                                                            onError={(e) => e.target.src = 'https://via.placeholder.com/80?text=Voucher'}
+                                                                            onError={(e) => e.target.src = PLACEHOLDER_IMAGE_80}
                                                                         />
                                                                     </div>
                                                                 )}
@@ -710,21 +706,59 @@ function CartProduct() {
 
             {/* Payment Method Modal */}
             {showPaymentForm && (
-                <div className={cx('modalOverlay')}>
-                    <div className={cx('paymentForm')}>
-                        <h3 className={cx('paymentFormTitle')}>Payment Method</h3>
-                        <div className={cx('paymentOptions')}>
-                            <button 
-                                className={cx('paymentFormBtn')}
-                                onClick={() => handlePaymentSelection('now')}
+                <div className={cx('paymentModalOverlay')}>
+                    <div className={cx('paymentModal')}>
+                        <div className={cx('paymentModalHeader')}>
+                            <h3>Chọn phương thức thanh toán</h3>
+                            <button
+                                className={cx('closeBtn')}
+                                onClick={() => setShowPaymentForm(false)}
+                                title="Đóng"
                             >
-                                PAY NOW
+                                <FontAwesomeIcon icon={faTimes} />
                             </button>
-                            <button 
-                                className={cx('paymentFormBtn')}
-                                onClick={() => handlePaymentSelection('later')}
+                        </div>
+
+                        <div className={cx('paymentModalContent')}>
+                            <div className={cx('paymentMethods')}>
+                                {/* Payment Method 1 - Pay Now */}
+                                <label className={cx('paymentMethodOption', { selected: paymentMethod === 'now' })}>
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value="now"
+                                        checked={paymentMethod === 'now'}
+                                        onChange={() => setPaymentMethod('now')}
+                                    />
+                                    <div className={cx('methodContent')}>
+                                        <span className={cx('methodTitle')}>💳 Thanh toán ngay</span>
+                                        <span className={cx('methodDescription')}>Thanh toán 100% ngay lập tức</span>
+                                    </div>
+                                </label>
+
+                                {/* Payment Method 2 - Pay Later */}
+                                <label className={cx('paymentMethodOption', { selected: paymentMethod === 'later' })}>
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value="later"
+                                        checked={paymentMethod === 'later'}
+                                        onChange={() => setPaymentMethod('later')}
+                                    />
+                                    <div className={cx('methodContent')}>
+                                        <span className={cx('methodTitle')}>📅 Thanh toán sau</span>
+                                        <span className={cx('methodDescription')}>Thanh toán sau khi nhận hàng</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className={cx('paymentModalFooter')}>
+                            <button
+                                className={cx('cancelBtn')}
+                                onClick={() => setShowPaymentForm(false)}
                             >
-                                PAY LATER
+                                Hủy
                             </button>
                         </div>
                     </div>

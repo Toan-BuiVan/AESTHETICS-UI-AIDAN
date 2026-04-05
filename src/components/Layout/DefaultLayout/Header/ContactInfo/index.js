@@ -1,7 +1,5 @@
 import { forwardRef, useRef, useState, useEffect } from 'react';
 
-import axios from 'axios';
-
 import classNames from 'classnames/bind';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -237,51 +235,7 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
         setMessages((prev) => [...prev, { type: 'text', text: content, isSystem: false }]);
 
         try {
-            const localUserId = localStorage.getItem('userID');
-
-            const payload = { searchText: content, userId: parseInt(localUserId) || null };
-
-            const response = await axios.post('http://localhost:5262/api/ChatBox/ChatBox', payload);
-
-            const apiData = response.data;
-
-            if (typeof apiData === 'object' && apiData !== null) {
-                if (apiData.countProducts !== undefined) {
-                    const headerText =
-                        apiData.countProducts > 0
-                            ? 'Thông tin sản phẩm liên quan đến yêu cầu:'
-                            : apiData.data && apiData.data.length > 0
-                            ? 'Xin lỗi quý khách, không tìm thấy sản phẩm chính xác phù hợp với yêu cầu. Chúng tôi gợi ý các sản phẩm liên quan:'
-                            : 'Không tìm thấy sản phẩm phù hợp.';
-
-                    setMessages((prev) => [...prev, { type: 'text', text: headerText, isSystem: true }]);
-
-                    if (apiData.data && apiData.data.length > 0) {
-                        apiData.data.forEach((product) => {
-                            setMessages((prev) => [...prev, { type: 'product', data: product, isSystem: true }]);
-                        });
-                    }
-                } else if (apiData.countServices !== undefined) {
-                    const headerText =
-                        apiData.countServices > 0
-                            ? 'Thông tin dịch vụ liên quan đến yêu cầu:'
-                            : apiData.data && apiData.data.length > 0
-                            ? 'Xin lỗi quý khách, không tìm thấy dịch vụ chính xác phù hợp với yêu cầu. Chúng tôi gợi ý các dịch vụ liên quan:'
-                            : 'Không tìm thấy dịch vụ phù hợp.';
-
-                    setMessages((prev) => [...prev, { type: 'text', text: headerText, isSystem: true }]);
-
-                    if (apiData.data && apiData.data.length > 0) {
-                        apiData.data.forEach((service) => {
-                            setMessages((prev) => [...prev, { type: 'service', data: service, isSystem: true }]);
-                        });
-                    }
-                } else {
-                    setMessages((prev) => [...prev, { type: 'text', text: JSON.stringify(apiData), isSystem: true }]);
-                }
-            } else {
-                setMessages((prev) => [...prev, { type: 'text', text: String(apiData), isSystem: true }]);
-            }
+            // API call removed
         } catch (error) {
             console.error('Lỗi khi gửi tin nhắn:', error.message);
 
@@ -340,23 +294,51 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                             renderMessageText(msg.text)
                         ) : msg.type === 'product' ? (
                             <div className={cx('product-item')}>
-                                <p>Mã: {msg.data.productID}</p>
+                                <p>
+                                    <strong>Mã:</strong> {msg.data.productID || msg.data.productId}
+                                </p>
 
-                                <p>Tên: {msg.data.productName}</p>
+                                <p>
+                                    <strong>Tên:</strong> {msg.data.productName || msg.data.name}
+                                </p>
 
-                                <p>Mô tả: {msg.data.productDescription}</p>
+                                {(msg.data.productDescription || msg.data.description) && (
+                                    <p>
+                                        <strong>Mô tả:</strong> {msg.data.productDescription || msg.data.description}
+                                    </p>
+                                )}
 
-                                <p>Giá: {Number(msg.data.sellingPrice).toLocaleString('vi-VN')} VND</p>
+                                <p>
+                                    <strong>Giá:</strong> {Number(msg.data.sellingPrice).toLocaleString('vi-VN')} VND
+                                </p>
+
+                                {msg.data.soldCount !== undefined && (
+                                    <p>
+                                        <strong>Đã bán:</strong> {msg.data.soldCount}
+                                    </p>
+                                )}
+
+                                {msg.data.quantity !== undefined && (
+                                    <p>
+                                        <strong>Kho:</strong> {msg.data.quantity}
+                                    </p>
+                                )}
+
+                                {msg.data.serviceType && (
+                                    <p>
+                                        <strong>Loại:</strong> {msg.data.serviceType}
+                                    </p>
+                                )}
 
                                 {msg.data.productImages && (
                                     <img
                                         src={`http://localhost:5262/Images/${msg.data.productImages}`}
                                         alt="Product Image"
-                                        style={{ maxWidth: '50%', borderRadius: '8px', marginTop: '8px' }}
+                                        style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '8px' }}
                                     />
                                 )}
 
-                                <button onClick={() => handleAddToCart(msg.data.productID)}>
+                                <button onClick={() => handleAddToCart(msg.data.productID || msg.data.productId)}>
                                     <FontAwesomeIcon icon={faShoppingCart} /> Thêm vào giỏ hàng
                                 </button>
                             </div>
@@ -375,6 +357,56 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                                     className={cx('booking-icon')}
                                     onClick={() => handleBooking(msg.data.serviceID)}
                                 />
+                            </div>
+                        ) : msg.type === 'loading' ? (
+                            <div className={cx('loading-indicator')}>
+                                <span>Đang trả lời</span>
+                                <span className={cx('dots')}>...</span>
+                            </div>
+                        ) : msg.type === 'slot' ? (
+                            <div className={cx('slot-item')}>
+                                <div className={cx('slot-time')}>
+                                    <span className={cx('time')}>{msg.data.time}</span>
+                                </div>
+                                <div className={cx('slot-info')}>
+                                    {msg.data.staffName ? (
+                                        <>
+                                            <p className={cx('staff-name')}>{msg.data.staffName}</p>
+                                            <p className={cx('slot-date')}>{msg.data.date}</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className={cx('slot-status')}>
+                                                {msg.data.available ? '✓ Còn trống' : '✗ Đã có lịch'}
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
+                                <button className={cx('slot-button')} onClick={() => handleBooking(null)}>
+                                    <FontAwesomeIcon icon={faCalendarCheck} /> Đặt
+                                </button>
+                            </div>
+                        ) : msg.type === 'doctor' ? (
+                            <div className={cx('doctor-item')}>
+                                <div className={cx('doctor-header')}>
+                                    <h3 className={cx('doctor-name')}>{msg.data.doctorName}</h3>
+                                    <p className={cx('doctor-spec')}>{msg.data.specialization}</p>
+                                </div>
+                                <div className={cx('doctor-slots')}>
+                                    {msg.data.availableSlots && msg.data.availableSlots.map((slot, idx) => (
+                                        <button
+                                            key={idx}
+                                            className={cx('slot-btn', { unavailable: !slot.available })}
+                                            disabled={!slot.available}
+                                            onClick={() => handleBooking(null)}
+                                        >
+                                            {slot.time}
+                                        </button>
+                                    ))}
+                                </div>
+                                {/* <p className={cx('doctor-info')}>
+                                    Còn lại: {msg.data.remainingSlots} / {msg.data.maxDailyLimit} slot
+                                </p> */}
                             </div>
                         ) : null}
                     </div>

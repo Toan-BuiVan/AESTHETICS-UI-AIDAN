@@ -1,0 +1,157 @@
+// Continue Payment Styles
+$color-warning: #FF9800;
+$color-text: #2d3748;
+$color-text-light: #718096;
+$color-bg-light: #f7fafc;
+$color-white: #ffffff;
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 1000px;
+    }
+}
+
+.continue-payment {
+    padding: 32px 20px;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+    min-height: 100vh;
+    animation: fadeIn 0.3s ease-in;
+
+    h3 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: $color-text;
+        margin-bottom: 32px;
+    }
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    gap: 16px;
+    font-size: 1.1rem;
+    color: $color-text-light;
+
+    .spinner {
+        animation: spin 1s linear infinite;
+    }
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.invoice-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.invoice-card {
+    background: $color-white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+}
+
+.invoice-header {
+    padding: 18px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: #f8f8fa;
+    }
+}
+
+.invoice-details {
+    padding: 20px;
+    background: #fafbfc;
+    border-top: 2px solid $color-warning;
+    animation: slideDown 0.3s ease;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.btn-pay {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: $color-warning;
+    color: $color-white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: #f57c00;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    }
+}

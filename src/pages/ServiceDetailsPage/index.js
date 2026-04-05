@@ -251,9 +251,9 @@ function ServiceDetailsPage() {
             // Reset selections
             setCheckedSessions(new Set());
             
-            // Navigate to bookings page after delay
+            // Navigate to services page after delay
             setTimeout(() => {
-                navigate('/profile?tab=bookings');
+                navigate('/servicesPage');
             }, 3600);
         } catch (error) {
             console.error('Error creating customer treatment plan:', error);

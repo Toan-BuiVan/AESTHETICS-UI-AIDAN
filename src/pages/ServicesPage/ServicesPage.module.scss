@@ -1587,3 +1587,13 @@ $text-secondary: #999;
         padding: 12px;
     }
 }
+
+// Time Slot Picker Wrapper
+.timeSlotPickerWrapper {
+    grid-column: 1 / -1;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border-top: 2px solid #e0e0e0;
+    animation: slideDown 0.3s ease-out;
+}

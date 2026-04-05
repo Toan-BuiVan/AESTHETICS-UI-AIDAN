@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faStar, faBox, faUser, faTag, faHeart } from '@fortawesome/free-solid-svg-icons';
 import styles from './ItemProduct.module.scss';
+import { PLACEHOLDER_IMAGE_250 } from '~/utils/placeholderImage';
 
 function ItemProduct({ product, onSuccess, onClick }) {
     const imageBaseUrl = 'http://localhost:5122/Images';
@@ -112,7 +113,7 @@ function ItemProduct({ product, onSuccess, onClick }) {
                             className={styles.productImage}
                             onLoad={() => setImageLoading(false)}
                             onError={(e) => { 
-                                e.target.src = 'https://via.placeholder.com/250x250?text=No+Image';
+                                e.target.src = PLACEHOLDER_IMAGE_250;
                                 setImageLoading(false);
                             }}
                         />

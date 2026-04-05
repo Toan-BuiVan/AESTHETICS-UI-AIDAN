@@ -509,8 +509,10 @@ $color-border: #e2e8f0;
     // ACTION BUTTON
     .row-action {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: stretch;
         justify-content: center;
+        gap: 10px;
 
         .voucher-point-options {
             display: flex;
@@ -584,6 +586,36 @@ $color-border: #e2e8f0;
             &:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+        }
+
+        .btn-claim-voucher {
+            padding: 10px 20px;
+            background: $gradient-success;
+            border: none;
+            border-radius: 8px;
+            color: $color-white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 10px rgba(79, 172, 254, 0.25);
+            white-space: nowrap;
+            margin-top: 8px;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(79, 172, 254, 0.35);
             }
 
             &:active {

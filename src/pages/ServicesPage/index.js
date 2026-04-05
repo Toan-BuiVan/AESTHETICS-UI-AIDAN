@@ -6,6 +6,7 @@ import ServicePackageCard from './ServicePackageCard';
 import DoctorCard from './DoctorCard';
 import BookingSummary from './BookingSummary';
 import BookingSuccessNotification from './BookingSuccessNotification';
+import TimeSlotPicker from './TimeSlotPicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -17,6 +18,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter, faTimes, faCheckCircle, faClock, faCalendarAlt, faGift, faStar, faUsers, faFlask, faUserMd, faArrowRight, faSearch, faTrophy, faBriefcase, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { PLACEHOLDER_IMAGE } from '~/utils/placeholderImage';
 
 const cx = classNames.bind(styles);
 
@@ -57,6 +59,12 @@ function ServicesPage() {
     const [selectedTreatmentSessions, setSelectedTreatmentSessions] = useState([]); // Array of { planIndex, sessionIndex, planName, sessionNumber, sessionName }
     const [deleteConfirmation, setDeleteConfirmation] = useState({ open: false, sessionId: null, sessionNumber: null });
     const [treatmentPlanDeleteConfirmation, setTreatmentPlanDeleteConfirmation] = useState({ open: false, planId: null, planName: null, planIndex: null });
+    
+    // New state for doctor availability time slots
+    const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+    const [loadingTimeSlots, setLoadingTimeSlots] = useState(false);
+    const [doctorAvailabilityError, setDoctorAvailabilityError] = useState(null);
+    const [selectedSessionForBooking, setSelectedSessionForBooking] = useState(null); // Track which session is being booked
 
     useEffect(() => {
         fetchCustomerTreatmentPlans();
@@ -81,6 +89,87 @@ function ServicesPage() {
             }
         }
     }, [selectedTreatmentSessions, customerTreatmentPlans]);
+
+    // Auto-fetch doctor availability after 3 seconds when both doctor and sessions are selected
+    useEffect(() => {
+        // If no doctor selected → clear time slots
+        if (!selectedDoctor) {
+            setAvailableTimeSlots([]);
+            setSelectedSessionForBooking(null);
+            return;
+        }
+
+        // Check if there are any selected sessions (from checkbox selection)
+        const hasSelectedSessions = Object.values(selectedSessions).some(arr => arr && arr.length > 0);
+        
+        // If no sessions selected → clear time slots
+        if (!hasSelectedSessions) {
+            setAvailableTimeSlots([]);
+            setSelectedSessionForBooking(null);
+            return;
+        }
+
+        // Set 3-second debounce timer
+        const timer = setTimeout(() => {
+            // Find the first selected session across all plans
+            let firstSession = null;
+            let planIndex = -1;
+
+            for (let pIdx = 0; pIdx < customerTreatmentPlans.length; pIdx++) {
+                if (selectedSessions[pIdx] && selectedSessions[pIdx].length > 0) {
+                    // Extract session index from first selected session key (format: "0-0" = planIndex-sessionIndex)
+                    const firstSessionKey = selectedSessions[pIdx][0];
+                    const [, sessionIndexStr] = firstSessionKey.split('-');
+                    const sessionIndex = parseInt(sessionIndexStr);
+                    
+                    const plan = customerTreatmentPlans[pIdx];
+                    const session = plan?.customerSessions?.[sessionIndex];
+                    
+                    if (session) {
+                        firstSession = { planIndex: pIdx, sessionIndex };
+                        break;
+                    }
+                }
+            }
+
+            if (!firstSession) {
+                console.log('No valid session found');
+                return;
+            }
+
+            // Get date from inlineBookings if user selected a date, otherwise use today
+            const sessionKey = `${firstSession.planIndex}-${firstSession.sessionIndex}`;
+            const selectedDateFromInput = inlineBookings[sessionKey]?.date;
+            
+            let dateString;
+            if (selectedDateFromInput) {
+                dateString = selectedDateFromInput;  // Use date chosen by user
+            } else {
+                // Fallback: use today's date
+                const today = new Date();
+                dateString = today.toISOString().split('T')[0];
+            }
+
+            console.log('Auto-fetching doctor availability:', {
+                doctorId: selectedDoctor.staffId,
+                planIndex: firstSession.planIndex,
+                sessionIndex: firstSession.sessionIndex,
+                date: dateString,
+                source: selectedDateFromInput ? 'user-selected' : 'today'
+            });
+
+            // Call API with the first selected session
+            fetchDoctorAvailability(
+                selectedDoctor.staffId,
+                firstSession.planIndex,
+                firstSession.sessionIndex,
+                dateString
+            );
+        }, 3000);
+
+        // Cleanup: clear timeout if dependencies change before 3 seconds
+        return () => clearTimeout(timer);
+    }, [selectedDoctor, selectedSessions, customerTreatmentPlans]);
 
     const fetchDoctors = async (serviceTypeIds) => {
         try {
@@ -112,7 +201,7 @@ function ServicesPage() {
                                     staffId: doctor.id,
                                     doctorID: doctor.id, // For backward compatibility
                                     doctorName: doctorName,
-                                    image: doctor.staffImage ? `http://localhost:5122/Images/${doctor.staffImage}` : 'https://via.placeholder.com/200?text=Doctor',
+                                    image: doctor.staffImage ? `http://localhost:5122/Images/${doctor.staffImage}` : PLACEHOLDER_IMAGE,
                                     specialty: doctor.specialization || 'Bác sĩ chuyên khoa',
                                     rating: 4.8, // Default rating
                                     reviews: 120, // Default reviews count
@@ -164,7 +253,8 @@ function ServicesPage() {
             const response = await axios.post(
                 'http://localhost:5122/api/CustomerTreatmentPlans/getcustomertreatmentplanlist',
                 {
-                    customerId: customerId
+                    customerId: customerId,
+                    status: 'ChoDatLich'
                 }
             );
 
@@ -349,27 +439,101 @@ function ServicesPage() {
         setTreatmentPlanDeleteConfirmation({ open: false, planId: null, planName: null, planIndex: null });
     };
 
-    const handleSessionDateTimeChange = (planIndex, sessionIndex, dateTimeString) => {
-        const sessionKey = `${planIndex}-${sessionIndex}`;
-        if (!dateTimeString) {
-            // Remove if empty
-            setInlineBookings(prev => {
-                const updated = { ...prev };
-                delete updated[sessionKey];
-                return updated;
-            });
-            return;
-        }
+    // Fetch doctor availability time slots
+    const fetchDoctorAvailability = async (doctorId, planIndex, sessionIndex, dateString) => {
+        if (!doctorId || !dateString) return;
+        
+        setLoadingTimeSlots(true);
+        setDoctorAvailabilityError(null);
+        setAvailableTimeSlots([]);
 
-        // Validate if time is within business hours (08:00-12:00 or 13:00-18:00)
-        if (!isDateTimeInBusinessHours(dateTimeString)) {
-            setSuccessMessage('⚠️ Vui lòng chọn giờ từ 08:00-12:00 hoặc 13:00-18:00');
-            return;
+        try {
+            const plan = customerTreatmentPlans[planIndex];
+            const session = plan?.customerSessions?.[sessionIndex];
+            
+            if (!session) {
+                setDoctorAvailabilityError('Không tìm thấy buổi khám');
+                return;
+            }
+
+            // Debug: Log full objects to see structure
+            console.log('🔍 Full Plan Object:', plan);
+            console.log('🔍 Full Session Object:', session);
+            console.log('🔍 Plan IDs:', {
+                'plan.id': plan?.id,
+                'plan.customerTreatmentPlanInformation?.id': plan?.customerTreatmentPlanInformation?.id,
+                'plan.planId': plan?.planId,
+                'plan.customerTreatmentPlanInformation': plan?.customerTreatmentPlanInformation
+            });
+            console.log('🔍 Session IDs:', {
+                'session.id': session?.id,
+                'session.sessionId': session?.sessionId,
+                'session.customerSessionId': session?.customerSessionId,
+                'session.customerTreatmentSessionId': session?.customerTreatmentSessionId
+            });
+
+            // Format date to YYYY-MM-DD
+            const date = new Date(dateString);
+            const formattedDate = date.toISOString().split('T')[0];
+
+            // Extract correct IDs
+            const customerSessionId = session?.id || session?.sessionId || session?.customerSessionId || session?.customerTreatmentSessionId;
+            const customerPlanId = plan?.customerTreatmentPlanInformation?.id || plan?.id || plan?.planId;
+
+            const requestData = {
+                doctorId: parseInt(doctorId),
+                customerTreatmentSessionId: customerSessionId,
+                customerTreatmentPlanId: customerPlanId,
+                sessionNumber: session?.sessionNumber,
+                date: formattedDate
+            };
+
+            console.log('📋 FINAL Payload being sent:', JSON.stringify(requestData, null, 2));
+
+            const response = await fetch('http://localhost:5122/api/Appointment/getdoctoravailability', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            console.log('✅ Doctor availability response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error('Lỗi khi lấy giờ trống bác sĩ');
+            }
+
+            const result = await response.json();
+            setAvailableTimeSlots(result.availableTimeSlots || []);
+            
+            setSelectedSessionForBooking({
+                planIndex,
+                sessionIndex,
+                doctorId,
+                dateString: formattedDate,
+                serviceDuration: result.serviceDuration || 60
+            });
+        } catch (error) {
+            console.error('Error fetching doctor availability:', error);
+            setDoctorAvailabilityError('Không thể tải giờ trống bác sĩ: ' + error.message);
+        } finally {
+            setLoadingTimeSlots(false);
         }
+    };
+
+
+    // Handle time slot selection from TimeSlotPicker grid
+    const handleTimeSlotSelect = (slot) => {
+        if (!selectedSessionForBooking) return;
+
+        const { planIndex, sessionIndex, dateString } = selectedSessionForBooking;
+        const sessionKey = `${planIndex}-${sessionIndex}`;
+        const dateTimeString = `${dateString}T${slot.startTime}`;
 
         const plan = customerTreatmentPlans[planIndex];
         const session = plan?.customerSessions?.[sessionIndex];
-        
+
         setInlineBookings(prev => ({
             ...prev,
             [sessionKey]: {
@@ -378,17 +542,14 @@ function ServicesPage() {
                 dateTime: dateTimeString,
                 planName: plan?.treatmentPlanInformation?.planName,
                 sessionNumber: session?.sessionNumber,
-                sessionName: session?.sessionName
+                sessionName: session?.sessionName,
+                selectedTimeSlot: slot // Store selected slot info
             }
         }));
-    };
 
-    const handleRemoveInlineBooking = (sessionKey) => {
-        setInlineBookings(prev => {
-            const updated = { ...prev };
-            delete updated[sessionKey];
-            return updated;
-        });
+        // Show success message
+        setSuccessMessage(`✓ Đã chọn giờ ${slot.startTime} - ${slot.endTime}`);
+        setTimeout(() => setSuccessMessage(null), 2000);
     };
 
     const handleAddTreatmentSessions = (planIndex, planData, sessionKeys) => {
@@ -532,6 +693,30 @@ function ServicesPage() {
         });
     };
 
+    // Get minimum date for date input (today or tomorrow if after business hours)
+    const getMinDate = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        let day = String(now.getDate()).padStart(2, '0');
+        
+        // Check if current time is after business hours (after 4:30 PM = 16:30)
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        
+        // If after 16:30 (4:30 PM), next available date is tomorrow
+        if (currentHour > 16 || (currentHour === 16 && currentMinute > 30)) {
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const nextYear = tomorrow.getFullYear();
+            const nextMonth = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const nextDay = String(tomorrow.getDate()).padStart(2, '0');
+            return `${nextYear}-${nextMonth}-${nextDay}`;
+        }
+        
+        return `${year}-${month}-${day}`;
+    };
+
     // Get minimum datetime for datetime-local input (08:00 AM or next available time)
     const getMinDateTime = () => {
         const now = new Date();
@@ -564,6 +749,52 @@ function ServicesPage() {
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
+    // Handle date selection - updates selectedSessionForBooking and triggers API re-fetch
+    const handleDateChange = (dateString) => {
+        if (!dateString) return;
+        if (!selectedSessionForBooking) return;
+
+        // Update selectedSessionForBooking with new date for API call
+        setSelectedSessionForBooking(prev => ({
+            ...prev,
+            dateString: dateString
+        }));
+
+        // Clear previous time slots - they will be re-fetched for new date
+        setAvailableTimeSlots([]);
+        setDoctorAvailabilityError(null);
+
+        // Immediately fetch doctor availability for the new date
+        console.log('📅 Date changed to:', dateString, 'Fetching availability immediately...');
+        fetchDoctorAvailability(
+            selectedDoctor.staffId || selectedDoctor.doctorID,
+            selectedSessionForBooking.planIndex,
+            selectedSessionForBooking.sessionIndex,
+            dateString
+        );
+    };
+
+    // Store date when user selects it in inline booking input
+    const handleSelectDateOnly = (planIndex, sessionIndex, dateString) => {
+        const sessionKey = `${planIndex}-${sessionIndex}`;
+        setInlineBookings(prev => ({
+            ...prev,
+            [sessionKey]: {
+                ...prev[sessionKey],
+                date: dateString
+            }
+        }));
+    };
+
+    // Remove inline booking
+    const handleRemoveInlineBooking = (sessionKey) => {
+        setInlineBookings(prev => {
+            const updated = { ...prev };
+            delete updated[sessionKey];
+            return updated;
+        });
+    };
+
     // Get maximum datetime for datetime-local input (16:30 on the selected date or later)
     const getMaxDateTime = (selectedDateObj) => {
         if (!selectedDateObj) return '';
@@ -575,9 +806,66 @@ function ServicesPage() {
         return `${year}-${month}-${day}T16:30`;
     };
 
-    const handleBooking = async () => {
+    // Generate session info for appointment creation
+    const getSelectedSessionInfo = () => {
+        if (!selectedSessionForBooking || !selectedDoctor) return null;
+
+        const customerId = parseInt(localStorage.getItem('customerId') || 0);
+        const { planIndex, sessionIndex, dateString } = selectedSessionForBooking;
+        const sessionKey = `${planIndex}-${sessionIndex}`;
+        const plan = customerTreatmentPlans[planIndex];
+        const session = plan?.customerSessions?.[sessionIndex];
+
+        if (!session || !plan) return null;
+
+        // Get the selected time from inlineBookings (e.g., "08:30")
+        const selectedSlot = inlineBookings[sessionKey]?.selectedTimeSlot;
+        const timeString = selectedSlot?.startTime || '08:00:00'; // Fallback to 08:00:00 if no time selected
+        
+        const startDateTime = new Date(`${dateString}T${timeString}Z`).toISOString();
+
+        console.log('📋 Session Info - Date:', dateString, 'Time:', timeString, 'StartTime ISO:', startDateTime);
+
+        return {
+            customerId: customerId,
+            staffId: selectedDoctor.staffId || selectedDoctor.doctorID,
+            customerTreatmentSessionId: session.id || session.sessionId || session.customerSessionId,
+            customerTreatmentPlanId: plan.customerTreatmentPlanInformation?.id || plan.id || plan.planId,
+            sessionNumber: session.sessionNumber,
+            startTime: startDateTime
+        };
+    };
+
+    const handleBooking = async (paymentData = {}) => {
+        // Get payment method from modal
+        const { paymentMethod, appointmentCreated } = paymentData;
+
         if (!selectedService || !selectedDoctor || !selectedDate || !selectedTime) {
             setSuccessMessage('⚠️ Vui lòng chọn đầy đủ thông tin');
+            return;
+        }
+
+        if (!paymentMethod) {
+            setSuccessMessage('⚠️ Vui lòng chọn phương thức thanh toán');
+            return;
+        }
+
+        // If appointment already created by BookingSummary API call, show success and return
+        if (appointmentCreated) {
+            const paymentMethodText = {
+                'partial': 'Trả trước 1 phần (30%)',
+                'full': 'Trả trước toàn bộ (100%)',
+                'completion': 'Thanh toán khi hoàn thành'
+            };
+            
+            setSuccessMessage(`✓ Đặt lịch khám thành công! Phương thức thanh toán: ${paymentMethodText[paymentMethod]}. Bác sĩ sẽ xác nhận trong vòng 2 giờ.`);
+            setTimeout(() => {
+                setSelectedService(null);
+                setSelectedDoctor(null);
+                setSelectedDate(null);
+                setSelectedTime(null);
+                setSuccessMessage(null);
+            }, 3000);
             return;
         }
 
@@ -609,6 +897,7 @@ function ServicesPage() {
                     userID: userID,
                     scheduledDate: bookingDate.toISOString(),
                     doctorID: selectedDoctor.doctorID,
+                    paymentMethod: paymentMethod,
                 }),
             });
 
@@ -619,7 +908,14 @@ function ServicesPage() {
             if (newAccessToken) localStorage.setItem('token', newAccessToken);
             if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
 
-            setSuccessMessage('✓ Đặt lịch khám thành công! Bác sĩ sẽ xác nhận trong vòng 2 giờ.');
+            // Map payment method to display text
+            const paymentMethodText = {
+                'partial': 'Trả trước 1 phần (30%)',
+                'full': 'Trả trước toàn bộ (100%)',
+                'completion': 'Thanh toán khi hoàn thành'
+            };
+
+            setSuccessMessage(`✓ Đặt lịch khám thành công! Phương thức thanh toán: ${paymentMethodText[paymentMethod] || paymentMethod}. Bác sĩ sẽ xác nhận trong vòng 2 giờ.`);
             setTimeout(() => {
                 setSelectedService(null);
                 setSelectedDoctor(null);
@@ -778,17 +1074,19 @@ function ServicesPage() {
                                                                     {isSelectable ? (
                                                                         <div className={cx('sessionActions')}>
                                                                             <input
-                                                                                type="datetime-local"
+                                                                                type="date"
                                                                                 className={cx('sessionDateTimeInput')}
-                                                                                value={inlineBookings[sessionKey]?.dateTime || ''}
+                                                                                value={inlineBookings[sessionKey]?.date || ''}
                                                                                 onChange={(e) => {
                                                                                     e.stopPropagation();
-                                                                                    handleSessionDateTimeChange(index, idx, e.target.value);
+                                                                                    if (selectedSessionForBooking?.planIndex === index && selectedSessionForBooking?.sessionIndex === idx) {
+                                                                                        handleDateChange(e.target.value);
+                                                                                    }
+                                                                                    handleSelectDateOnly(index, idx, e.target.value);
                                                                                 }}
                                                                                 onClick={(e) => e.stopPropagation()}
-                                                                                placeholder="Chọn ngày/giờ"
-                                                                                min={getMinDateTime()}
-                                                                                step="1800"
+                                                                                placeholder="Chọn ngày"
+                                                                                min={getMinDate()}
                                                                             />
                                                                             {inlineBookings[sessionKey] && (
                                                                                 <button
@@ -844,6 +1142,20 @@ function ServicesPage() {
                                                                     )}
                                                                 </div>
                                                             </div>
+
+                                                            {/* Time Slot Picker - Show when date is selected */}
+                                                            {selectedSessionForBooking && selectedSessionForBooking.planIndex === index && selectedSessionForBooking.sessionIndex === idx && (
+                                                                <div className={cx('timeSlotPickerWrapper')}>
+                                                                    <TimeSlotPicker 
+                                                                        availableTimeSlots={availableTimeSlots}
+                                                                        loading={loadingTimeSlots}
+                                                                        error={doctorAvailabilityError}
+                                                                        selectedSlot={inlineBookings[sessionKey]?.selectedTimeSlot}
+                                                                        onSlotSelect={handleTimeSlotSelect}
+                                                                        serviceDuration={selectedSessionForBooking?.serviceDuration}
+                                                                    />
+                                                                </div>
+                                                            )}
 
                                                             {/* Inline Session Details */}
                                                             {expandedSessionKey === sessionKey && (
@@ -1040,7 +1352,7 @@ function ServicesPage() {
                                                 <img
                                                     src={doctor.image}
                                                     alt={doctor.doctorName}
-                                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=Doctor'; }}
+                                                    onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }}
                                                 />
                                                 <div className={cx('doctorCardOverlay')}></div>
                                                 {!canSelect && (
@@ -1099,6 +1411,8 @@ function ServicesPage() {
                             selectedTreatmentSessions={selectedTreatmentSessions}
                             onRemoveTreatmentSession={handleRemoveTreatmentSession}
                             customerTreatmentPlans={customerTreatmentPlans}
+                            customerId={parseInt(localStorage.getItem('customerId') || 0)}
+                            selectedSessionInfo={getSelectedSessionInfo()}
                         />
                     </div>
                 </div>

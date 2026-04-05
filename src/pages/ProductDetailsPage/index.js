@@ -4,6 +4,7 @@ import styles from './ProductDetailsPage.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruck, faTag, faBox, faArrowLeft, faHeart, faShoppingCart, faStar, faCheck, faThumbsUp, faExpand, faPen, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import NotificationToast from './NotificationToast';
+import { PLACEHOLDER_IMAGE } from '~/utils/placeholderImage';
 
 const cx = classNames.bind(styles);
 
@@ -695,7 +696,7 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                                         src={`http://localhost:5122/Images/${relatedProduct.productImages}`}
                                         alt={relatedProduct.productName}
                                         className={cx('product-image')}
-                                        onError={(e) => e.target.src = 'https://via.placeholder.com/200?text=No+Image'}
+                                        onError={(e) => e.target.src = PLACEHOLDER_IMAGE}
                                     />
                                 </div>
                                 <div className={cx('product-info')}>

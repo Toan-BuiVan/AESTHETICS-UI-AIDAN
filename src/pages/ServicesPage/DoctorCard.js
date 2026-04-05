@@ -3,6 +3,7 @@ import classNames from 'classnames/bind';
 import styles from './DoctorCard.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faStar, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
+import { PLACEHOLDER_IMAGE_150 } from '~/utils/placeholderImage';
 
 const cx = classNames.bind(styles);
 
@@ -21,7 +22,7 @@ function DoctorCard({ doctor, isSelected, onSelect }) {
         >
             <div className={cx('imageContainer')}>
                 <img
-                    src={doctor.image || 'https://via.placeholder.com/150?text=Doctor'}
+                    src={doctor.image || PLACEHOLDER_IMAGE_150}
                     alt={doctor.doctorName}
                     className={cx('image')}
                 />

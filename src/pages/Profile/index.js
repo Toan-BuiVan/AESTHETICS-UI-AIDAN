@@ -3,6 +3,7 @@ import ChangePasswordForm from './ChangePasswordForm';
 import VoucherSection from './VoucherSection';
 import DeviceHistory from './DeviceHistory';
 import AwaitingPayment from './AwaitingPayment';
+import ContinuePayment from './ContinuePayment';
 import PaymentSuccessful from './PaymentSuccessful';
 import PaymentCanceled from './PaymentCanceled';
 import PaymentOrder from './PaymentOrder';
@@ -25,6 +26,7 @@ function Profile() {
     const [userName, setUserName] = useState('');
     const [userRole, setUserRole] = useState(0); // 0: Customer, 1: Staff, 2: Admin
     const [awaitingPaymentCount, setAwaitingPaymentCount] = useState(0);
+    const [continuePaymentCount, setContinuePaymentCount] = useState(0);
     const [paymentSuccessfulCount, setPaymentSuccessfulCount] = useState(0);
     const [paymentCanceledCount, setPaymentCanceledCount] = useState(0);
     const location = useLocation();
@@ -95,6 +97,10 @@ function Profile() {
 
     const handleAwaitingPaymentCount = (count) => {
         setAwaitingPaymentCount(count);
+    };
+
+    const handleContinuePaymentCount = (count) => {
+        setContinuePaymentCount(count);
     };
 
     const handlePaymentSuccessfulCount = (count) => {
@@ -180,6 +186,12 @@ function Profile() {
                                 Chờ thanh toán {awaitingPaymentCount > 0 && `(${awaitingPaymentCount})`}
                             </li>
                             <li
+                                className={cx('tab', { active: selectedMenu === 'continuePayment' })}
+                                onClick={() => setSelectedMenu('continuePayment')}
+                            >
+                                Tiếp tục thanh toán {continuePaymentCount > 0 && `(${continuePaymentCount})`}
+                            </li>
+                            <li
                                 className={cx('tab', { active: selectedMenu === 'paymentSuccessful' })}
                                 onClick={() => setSelectedMenu('paymentSuccessful')}
                             >
@@ -209,6 +221,9 @@ function Profile() {
                     {selectedMenu === 'deviceHistory' && <DeviceHistory />}
                     {selectedMenu === 'awaitingPayment' && (
                         <AwaitingPayment onCountChange={handleAwaitingPaymentCount} />
+                    )}
+                    {selectedMenu === 'continuePayment' && (
+                        <ContinuePayment onCountChange={handleContinuePaymentCount} />
                     )}
                     {selectedMenu === 'paymentSuccessful' && (
                         <PaymentSuccessful onCountChange={handlePaymentSuccessfulCount} />

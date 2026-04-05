@@ -1422,85 +1422,225 @@ $trans-fast: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 // ==========================================
 // PAYMENT MODAL
 // ==========================================
-.modalOverlay {
+.paymentModalOverlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-out;
-    padding: $space-lg;
-    backdrop-filter: blur(5px);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+.paymentModal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    animation: slideUpModal 0.3s ease;
+    overflow: hidden;
+
+    @keyframes slideUpModal {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+.paymentModalHeader {
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+}
+
+.closeBtn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.paymentModalContent {
+    padding: 24px;
+}
+
+.paymentMethods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.paymentMethodOption {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+
+    input[type="radio"] {
+        margin-right: 12px;
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+        accent-color: #1ca07d;
+    }
+
+    .methodContent {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .methodTitle {
+        font-weight: 700;
+        color: #1a1a1a;
+        font-size: 15px;
+    }
+
+    .methodDescription {
+        font-size: 13px;
+        color: #666;
+        font-weight: 500;
+    }
+
+    &:hover {
+        border-color: #1ca07d;
+        background: rgba(28, 160, 125, 0.05);
+    }
+
+    &.selected {
+        border-color: #1ca07d;
+        background: rgba(28, 160, 125, 0.1);
+        box-shadow: 0 2px 8px rgba(28, 160, 125, 0.15);
+    }
+}
+
+.paymentModalFooter {
+    display: flex;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.cancelBtn {
+    flex: 1;
+    padding: 12px 16px;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #e8e8e8;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.confirmBtn {
+    flex: 1;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover:not(.disabled) {
+        box-shadow: 0 4px 12px rgba(28, 160, 125, 0.3);
+        transform: translateY(-2px);
+    }
+
+    &:active:not(.disabled) {
+        transform: translateY(0);
+    }
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// Old styles (keeping for backward compatibility)
+.modalOverlay {
+    display: none; // Hide old overlay
 }
 
 .paymentForm {
-    background: $background-primary;
-    border: 2px solid $accent-color;
-    border-radius: 12px;
-    max-width: 480px;
-    width: 100%;
-    padding: $space-2xl;
-    box-shadow: $shadow-xl;
-    animation: scaleUp 0.4s ease-out;
-    position: relative;
+    display: none; // Hide old form
 }
 
 .paymentFormTitle {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, $primary-color, $primary-light);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 $space-2xl;
-    text-align: center;
+    display: none;
 }
 
 .paymentOptions {
-    display: flex;
-    flex-direction: column;
-    gap: $space-lg;
+    display: none;
 }
 
 .paymentFormBtn {
-    padding: $space-lg;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: $trans;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-
-    &:first-child {
-        background: linear-gradient(135deg, $accent-color, $accent-secondary);
-        color: $background-primary;
-        border-color: transparent;
-        box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
-
-        &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 36px rgba(0, 212, 255, 0.4);
-        }
-    }
-
-    &:last-child {
-        background: transparent;
-        color: $primary-color;
-        border-color: $primary-color;
-
-        &:hover {
-            background: $primary-color;
-            color: $background-primary;
-        }
-    }
+    display: none;
 }
 
 // ==========================================

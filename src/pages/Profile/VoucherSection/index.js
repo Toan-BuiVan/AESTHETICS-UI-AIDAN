@@ -114,11 +114,12 @@ function VoucherSection() {
                 });
 
                 const result = await response.json();
+                console.log('exchangevoucher response:', result);
 
-                if (result.success) {
+                if (response.ok && (result === true || result.success === true)) {
                     setSuccessMessage(`Đổi voucher thành công!`);
                 } else {
-                    setSuccessMessage('Đổi voucher thất bại');
+                    setSuccessMessage(result.message || 'Đổi voucher thất bại');
                 }
             } catch (err) {
                 setSuccessMessage('Đổi voucher thất bại');
@@ -357,6 +358,12 @@ function VoucherSection() {
                                         <span className={cx('point-label')}>Mua Hàng</span>
                                     </label>
                                 </div>
+                                <button 
+                                    className={cx('btn-claim-voucher')}
+                                    onClick={() => handleClaimVoucher(voucher)}
+                                >
+                                    Lưu
+                                </button>
                             </div>
                         </div>
                     ))}

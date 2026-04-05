@@ -1,14 +1,138 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './BookingSummary.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faClock, faUser, faTasks, faCheckCircle, faTrash, faUserMd } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faClock, faUser, faTasks, faCheckCircle, faTrash, faUserMd, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
-function BookingSummary({ selectedService, selectedDoctor, selectedDate, selectedTime, onBooking, isLoading, inlineBookings = {}, onRemoveBooking, selectedTreatmentSessions = [], onRemoveTreatmentSession, customerTreatmentPlans = [] }) {
+function BookingSummary({ selectedService, selectedDoctor, selectedDate, selectedTime, onBooking, isLoading, inlineBookings = {}, onRemoveBooking, selectedTreatmentSessions = [], onRemoveTreatmentSession, customerTreatmentPlans = [], customerId, selectedSessionInfo = null }) {
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [paymentMessage, setPaymentMessage] = useState(null);
     const inlineBookingsList = Object.values(inlineBookings);
     const isComplete = (selectedService || selectedTreatmentSessions.length > 0) && selectedDoctor && (selectedDate || inlineBookingsList.length > 0) && (selectedTime || inlineBookingsList.length > 0);
+    
+    // Debounce payment method selection with 3 second delay
+    useEffect(() => {
+        if (!selectedPaymentMethod || !selectedSessionInfo) {
+            return;
+        }
+
+        setPaymentLoading(true);
+        setPaymentMessage(null);
+
+        // Set up debounce timer - 3 second delay
+        const debounceTimer = setTimeout(() => {
+            handleCreateAppointment(selectedPaymentMethod);
+        }, 3000);
+
+        // Cleanup function to clear timer if component unmounts or selection changes
+        return () => clearTimeout(debounceTimer);
+    }, [selectedPaymentMethod, selectedSessionInfo]);
+    
+    // Handle booking with payment method
+    const handleBookingClick = () => {
+        setShowPaymentModal(true);
+        setSelectedPaymentMethod(null);
+    };
+
+    const handlePaymentMethodSelect = (method) => {
+        setSelectedPaymentMethod(method);
+        setPaymentMessage(null);
+    };
+
+    const handleCreateAppointment = async (paymentMethod) => {
+        if (!selectedSessionInfo) {
+            setPaymentMessage('❌ Không có thông tin buổi khám');
+            setPaymentLoading(false);
+            return;
+        }
+
+        try {
+            const {
+                customerId: cId,
+                staffId,
+                customerTreatmentSessionId,
+                customerTreatmentPlanId,
+                sessionNumber,
+                startTime
+            } = selectedSessionInfo;
+
+            // Map payment method to typeInvoice
+            const typeInvoiceMap = {
+                'completion': 0,  // 0 = trả sau (thanh toán khi hoàn thành)
+                'full': 1,        // 1 = trả trước toàn bộ (100%)
+                'partial': 2      // 2 = thanh toán 1 phần (30%)
+            };
+
+            // Determine actual payment method for API
+            // When user selects "full" or "partial", use "ThanhToanOnline" for online payment
+            // Otherwise, use "TienMat" for cash payment
+            let apiPaymentMethod = 'ThanhToanOnline';
+            if (paymentMethod === 'full' || paymentMethod === 'partial') {
+                apiPaymentMethod = 'ThanhToanOnline';
+            }
+
+            const requestData = {
+                customerId: cId,
+                staffId: staffId,
+                customerTreatmentSessionId: customerTreatmentSessionId,
+                customerTreatmentPlanId: customerTreatmentPlanId,
+                sessionNumber: sessionNumber,
+                startTime: startTime,
+                paidAmount: 0,
+                paymentMethod: apiPaymentMethod,
+                typeInvoice: typeInvoiceMap[paymentMethod] || 0,
+                voucherId: null
+            };
+
+            console.log(`📋 Creating appointment with ${paymentMethod} payment (API method: ${apiPaymentMethod}):`, requestData);
+
+            const response = await fetch('http://localhost:5122/api/Appointment/createappointment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const result = await response.json();
+            
+            console.log(`✅ Appointment creation response (${paymentMethod}):`, result);
+
+            // Check if result is true (boolean) or if result.success is true (object response)
+            if (result === true || result?.success === true) {
+                const paymentMethodText = {
+                    'partial': 'Trả trước 1 phần (30%)',
+                    'full': 'Trả trước toàn bộ (100%)',
+                    'completion': 'Thanh toán khi hoàn thành'
+                };
+                
+                setPaymentMessage(`✓ Tạo lịch khám thành công! Phương thức: ${paymentMethodText[paymentMethod]}`);
+                
+                setTimeout(() => {
+                    setShowPaymentModal(false);
+                    setSelectedPaymentMethod(null);
+                    // Call parent onBooking with success
+                    onBooking({
+                        paymentMethod: paymentMethod,
+                        appointmentCreated: true
+                    });
+                }, 1500);
+            } else {
+                setPaymentMessage('❌ Tạo lịch khám thất bại. Vui lòng thử lại.');
+                setSelectedPaymentMethod(null);
+            }
+        } catch (error) {
+            console.error('Error creating appointment:', error);
+            setPaymentMessage('❌ Lỗi: ' + error.message);
+            setSelectedPaymentMethod(null);
+        } finally {
+            setPaymentLoading(false);
+        }
+    };
     
     // Calculate total price including treatment sessions
     let totalPrice = (selectedService?.priceService || selectedService?.totalPrice || 0);
@@ -205,7 +329,7 @@ function BookingSummary({ selectedService, selectedDoctor, selectedDate, selecte
 
             <button
                 className={cx('bookingBtn', { disabled: !isComplete, loading: isLoading })}
-                onClick={onBooking}
+                onClick={handleBookingClick}
                 disabled={!isComplete || isLoading}
             >
                 {isLoading ? (
@@ -227,6 +351,97 @@ function BookingSummary({ selectedService, selectedDoctor, selectedDate, selecte
                 <p className={cx('note')}>
                     ⚠️ Vui lòng chọn đầy đủ dịch vụ, bác sĩ, ngày và giờ để đặt lịch
                 </p>
+            )}
+
+            {/* Payment Method Modal */}
+            {showPaymentModal && (
+                <div className={cx('paymentModalOverlay')}>
+                    <div className={cx('paymentModal')}>
+                        <div className={cx('paymentModalHeader')}>
+                            <h3>Chọn phương thức thanh toán</h3>
+                            <button
+                                className={cx('closeBtn')}
+                                onClick={() => setShowPaymentModal(false)}
+                                title="Đóng"
+                            >
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                        </div>
+
+                        <div className={cx('paymentModalContent')}>
+                            {paymentMessage && (
+                                <div className={cx('paymentMessage', { 
+                                    success: paymentMessage.includes('✓'), 
+                                    error: paymentMessage.includes('❌') 
+                                })}>
+                                    {paymentMessage}
+                                </div>
+                            )}
+                            {paymentLoading && (
+                                <div className={cx('paymentLoadingContainer')}>
+                                    <span className={cx('paymentSpinner')}></span>
+                                    <span>Đang tạo lịch khám...</span>
+                                </div>
+                            )}
+                            <div className={cx('paymentMethods')}>
+                                {/* Payment Method 1 */}
+                                <label className={cx('paymentMethodOption', { selected: selectedPaymentMethod === 'partial' })}>
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value="partial"
+                                        checked={selectedPaymentMethod === 'partial'}
+                                        onChange={() => handlePaymentMethodSelect('partial')}
+                                    />
+                                    <div className={cx('methodContent')}>
+                                        <span className={cx('methodTitle')}>💳 Trả trước 1 phần</span>
+                                        <span className={cx('methodDescription')}>Thanh toán 30% ngay, 70% khi hoàn thành</span>
+                                    </div>
+                                </label>
+
+                                {/* Payment Method 2 */}
+                                <label className={cx('paymentMethodOption', { selected: selectedPaymentMethod === 'full' })}>
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value="full"
+                                        checked={selectedPaymentMethod === 'full'}
+                                        onChange={() => handlePaymentMethodSelect('full')}
+                                    />
+                                    <div className={cx('methodContent')}>
+                                        <span className={cx('methodTitle')}>✅ Trả trước toàn bộ</span>
+                                        <span className={cx('methodDescription')}>Thanh toán 100% ngay lập tức</span>
+                                    </div>
+                                </label>
+
+                                {/* Payment Method 3 */}
+                                <label className={cx('paymentMethodOption', { selected: selectedPaymentMethod === 'completion' })}>
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value="completion"
+                                        checked={selectedPaymentMethod === 'completion'}
+                                        onChange={() => handlePaymentMethodSelect('completion')}
+                                    />
+                                    <div className={cx('methodContent')}>
+                                        <span className={cx('methodTitle')}>🎯 Thanh toán khi hoàn thành</span>
+                                        <span className={cx('methodDescription')}>Thanh toán 100% sau khi dịch vụ hoàn tất</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className={cx('paymentModalFooter')}>
+                            <button
+                                className={cx('cancelBtn')}
+                                onClick={() => setShowPaymentModal(false)}
+                                disabled={paymentLoading}
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
