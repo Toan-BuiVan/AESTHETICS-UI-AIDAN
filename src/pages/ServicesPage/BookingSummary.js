@@ -75,7 +75,13 @@ function BookingSummary({ selectedService, selectedDoctor, selectedDate, selecte
                 apiPaymentMethod = 'ThanhToanOnline';
             }
 
+            // Extract serviceId from treatment plan
+            const serviceId = customerTreatmentPlans && customerTreatmentPlanId
+                ? customerTreatmentPlans.find(plan => plan.customerTreatmentPlanInformation?.id === customerTreatmentPlanId)?.treatmentPlanInformation?.serviceId
+                : null;
+
             const requestData = {
+                serviceId: serviceId,
                 customerId: cId,
                 staffId: staffId,
                 customerTreatmentSessionId: customerTreatmentSessionId,

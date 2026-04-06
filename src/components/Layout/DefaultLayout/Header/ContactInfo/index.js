@@ -1,5 +1,7 @@
 import { forwardRef, useRef, useState, useEffect } from 'react';
 
+import axios from 'axios';
+
 import classNames from 'classnames/bind';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,9 +29,13 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const [failedImages, setFailedImages] = useState({});
+
     const [messages, setMessages] = useState([
         { type: 'text', text: 'Chào bạn! Hãy gửi tin nhắn để chúng tôi hỗ trợ tự động ngay lập tức.', isSystem: true },
     ]);
+
+    const [conversationHistory, setConversationHistory] = useState([]);
 
     const [showBooking, setShowBooking] = useState(false);
 
@@ -45,6 +51,13 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
         setErrors(newErrors);
 
         return Object.keys(newErrors).length === 0;
+    };
+
+    const handleImageError = (imageFileName) => {
+        setFailedImages((prev) => ({
+            ...prev,
+            [imageFileName]: true,
+        }));
     };
 
     const handleAddToCart = async (productID) => {
@@ -235,7 +248,114 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
         setMessages((prev) => [...prev, { type: 'text', text: content, isSystem: false }]);
 
         try {
-            // API call removed
+            const customerId = localStorage.getItem('customerId');
+            const userId = parseInt(customerId) || null;
+
+            // Cập nhật conversation history với tin nhắn người dùng
+            const updatedHistory = [
+                ...conversationHistory,
+                { role: 'user', content: content }
+            ];
+
+            const payload = {
+                userQuery: content,
+                userId: userId,
+                conversationHistory: updatedHistory
+            };
+
+            const response = await axios.post(
+                'http://localhost:5122/api/AIFunctionCalling/process-user-query',
+                payload
+            );
+
+            const apiData = response.data;
+
+            // Cập nhật conversation history
+            setConversationHistory(updatedHistory);
+
+            // Xử lý response từ API dựa trên toolUsed hoặc structure của data
+            if (apiData && apiData.data) {
+                const toolData = apiData.data;
+
+                // Kiểm tra loại dữ liệu trả về
+                if (toolData.availableSlots && toolData.doctorName) {
+                    // Type 1 & 2: Doctor availability slots
+                    setMessages((prev) => [...prev, {
+                        type: 'doctorSlots',
+                        data: toolData,
+                        isSystem: true
+                    }]);
+                } else if (toolData.doctors && toolData.serviceName) {
+                    // Type 3: Doctors for service
+                    setMessages((prev) => [...prev, {
+                        type: 'doctorsForService',
+                        data: toolData,
+                        isSystem: true
+                    }]);
+                } else if (toolData.serviceId && toolData.userCount !== undefined) {
+                    // Type 4: Most popular services
+                    setMessages((prev) => [...prev, {
+                        type: 'popularService',
+                        data: toolData,
+                        isSystem: true
+                    }]);
+                } else if (toolData.staffName && toolData.appointmentCount !== undefined) {
+                    // Type 5: Best doctor for service
+                    setMessages((prev) => [...prev, {
+                        type: 'bestDoctor',
+                        data: toolData,
+                        isSystem: true
+                    }]);
+                } else if (toolData.services && Array.isArray(toolData.services)) {
+                    // Type 6: Services by price range
+                    setMessages((prev) => [...prev, {
+                        type: 'servicesByPrice',
+                        data: toolData,
+                        isSystem: true
+                    }]);
+                } else if (toolData.products && Array.isArray(toolData.products)) {
+                    // Type 7: Top selling products, Type 8 & 9: Recommended products by category
+                    const isTopSelling = apiData.toolUsed === 'getTopSellingProducts';
+                    const isRecommended = apiData.toolUsed === 'getRecommendedProductsByCategory';
+                    setMessages((prev) => [...prev, {
+                        type: isTopSelling ? 'topSellingProducts' : (isRecommended ? 'recommendedProducts' : 'recommendedProducts'),
+                        data: toolData,
+                        isSystem: true
+                    }]);
+                } else if (toolData.service && toolData.treatmentPackages && Array.isArray(toolData.treatmentPackages)) {
+                    // Type 10: Treatment packages with sessions OR Type 11: Service with no packages
+                    if (toolData.treatmentPackages.length > 0) {
+                        // Type 10: Has treatment packages
+                        setMessages((prev) => [...prev, {
+                            type: 'treatmentPackages',
+                            data: toolData,
+                            isSystem: true
+                        }]);
+                    } else {
+                        // Type 11: No treatment packages available
+                        setMessages((prev) => [...prev, {
+                            type: 'noTreatmentPackages',
+                            data: toolData,
+                            isSystem: true
+                        }]);
+                    }
+                } else if (apiData.toolUsed === 'bookAppointment' && toolData.appointmentId) {
+                    // Booking appointment success
+                    setMessages((prev) => [...prev, {
+                        type: 'bookingSuccess',
+                        data: toolData,
+                        isSystem: true
+                    }]);
+                } else {
+                    // Default: Display as text
+                    const message = apiData.conversationUpdate?.content || apiData.message || JSON.stringify(apiData);
+                    setMessages((prev) => [...prev, {
+                        type: 'text',
+                        text: message,
+                        isSystem: true
+                    }]);
+                }
+            }
         } catch (error) {
             console.error('Lỗi khi gửi tin nhắn:', error.message);
 
@@ -358,6 +478,141 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                                     onClick={() => handleBooking(msg.data.serviceID)}
                                 />
                             </div>
+                        ) : msg.type === 'doctorSlots' ? (
+                            // Type 1 & 2: Doctor availability slots with treatment plans
+                            <div className={cx('doctor-slots-container')}>
+                                <div className={cx('doctor-header-luxury')}>
+                                    <h3 className={cx('doctor-name-luxury')}>{msg.data.doctorName}</h3>
+                                    <p className={cx('doctor-message')}>{msg.data.message}</p>
+                                </div>
+
+                                <div className={cx('slots-grid')}>
+                                    {msg.data.availableSlots && msg.data.availableSlots.map((slot, idx) => (
+                                        <div key={idx} className={cx('slot-card')}>
+                                            <div className={cx('slot-date')}>{slot.date}</div>
+                                            <div className={cx('slot-time-display')}>
+                                                {slot.startTime} - {slot.endTime}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {msg.data.treatmentPlans && msg.data.treatmentPlans.length > 0 && (
+                                    <div className={cx('treatment-plans')}>
+                                        <h4 className={cx('treatment-title')}>Gói điều trị khuyên cáo</h4>
+                                        {msg.data.treatmentPlans.map((plan, idx) => (
+                                            <div key={idx} className={cx('treatment-plan-card')}>
+                                                <h5 className={cx('plan-name')}>{plan.name}</h5>
+                                                <p className={cx('plan-desc')}>{plan.description}</p>
+                                                <p className={cx('plan-price')}>
+                                                    {Number(plan.price).toLocaleString('vi-VN')} VND
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ) : msg.type === 'doctorsForService' ? (
+                            // Type 3: Doctors for service
+                            <div className={cx('doctors-for-service-container')}>
+                                <div className={cx('service-header-luxury')}>
+                                    <h3 className={cx('service-name-luxury')}>{msg.data.serviceName}</h3>
+                                    <p className={cx('service-desc')}>{msg.data.serviceDescription}</p>
+                                    <p className={cx('service-message')}>{msg.data.message}</p>
+                                </div>
+
+                                <div className={cx('doctors-list')}>
+                                    {msg.data.doctors && msg.data.doctors.map((doctor, idx) => (
+                                        <div key={idx} className={cx('doctor-card')}>
+                                            <div className={cx('doctor-card-header')}>
+                                                <h4 className={cx('doctor-card-name')}>{doctor.name}</h4>
+                                                <span className={cx('rating-badge')}>★ {doctor.rating || 0}</span>
+                                            </div>
+                                            <div className={cx('doctor-card-info')}>
+                                                {doctor.specialization && (
+                                                    <p><span className={cx('label')}>Chuyên khoa:</span> {doctor.specialization}</p>
+                                                )}
+                                                {doctor.degree && (
+                                                    <p><span className={cx('label')}>Bằng cấp:</span> {doctor.degree}</p>
+                                                )}
+                                                {doctor.experience > 0 && (
+                                                    <p><span className={cx('label')}>Kinh nghiệm:</span> {doctor.experience} năm</p>
+                                                )}
+                                                <p><span className={cx('label')}>Lịch hẹn:</span> {doctor.appointmentCount}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : msg.type === 'popularService' ? (
+                            // Type 4: Most popular services
+                            <div className={cx('popular-service-container')}>
+                                <p className={cx('popular-message')}>{msg.data.message}</p>
+                                <div className={cx('popular-service-card')}>
+                                    <h4 className={cx('service-rank-title')}>🏆 Dịch vụ Hàng Đầu</h4>
+                                    <h3 className={cx('service-rank-name')}>{msg.data.serviceName}</h3>
+                                    <div className={cx('service-stats')}>
+                                        <div className={cx('stat-item')}>
+                                            <span className={cx('stat-label')}>Giá:</span>
+                                            <span className={cx('stat-value')}>
+                                                {Number(msg.data.price).toLocaleString('vi-VN')} VND
+                                            </span>
+                                        </div>
+                                        <div className={cx('stat-item')}>
+                                            <span className={cx('stat-label')}>Số khách hàng:</span>
+                                            <span className={cx('stat-value')}>{msg.data.userCount}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : msg.type === 'bestDoctor' ? (
+                            // Type 5: Best doctor for service
+                            <div className={cx('best-doctor-container')}>
+                                <p className={cx('best-doctor-message')}>{msg.data.message}</p>
+                                <div className={cx('best-doctor-card')}>
+                                    <div className={cx('best-doctor-badge')}>🌟 Bác Sĩ Hàng Đầu</div>
+                                    <div className={cx('doctor-profile-section')}>
+                                        {msg.data.staffImage ?  (
+                                            <img
+                                                src={`http://localhost:5122/Images/${msg.data.staffImage}`}
+                                                alt={msg.data.staffName}
+                                                className={cx('doctor-profile-image')}
+                                                onError={() => handleImageError(msg.data.staffImage)}
+                                            />
+                                        ) : (
+                                            <div className={cx('doctor-profile  -avatar-fallback')}>
+                                                <span className={cx('avatar-initials')}>
+                                                    {msg.data.staffName
+                                                        .split(' ')
+                                                        .map((word) => word[0])
+                                                        .join('')
+                                                        .toUpperCase()
+                                                        .slice(0, 2)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        <div className={cx('doctor-profile-info')}>
+                                            <h3 className={cx('profile-name')}>{msg.data.staffName}</h3>
+                                            {msg.data.specialization && (
+                                                <p className={cx('profile-spec')}>{msg.data.specialization}</p>
+                                            )}
+                                            {msg.data.degree && (
+                                                <p className={cx('profile-degree')}>{msg.data.degree}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className={cx('doctor-profile-stats')}>
+                                        <div className={cx('stat-box')}>
+                                            <span className={cx('stat-icon')}>📚</span>
+                                            <p><strong>{msg.data.experienceYears}</strong> năm kinh nghiệm</p>
+                                        </div>
+                                        <div className={cx('stat-box')}>
+                                            <span className={cx('stat-icon')}>📅</span>
+                                            <p><strong>{msg.data.appointmentCount}</strong> lịch hẹn</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         ) : msg.type === 'loading' ? (
                             <div className={cx('loading-indicator')}>
                                 <span>Đang trả lời</span>
@@ -407,6 +662,145 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                                 {/* <p className={cx('doctor-info')}>
                                     Còn lại: {msg.data.remainingSlots} / {msg.data.maxDailyLimit} slot
                                 </p> */}
+                            </div>
+                        ) : msg.type === 'servicesByPrice' ? (
+                            // Type 6: Services by price range
+                            <div className={cx('services-by-price-container')}>
+                                <p className={cx('services-message')}>{msg.data.message}</p>
+                                <div className={cx('services-list')}>
+                                    {msg.data.services && msg.data.services.map((service, idx) => (
+                                        <div key={idx} className={cx('service-price-card')}>
+                                            <h4 className={cx('service-price-name')}>{service.serviceName}</h4>
+                                            <p className={cx('service-price-desc')}>{service.description}</p>
+                                            <div className={cx('service-price-footer')}>
+                                                <span className={cx('service-price-tag')}>
+                                                    {Number(service.price).toLocaleString('vi-VN')} VND
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : msg.type === 'topSellingProducts' ? (
+                            // Type 7: Top selling products
+                            <div className={cx('top-selling-container')}>
+                                <p className={cx('top-selling-message')}>{msg.data.message}</p>
+                                <div className={cx('products-grid')}>
+                                    {msg.data.products && msg.data.products.map((product, idx) => (
+                                        <div key={idx} className={cx('product-top-card')}>
+                                            <div className={cx('product-top-badge')}>🔥 Bán chạy</div>
+                                            <h4 className={cx('product-top-name')}>{product.productName}</h4>
+                                            <div className={cx('product-top-stats')}>
+                                                <span className={cx('sales-count')}>
+                                                    📊 {product.salesCount} lần bán
+                                                </span>
+                                            </div>
+                                            <p className={cx('product-top-price')}>
+                                                {Number(product.price).toLocaleString('vi-VN')} VND
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : msg.type === 'recommendedProducts' ? (
+                            // Type 8: Recommended products by category
+                            <div className={cx('recommended-products-container')}>
+                                <p className={cx('recommended-message')}>{msg.data.message}</p>
+                                <div className={cx('recommended-grid')}>
+                                    {msg.data.products && msg.data.products.map((product, idx) => (
+                                        <div key={idx} className={cx('product-recommended-card')}>
+                                            <div className={cx('product-rec-badge')}>✨ Gợi ý</div>
+                                            <h4 className={cx('product-rec-name')}>{product.productName}</h4>
+                                            <p className={cx('product-rec-desc')}>{product.description}</p>
+                                            <div className={cx('product-rec-info')}>
+                                                <span className={cx('stock-info')}>📦 {product.quantity} sản phẩm</span>
+                                            </div>
+                                            <p className={cx('product-rec-price')}>
+                                                {Number(product.price).toLocaleString('vi-VN')} VND
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : msg.type === 'bookingSuccess' ? (
+                            // Booking appointment confirmation
+                            <div className={cx('booking-success-container')}>
+                                <div className={cx('booking-success-card')}>
+                                    <div className={cx('success-icon')}>✅</div>
+                                    <h3 className={cx('success-title')}>Đặt lịch thành công!</h3>
+                                    <p className={cx('success-message')}>{msg.data.message}</p>
+                                    <div className={cx('appointment-id')}>
+                                        Mã lịch hẹn: <strong>#{msg.data.appointmentId}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : msg.type === 'treatmentPackages' ? (
+                            // Type 10: Treatment packages with sessions
+                            <div className={cx('treatment-packages-container')}>
+                                <p className={cx('treatment-msg')}>{msg.data.message}</p>
+                                
+                                {msg.data.service && (
+                                    <div className={cx('service-info-card')}>
+                                        <h3 className={cx('service-title')}>{msg.data.service.serviceName}</h3>
+                                        <p className={cx('service-description')}>{msg.data.service.description}</p>
+                                        <div className={cx('service-meta')}>
+                                            <span className={cx('service-price')}>💰 {Number(msg.data.service.price).toLocaleString('vi-VN')} VND</span>
+                                            <span className={cx('service-duration')}>⏱️ {msg.data.service.duration} phút</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {msg.data.treatmentPackages && msg.data.treatmentPackages.map((pkg, pkgIdx) => (
+                                    <div key={pkgIdx} className={cx('package-card')}>
+                                        <div className={cx('package-header')}>
+                                            <h4 className={cx('package-name')}>{pkg.planName}</h4>
+                                            <span className={cx('package-badge')}>📋 {pkg.totalSessions} buổi</span>
+                                        </div>
+                                        <p className={cx('package-description')}>{pkg.description}</p>
+                                        <div className={cx('package-details')}>
+                                            <span>💵 {Number(pkg.price).toLocaleString('vi-VN')} VND</span>
+                                            <span>⏰ Cách nhau {pkg.sessionInterval} ngày</span>
+                                        </div>
+
+                                        {pkg.sessions && pkg.sessions.length > 0 && (
+                                            <div className={cx('sessions-section')}>
+                                                <h5 className={cx('sessions-title')}>Chi tiết buổi điều trị</h5>
+                                                <div className={cx('sessions-list')}>
+                                                    {pkg.sessions.map((session, sessionIdx) => (
+                                                        <div key={sessionIdx} className={cx('session-item')}>
+                                                            <div className={cx('session-number')}>Buổi {session.sessionNumber}</div>
+                                                            <div className={cx('session-info')}>
+                                                                <p className={cx('session-name')}>{session.sessionName}</p>
+                                                                <p className={cx('session-desc')}>{session.description}</p>
+                                                                <span className={cx('session-duration')}>⏱️ {session.duration} phút</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : msg.type === 'noTreatmentPackages' ? (
+                            // Type 11: Service with no treatment packages
+                            <div className={cx('no-packages-container')}>
+                                <p className={cx('no-packages-msg')}>{msg.data.message}</p>
+                                
+                                {msg.data.service && (
+                                    <div className={cx('service-no-packages-card')}>
+                                        <div className={cx('service-icon-empty')}>ℹ️</div>
+                                        <h3 className={cx('service-name-empty')}>{msg.data.service.serviceName}</h3>
+                                        <p className={cx('service-desc-empty')}>{msg.data.service.description}</p>
+                                        <div className={cx('service-meta-empty')}>
+                                            <span className={cx('price-empty')}>💰 {Number(msg.data.service.price).toLocaleString('vi-VN')} VND</span>
+                                            <span className={cx('duration-empty')}>⏱️ {msg.data.service.duration} phút</span>
+                                        </div>
+                                        <div className={cx('no-packages-notice')}>
+                                            <p>📌 Dịch vụ này hiện không có gói điều trị nào</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ) : null}
                     </div>
