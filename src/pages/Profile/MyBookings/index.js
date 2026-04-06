@@ -3,7 +3,7 @@ import axios from 'axios';
 import classNames from 'classnames/bind';
 import styles from './MyBookings.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faClock, faUserMd, faTimes, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faClock, faUserMd, faTimes, faCheckCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -24,6 +24,15 @@ function MyBookings() {
 
     // Detail modal
     const [selectedAppointment, setSelectedAppointment] = useState(null);
+    
+    // Cancel confirmation
+    const [cancelConfirmation, setCancelConfirmation] = useState({
+        open: false,
+        appointmentId: null,
+        appointmentName: null,
+        booking: null
+    });
+    const [cancelLoading, setCancelLoading] = useState(false);
 
     // Fetch when filter changes (immediately)
     useEffect(() => {
@@ -203,6 +212,63 @@ function MyBookings() {
         return isInProgressOrCompleted && isPaid;
     };
 
+    const shouldShowCancelButton = (booking) => {
+        // Show cancel button if status is Booked (1) or InProgress (2)
+        const statusStr = String(booking.status).toLowerCase();
+        return statusStr === '1' || statusStr === '2' || 
+               statusStr.includes('booked') || 
+               statusStr.includes('đã') || 
+               statusStr.includes('inprogress') || 
+               statusStr.includes('đang');
+    };
+
+    const handleCancelClick = (appointmentId, appointmentName, booking) => {
+        setCancelConfirmation({
+            open: true,
+            appointmentId: appointmentId,
+            appointmentName: appointmentName,
+            booking: booking
+        });
+    };
+
+    const confirmCancel = async () => {
+        if (!cancelConfirmation.appointmentId || !cancelConfirmation.booking) return;
+
+        try {
+            setCancelLoading(true);
+            
+            const customerTreatmentSessionId = cancelConfirmation.booking.customerTreatmentSession?.id;
+            console.log('🗑️ Canceling appointment:', cancelConfirmation.appointmentId, 'Session ID:', customerTreatmentSessionId);
+
+            const response = await axios.post(
+                'http://localhost:5122/api/Appointment/updateappointmentstatus',
+                { 
+                    customerTreatmentSessionId: customerTreatmentSessionId,
+                    status: 4
+                }
+            );
+
+            console.log('✅ Cancel appointment response:', response.data);
+
+            // Close confirmation dialog
+            setCancelConfirmation({ open: false, appointmentId: null, appointmentName: null, booking: null });
+            setSelectedAppointment(null);
+            
+            // Refresh bookings
+            setError(null);
+            await fetchMyBookings(currentPage);
+        } catch (err) {
+            console.error('❌ Error canceling appointment:', err);
+            setError('Lỗi khi hủy lịch: ' + (err.response?.data?.message || err.message));
+        } finally {
+            setCancelLoading(false);
+        }
+    };
+
+    const cancelCancelDialog = () => {
+        setCancelConfirmation({ open: false, appointmentId: null, appointmentName: null, booking: null });
+    };
+
     const filterBookings = () => {
         // Filtering is now done server-side, just return all bookings
         return bookings;
@@ -344,8 +410,8 @@ function MyBookings() {
                                 Xem chi tiết →
                             </div>
 
-                            {(shouldShowPaymentButton(booking) || shouldShowPaidBadge(booking)) && (
-                                <div className={cx('paymentButtonContainer')}>
+                            {(shouldShowPaymentButton(booking) || shouldShowPaidBadge(booking) || shouldShowCancelButton(booking)) && (
+                                <div className={cx('actionButtonContainer')}>
                                     {shouldShowPaymentButton(booking) && (
                                         <button 
                                             className={cx('paymentButton')}
@@ -364,6 +430,23 @@ function MyBookings() {
                                             disabled
                                         >
                                             ✓ Đã Thanh Toán
+                                        </button>
+                                    )}
+
+                                    {shouldShowCancelButton(booking) && (
+                                        <button 
+                                            className={cx('cancelButton')}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleCancelClick(
+                                                    booking.id, 
+                                                    booking.treatmentSession?.sessionName || booking.sessionName || `Buổi ${booking.sessionNumber}`,
+                                                    booking
+                                                );
+                                            }}
+                                            title="Hủy đặt lịch"
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} /> Hủy Lịch
                                         </button>
                                     )}
                                 </div>
@@ -398,6 +481,37 @@ function MyBookings() {
                     >
                         Trang sau →
                     </button>
+                </div>
+            )}
+
+            {/* Cancel Confirmation Dialog */}
+            {cancelConfirmation.open && (
+                <div className={cx('confirmationOverlay')} onClick={cancelCancelDialog}>
+                    <div className={cx('confirmationDialog')} onClick={(e) => e.stopPropagation()}>
+                        <div className={cx('confirmationHeader')}>
+                            <h3>Xác Nhận Hủy Lịch</h3>
+                        </div>
+                        <div className={cx('confirmationBody')}>
+                            <p>Bạn có chắc chắn muốn hủy lịch <strong>{cancelConfirmation.appointmentName}</strong>?</p>
+                            <p style={{ color: '#666', fontSize: '12px', marginTop: '10px' }}>Hành động này không thể hoàn tác.</p>
+                        </div>
+                        <div className={cx('confirmationFooter')}>
+                            <button 
+                                className={cx('cancelDialogBtn')}
+                                onClick={cancelCancelDialog}
+                                disabled={cancelLoading}
+                            >
+                                Không, giữ lịch
+                            </button>
+                            <button 
+                                className={cx('confirmCancelBtn')}
+                                onClick={confirmCancel}
+                                disabled={cancelLoading}
+                            >
+                                {cancelLoading ? 'Đang hủy...' : 'Hủy lịch'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './ServicesPage.module.scss';
 import classNames from 'classnames/bind';
+import { useLocation } from 'react-router-dom';
 import ServicePackageCard from './ServicePackageCard';
 import DoctorCard from './DoctorCard';
 import BookingSummary from './BookingSummary';
 import BookingSuccessNotification from './BookingSuccessNotification';
 import TimeSlotPicker from './TimeSlotPicker';
+import SingleServiceBookingForm from './SingleServiceBookingForm';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -66,11 +68,117 @@ function ServicesPage() {
     const [doctorAvailabilityError, setDoctorAvailabilityError] = useState(null);
     const [selectedSessionForBooking, setSelectedSessionForBooking] = useState(null); // Track which session is being booked
 
-    useEffect(() => {
-        fetchCustomerTreatmentPlans();
-    }, []);
+    const location = useLocation();
+    const [isSingleServiceBooking, setIsSingleServiceBooking] = useState(false);
 
-    // Monitor selected sessions and reset doctor if not eligible
+    useEffect(() => {
+        // Check if serviceType is passed from ServicesListPage - SINGLE SERVICE BOOKING MODE
+        if (location.state?.serviceType) {
+            console.log('🎯 SINGLE SERVICE BOOKING MODE - Fetching services for serviceType:', location.state.serviceType);
+            setIsSingleServiceBooking(true);
+            setDoctors([]); // Clear old doctors
+            setCustomerTreatmentPlans([]); // Clear old treatment plans
+            fetchServicesByType(location.state.serviceType);
+        } else {
+            // TREATMENT PLAN MODE - Fetch customer treatment plans and doctors
+            console.log('📋 TREATMENT PLAN MODE - Fetching customer treatment plans');
+            setIsSingleServiceBooking(false);
+            setServices([]); // Clear services from single mode
+            setFilteredServices([]); // Clear filtered services
+            fetchCustomerTreatmentPlans();
+        }
+    }, [location.state]);
+
+    const fetchServicesByType = async (serviceType) => {
+        try {
+            setIsLoading(true);
+            const payload = {
+                isDoctor: false,
+                servicetypeId: serviceType
+            };
+            console.log('📤 Calling Service/getservicelist with payload:', payload);
+            const response = await axios.post(
+                'http://localhost:5122/api/Service/getservicelist',
+                payload
+            );
+            console.log('✅ Services fetched:', response.data);
+            
+            // Handle different response formats
+            let servicesData = [];
+            if (Array.isArray(response.data)) {
+                servicesData = response.data;
+            } else if (response.data?.result && Array.isArray(response.data.result)) {
+                servicesData = response.data.result;
+            } else if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                servicesData = response.data.baseDatas;
+            }
+            
+            if (servicesData.length > 0) {
+                setServices(servicesData);
+                setFilteredServices(servicesData);
+                console.log('✅ Services set:', servicesData);
+                
+                // Also fetch staff for single service booking
+                await fetchStaffForSingleService(serviceType);
+            } else {
+                console.warn('⚠️ No services returned from API');
+            }
+        } catch (error) {
+            console.error('❌ Error fetching services:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchStaffForSingleService = async (serviceType) => {
+        try {
+            const payload = {
+                isDoctor: false,
+                servicetypeId: serviceType
+            };
+            console.log('📤 Calling Staff/get-list with payload:', payload);
+            const response = await axios.post(
+                'http://localhost:5122/api/Staff/get-list',
+                payload
+            );
+            console.log('✅ Staff fetched:', response.data);
+            
+            // Handle response format
+            let staffData = [];
+            if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                staffData = response.data.baseDatas;
+            }
+            
+            if (staffData.length > 0) {
+                // Format staff data similar to how we do for treatment plans
+                const formattedDoctors = staffData.map(staff => ({
+                    staffId: staff.id,
+                    doctorID: staff.id,
+                    doctorName: staff.fullName || 'Nhân viên',
+                    image: staff.staffImage ? `http://localhost:5122/Images/${staff.staffImage}` : PLACEHOLDER_IMAGE,
+                    specialty: staff.specialization || 'Nhân viên',
+                    rating: 4.8,
+                    reviews: 120,
+                    experience: staff.experienceYears || 0,
+                    email: '',
+                    phone: staff.phone || '',
+                    degree: staff.degree || '',
+                    licenseNumber: staff.licenseNumber || '',
+                    biography: staff.biography || '',
+                    serviceTypeId: serviceType,
+                    ...staff
+                }));
+                setDoctors(formattedDoctors);
+                console.log('✅ Staff formatted and set:', formattedDoctors);
+            } else {
+                console.warn('⚠️ No staff returned from API');
+                setDoctors([]);
+            }
+        } catch (error) {
+            console.error('❌ Error fetching staff:', error);
+            setDoctors([]);
+        }
+    };
     useEffect(() => {
         if (selectedDoctor && selectedTreatmentSessions.length > 0) {
             // Get eligible service type IDs from selected sessions
@@ -235,6 +343,18 @@ function ServicesPage() {
 
     const fetchCustomerTreatmentPlans = async () => {
         try {
+            // DONT FETCH IF IN SINGLE SERVICE BOOKING MODE
+            if (isSingleServiceBooking) {
+                console.log('⏭️ Skipping fetchCustomerTreatmentPlans - Single Service Booking Mode');
+                return;
+            }
+
+            // ALSO SKIP if location.state has serviceType (indicating single service mode)
+            if (location.state?.serviceType) {
+                console.log('⏭️ Skipping fetchCustomerTreatmentPlans - location.state has serviceType');
+                return;
+            }
+
             setLoadingPlans(true);
             // Get customerId from localStorage (CustomerId or fallback to StaffId)
             let customerId = parseInt(localStorage.getItem('customerId') || 0);
@@ -250,20 +370,37 @@ function ServicesPage() {
                 return;
             }
 
-            const response = await axios.post(
-                'http://localhost:5122/api/CustomerTreatmentPlans/getcustomertreatmentplanlist',
-                {
-                    customerId: customerId,
-                    status: 'ChoDatLich'
-                }
-            );
+            // Fetch plans with both statuses: ChoDatLich and DangThucHien
+            const [responseChoDatLich, responseDangThucHien] = await Promise.all([
+                axios.post(
+                    'http://localhost:5122/api/CustomerTreatmentPlans/getcustomertreatmentplanlist',
+                    {
+                        customerId: customerId,
+                        status: 'ChoDatLich'
+                    }
+                ),
+                axios.post(
+                    'http://localhost:5122/api/CustomerTreatmentPlans/getcustomertreatmentplanlist',
+                    {
+                        customerId: customerId,
+                        status: 'DangThucHien'
+                    }
+                )
+            ]);
 
-            console.log('Customer treatment plans response:', response.data);
+            // Merge results from both API calls
+            const allPlans = [
+                ...(responseChoDatLich.data?.baseDatas || []),
+                ...(responseDangThucHien.data?.baseDatas || [])
+            ];
 
-            if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+            console.log('Customer treatment plans response (ChoDatLich):', responseChoDatLich.data);
+            console.log('Customer treatment plans response (DangThucHien):', responseDangThucHien.data);
+
+            if (allPlans.length > 0) {
                 // Remove duplicates based on customerTreatmentPlanInformation ID
                 const uniquePlans = Array.from(
-                    new Map(response.data.baseDatas.map(plan => [plan.customerTreatmentPlanInformation?.id, plan])).values()
+                    new Map(allPlans.map(plan => [plan.customerTreatmentPlanInformation?.id, plan])).values()
                 );
                 setCustomerTreatmentPlans(uniquePlans);
                 
@@ -941,6 +1078,19 @@ function ServicesPage() {
                 />
             )}
             <div className={cx('container')}>
+                {/* SINGLE SERVICE BOOKING MODE */}
+                {isSingleServiceBooking && services.length > 0 && (
+                    <div className={cx('singleServiceContainer')}>
+                        <SingleServiceBookingForm 
+                            services={services}
+                            serviceType={location.state?.serviceType}
+                        />
+                    </div>
+                )}
+
+                {/* TREATMENT PLAN MODE - Original Multi-Panel Layout */}
+                {!isSingleServiceBooking && (
+                    <>
                 {/* LEFT PANEL - Treatment Plans + Date Selection */}
                 <div className={cx('leftPanel')}>
                     {/* CUSTOMER TREATMENT PLANS SECTION */}
@@ -1211,7 +1361,7 @@ function ServicesPage() {
                                                         );
                                                     })}
                                                 </div>
-                                                {plan.customerTreatmentPlanInformation?.status === 'ChoDatLich' && (plan.customerSessions?.some(s => s.status === 'ChoDatLich') || false) && (
+                                                {(plan.customerTreatmentPlanInformation?.status === 'ChoDatLich' || plan.customerTreatmentPlanInformation?.status === 'DangThucHien') && (plan.customerSessions?.some(s => s.status === 'ChoDatLich' || s.status === 'DangThucHien') || false) && (
                                                     <button
                                                         className={cx('bookSelectedBtn')}
                                                         onClick={() => handleAddTreatmentSessions(index, plan, selectedSessions[index])}
@@ -1416,6 +1566,8 @@ function ServicesPage() {
                         />
                     </div>
                 </div>
+                </>
+                )}
             </div>
 
             {/* Delete Confirmation Modal */}

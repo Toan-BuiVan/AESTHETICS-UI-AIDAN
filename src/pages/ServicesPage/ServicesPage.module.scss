@@ -122,6 +122,15 @@ $text-secondary: #999;
     animation: fadeIn 0.6s ease-out 0.3s both;
 }
 
+// Single Service Booking Container
+.singleServiceContainer {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 40px 30px;
+    animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
 // Right Panel with Doctors Sidebar + Booking Summary
 .rightPanel {
     display: flex;
