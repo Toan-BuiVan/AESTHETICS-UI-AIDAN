@@ -245,7 +245,11 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
 
         setIsLoading(true);
 
-        setMessages((prev) => [...prev, { type: 'text', text: content, isSystem: false }]);
+        setMessages((prev) => [
+            ...prev,
+            { type: 'text', text: content, isSystem: false },
+            { type: 'typing', isSystem: true }
+        ]);
 
         try {
             const customerId = localStorage.getItem('customerId');
@@ -270,84 +274,126 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
 
             const apiData = response.data;
 
+            // Xóa typing indicator
+            setMessages((prev) => prev.filter((msg, index) => !(index === prev.length - 1 && msg.type === 'typing')));
+
             // Cập nhật conversation history
             setConversationHistory(updatedHistory);
 
-            // Xử lý response từ API dựa trên toolUsed hoặc structure của data
-            if (apiData && apiData.data) {
-                const toolData = apiData.data;
+            console.log('🔍 API Response:', {
+                toolUsed: apiData.toolUsed,
+                hasData: !!apiData.data,
+                dataKeys: apiData.data ? Object.keys(apiData.data) : null
+            });
 
-                // Kiểm tra loại dữ liệu trả về
+            // Xử lý response từ API theo toolUsed hoặc structure của data
+            if (apiData?.toolUsed === 'getDoctorAvailableSlots' && apiData.data?.availableSlots) {
+                // Kiểu 1-2: Doctor available slots
+                setMessages((prev) => [...prev, {
+                    type: 'doctorSlots',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'getDoctorsForService' && apiData.data?.doctors) {
+                // Kiểu 3: Doctors for service
+                setMessages((prev) => [...prev, {
+                    type: 'doctorsForService',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'getMostPopularServices' && apiData.data?.serviceId) {
+                // Kiểu 4: Most popular services
+                setMessages((prev) => [...prev, {
+                    type: 'popularService',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'getBestDoctorForService' && apiData.data?.staffId) {
+                // Kiểu 5: Best doctor for service
+                setMessages((prev) => [...prev, {
+                    type: 'bestDoctor',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'getServicesByPriceRange' && apiData.data?.services) {
+                // Kiểu 6: Services by price range
+                setMessages((prev) => [...prev, {
+                    type: 'servicesByPrice',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'getTopSellingProducts' && apiData.data?.products) {
+                // Kiểu 7: Top selling products
+                setMessages((prev) => [...prev, {
+                    type: 'topSellingProducts',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'getRecommendedProductsByCategory' && apiData.data?.products) {
+                // Kiểu 8-9: Recommended products by category
+                setMessages((prev) => [...prev, {
+                    type: 'recommendedProducts',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'bookAppointment' && apiData.data?.appointmentId) {
+                // Kiểu 10: Booking appointment success
+                setMessages((prev) => [...prev, {
+                    type: 'bookingSuccess',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'getTreatmentPackagesByServiceName' && apiData.data?.service) {
+                // Kiểu 11-12: Treatment packages (with or without sessions)
+                if (apiData.data.treatmentPackages && apiData.data.treatmentPackages.length > 0) {
+                    // Has treatment packages
+                    setMessages((prev) => [...prev, {
+                        type: 'treatmentPackages',
+                        data: apiData.data,
+                        isSystem: true
+                    }]);
+                } else {
+                    // No treatment packages
+                    setMessages((prev) => [...prev, {
+                        type: 'noTreatmentPackages',
+                        data: apiData.data,
+                        isSystem: true
+                    }]);
+                }
+            } else if (apiData?.toolUsed === 'cancelAppointment' && apiData.data?.cancelledCount !== undefined) {
+                // Kiểu 13-15: Cancel appointment
+                setMessages((prev) => [...prev, {
+                    type: 'cancelAppointment',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if ((apiData?.toolUsed === 'chatbot_llm' || apiData?.toolUsed === 'chatbot_friendly') && !apiData.data) {
+                // Kiểu 16-17: Chatbot responses (data: null)
+                const message = apiData.conversationUpdate?.content || apiData.message;
+                const isFriendly = apiData.toolUsed === 'chatbot_friendly';
+                console.log(`💬 ${isFriendly ? '👋 Friendly' : '🤖 LLM'} Chatbot response:`, message);
+                setMessages((prev) => [...prev, {
+                    type: 'text',
+                    text: message,
+                    isSystem: true,
+                    isChatbotFriendly: isFriendly
+                }]);
+            } else if (apiData?.data) {
+                // Fallback: Display based on data structure
+                const toolData = apiData.data;
                 if (toolData.availableSlots && toolData.doctorName) {
-                    // Type 1 & 2: Doctor availability slots
                     setMessages((prev) => [...prev, {
                         type: 'doctorSlots',
                         data: toolData,
                         isSystem: true
                     }]);
                 } else if (toolData.doctors && toolData.serviceName) {
-                    // Type 3: Doctors for service
                     setMessages((prev) => [...prev, {
                         type: 'doctorsForService',
                         data: toolData,
                         isSystem: true
                     }]);
-                } else if (toolData.serviceId && toolData.userCount !== undefined) {
-                    // Type 4: Most popular services
-                    setMessages((prev) => [...prev, {
-                        type: 'popularService',
-                        data: toolData,
-                        isSystem: true
-                    }]);
-                } else if (toolData.staffName && toolData.appointmentCount !== undefined) {
-                    // Type 5: Best doctor for service
-                    setMessages((prev) => [...prev, {
-                        type: 'bestDoctor',
-                        data: toolData,
-                        isSystem: true
-                    }]);
-                } else if (toolData.services && Array.isArray(toolData.services)) {
-                    // Type 6: Services by price range
-                    setMessages((prev) => [...prev, {
-                        type: 'servicesByPrice',
-                        data: toolData,
-                        isSystem: true
-                    }]);
-                } else if (toolData.products && Array.isArray(toolData.products)) {
-                    // Type 7: Top selling products, Type 8 & 9: Recommended products by category
-                    const isTopSelling = apiData.toolUsed === 'getTopSellingProducts';
-                    const isRecommended = apiData.toolUsed === 'getRecommendedProductsByCategory';
-                    setMessages((prev) => [...prev, {
-                        type: isTopSelling ? 'topSellingProducts' : (isRecommended ? 'recommendedProducts' : 'recommendedProducts'),
-                        data: toolData,
-                        isSystem: true
-                    }]);
-                } else if (toolData.service && toolData.treatmentPackages && Array.isArray(toolData.treatmentPackages)) {
-                    // Type 10: Treatment packages with sessions OR Type 11: Service with no packages
-                    if (toolData.treatmentPackages.length > 0) {
-                        // Type 10: Has treatment packages
-                        setMessages((prev) => [...prev, {
-                            type: 'treatmentPackages',
-                            data: toolData,
-                            isSystem: true
-                        }]);
-                    } else {
-                        // Type 11: No treatment packages available
-                        setMessages((prev) => [...prev, {
-                            type: 'noTreatmentPackages',
-                            data: toolData,
-                            isSystem: true
-                        }]);
-                    }
-                } else if (apiData.toolUsed === 'bookAppointment' && toolData.appointmentId) {
-                    // Booking appointment success
-                    setMessages((prev) => [...prev, {
-                        type: 'bookingSuccess',
-                        data: toolData,
-                        isSystem: true
-                    }]);
                 } else {
-                    // Default: Display as text
                     const message = apiData.conversationUpdate?.content || apiData.message || JSON.stringify(apiData);
                     setMessages((prev) => [...prev, {
                         type: 'text',
@@ -355,6 +401,23 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                         isSystem: true
                     }]);
                 }
+            } else if (apiData?.conversationUpdate?.content) {
+                // Handle any response with conversationUpdate content
+                const message = apiData.conversationUpdate.content || apiData.message;
+                setMessages((prev) => [...prev, {
+                    type: 'text',
+                    text: message,
+                    isSystem: true
+                }]);
+            } else {
+                // Final fallback
+                const message = apiData?.message || 'Không thể xử lý phản hồi từ API';
+                console.log('⚠️ Fallback response:', message);
+                setMessages((prev) => [...prev, {
+                    type: 'text',
+                    text: message,
+                    isSystem: true
+                }]);
             }
         } catch (error) {
             console.error('Lỗi khi gửi tin nhắn:', error.message);
@@ -410,7 +473,13 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
             <div className={cx('chat-body')} ref={chatBodyRef}>
                 {messages.map((msg, index) => (
                     <div key={index} className={cx('message-bubble', msg.isSystem ? 'system-message' : 'user-message')}>
-                        {msg.type === 'text' ? (
+                        {msg.type === 'typing' ? (
+                            <div className={cx('typing-indicator')}>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        ) : msg.type === 'text' ? (
                             renderMessageText(msg.text)
                         ) : msg.type === 'product' ? (
                             <div className={cx('product-item')}>
@@ -801,6 +870,40 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        ) : msg.type === 'cancelAppointment' ? (
+                            // Type 13-15: Cancel appointment confirmation
+                            <div className={cx('cancel-appointment-container')}>
+                                <div className={cx('cancel-success-card')}>
+                                    <div className={cx('cancel-icon')}>✅</div>
+                                    <h3 className={cx('cancel-title')}>Hủy lịch hẹn thành công!</h3>
+                                    <div className={cx('cancel-stats')}>
+                                        <div className={cx('stat-item')}>
+                                            <span className={cx('stat-label')}>Lịch đã hủy:</span>
+                                            <span className={cx('stat-value')} style={{ color: '#d73d31', fontWeight: 'bold' }}>
+                                                {msg.data.cancelledCount} appointment(s)
+                                            </span>
+                                        </div>
+                                        {msg.data.assignmentCount !== undefined && (
+                                            <div className={cx('stat-item')}>
+                                                <span className={cx('stat-label')}>Assignment cập nhật:</span>
+                                                <span className={cx('stat-value')}>{msg.data.assignmentCount}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {msg.data.details && msg.data.details.length > 0 && (
+                                        <div className={cx('cancel-details')}>
+                                            <p className={cx('details-title')}>Chi tiết hủy lịch:</p>
+                                            <ul className={cx('details-list')}>
+                                                {msg.data.details.map((detail, idx) => (
+                                                    <li key={idx} className={cx('detail-item')}>
+                                                        📅 {detail}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ) : null}
                     </div>

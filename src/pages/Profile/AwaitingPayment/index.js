@@ -17,7 +17,6 @@ function AwaitingPayment({ onCountChange }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
-    const [activeTab, setActiveTab] = useState('ChuaThanhToan'); // 'ChuaThanhToan' | 'ThanhToanMotPhan'
     const pageSize = 8;
 
     // Hàm gọi API getinvoicelist
@@ -76,12 +75,10 @@ function AwaitingPayment({ onCountChange }) {
         }
     };
 
-    // Fetch invoices khi component mount hoặc type/tab thay đổi
+    // Fetch invoices khi component mount hoặc type thay đổi
     useEffect(() => {
-        // Nếu ở tab "ThanhToanMotPhan", tự động set type = 'DichVu'
-        const typeForFetch = activeTab === 'ThanhToanMotPhan' ? 'DichVu' : selectedType;
-        fetchInvoices(typeForFetch, 1, activeTab);
-    }, [selectedType, activeTab]);
+        fetchInvoices(selectedType, 1, 'ChuaThanhToan');
+    }, [selectedType]);
 
     // Xử lý click button "Sản phẩm"
     const handleFilterProduct = () => {
@@ -95,12 +92,7 @@ function AwaitingPayment({ onCountChange }) {
         setCurrentPage(1);
     };
 
-    // Xử lý chuyển tab
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-        setSelectedType(null); // Reset filter khi đổi tab
-        setCurrentPage(1);
-    };
+
 
     // Xử lý toggle expand details
     const handleToggleDetails = (invoiceID) => {
@@ -110,16 +102,14 @@ function AwaitingPayment({ onCountChange }) {
     // Phân trang - trang trước
     const handlePrevPage = () => {
         if (currentPage > 1) {
-            const typeForFetch = activeTab === 'ThanhToanMotPhan' ? 'DichVu' : selectedType;
-            fetchInvoices(typeForFetch, currentPage - 1, activeTab);
+            fetchInvoices(selectedType, currentPage - 1, 'ChuaThanhToan');
         }
     };
 
     // Phân trang - trang sau
     const handleNextPage = () => {
         if (currentPage < totalPages) {
-            const typeForFetch = activeTab === 'ThanhToanMotPhan' ? 'DichVu' : selectedType;
-            fetchInvoices(typeForFetch, currentPage + 1, activeTab);
+            fetchInvoices(selectedType, currentPage + 1, 'ChuaThanhToan');
         }
     };
 
@@ -142,68 +132,15 @@ function AwaitingPayment({ onCountChange }) {
                     <h3 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>Hóa Đơn Thanh Toán</h3>
                 </div>
                 
-                {/* Tab Buttons */}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '16px', borderBottom: '2px solid #E8E8E8', paddingBottom: '12px' }}>
-                    <button
-                        onClick={() => handleTabChange('ChuaThanhToan')}
-                        style={{
-                            padding: '10px 20px',
-                            borderRadius: '8px 8px 0 0',
-                            border: 'none',
-                            backgroundColor: activeTab === 'ChuaThanhToan' ? '#6B63B5' : '#F0F0F0',
-                            color: activeTab === 'ChuaThanhToan' ? '#fff' : '#666',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                            if (activeTab !== 'ChuaThanhToan') {
-                                e.currentTarget.style.backgroundColor = '#E0E0E0';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (activeTab !== 'ChuaThanhToan') {
-                                e.currentTarget.style.backgroundColor = '#F0F0F0';
-                            }
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faExclamationCircle} style={{ marginRight: '8px' }} />
-                        Chờ thanh toán ({totalRecords})
-                    </button>
-                    <button
-                        onClick={() => handleTabChange('ThanhToanMotPhan')}
-                        style={{
-                            padding: '10px 20px',
-                            borderRadius: '8px 8px 0 0',
-                            border: 'none',
-                            backgroundColor: activeTab === 'ThanhToanMotPhan' ? '#6B63B5' : '#F0F0F0',
-                            color: activeTab === 'ThanhToanMotPhan' ? '#fff' : '#666',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                            if (activeTab !== 'ThanhToanMotPhan') {
-                                e.currentTarget.style.backgroundColor = '#E0E0E0';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (activeTab !== 'ThanhToanMotPhan') {
-                                e.currentTarget.style.backgroundColor = '#F0F0F0';
-                            }
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faClock} style={{ marginRight: '8px' }} />
-                        Tiếp tục thanh toán ({totalRecords})
-                    </button>
+                {/* Title */}
+                <div style={{ fontSize: '14px', color: '#999', marginTop: '12px' }}>
+                    <FontAwesomeIcon icon={faExclamationCircle} style={{ marginRight: '6px' }} />
+                    Danh sách hóa đơn chờ thanh toán ({totalRecords})
                 </div>
             </div>
 
-            {/* Smart Filter Buttons - Ẩn Sản Phẩm khi ở tab "ThanhToanMotPhan" */}
-            {activeTab === 'ChuaThanhToan' && (
-                <div className={cx('filter-buttons')}>
+            {/* Smart Filter Buttons */}
+            <div className={cx('filter-buttons')}>
                     <button
                         className={cx('filter-btn', { active: selectedType === 'BanHang' })}
                         onClick={handleFilterProduct}
@@ -245,7 +182,6 @@ function AwaitingPayment({ onCountChange }) {
                         {selectedType === 'DichVu' && <FontAwesomeIcon icon={faCheckCircle} style={{ marginLeft: '4px' }} />}
                     </button>
                 </div>
-            )}
 
             {/* Loading State */}
             {loading ? (
@@ -317,6 +253,36 @@ function AwaitingPayment({ onCountChange }) {
                                                     {formatCurrency(item.invoice.finalPrice).split(' ')[0]}
                                                 </div>
                                             </div>
+                                            <button
+                                                style={{
+                                                    padding: '8px 16px',
+                                                    backgroundColor: '#6B63B5',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '13px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    transition: 'all 0.3s ease',
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#5754A8';
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(107, 99, 181, 0.3)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#6B63B5';
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                            >
+                                                <FontAwesomeIcon icon={faCreditCard} />
+                                                <span>Thanh toán</span>
+                                            </button>
                                             <FontAwesomeIcon 
                                                 icon={faChevronRight} 
                                                 style={{ 

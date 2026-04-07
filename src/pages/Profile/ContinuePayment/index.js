@@ -196,6 +196,36 @@ function ContinuePayment({ onCountChange }) {
                                                     {formatCurrency(item.invoice.outstandingBalance).split(' ')[0]}
                                                 </div>
                                             </div>
+                                            <button
+                                                style={{
+                                                    padding: '8px 16px',
+                                                    backgroundColor: '#FF9800',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '13px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    transition: 'all 0.3s ease',
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#F57C00';
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 152, 0, 0.3)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#FF9800';
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                            >
+                                                <FontAwesomeIcon icon={faCreditCard} />
+                                                <span>Thanh toán</span>
+                                            </button>
                                             <FontAwesomeIcon 
                                                 icon={faChevronRight} 
                                                 style={{ 

@@ -270,7 +270,7 @@ function ServicesListPage() {
                                             </div>
                                         </div>
 
-                                        {service.isCourse && (
+                                        {service.isCourse ? (
                                             <button 
                                                 className={cx('actionBtn')}
                                                 onClick={(e) => {
@@ -279,6 +279,22 @@ function ServicesListPage() {
                                                 }}
                                             >
                                                 Xem chi tiết
+                                                <FontAwesomeIcon icon={faArrowRight} />
+                                            </button>
+                                        ) : (
+                                            <button 
+                                                className={cx('actionBtn', 'bookingBtn')}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    console.log('📋 Navigating to services with serviceType:', service.serviceType);
+                                                    navigate(`/services/${service.id}`, {
+                                                        state: {
+                                                            serviceType: service.serviceType
+                                                        }
+                                                    });
+                                                }}
+                                            >
+                                                Đặt lịch
                                                 <FontAwesomeIcon icon={faArrowRight} />
                                             </button>
                                         )}

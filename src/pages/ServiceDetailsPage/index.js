@@ -4,6 +4,7 @@ import styles from './ServiceDetailsPage.module.scss';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NotificationToast from './NotificationToast';
+import useDebounce from '../../hooks/useDebounce';
 import {
     faArrowLeft,
     faClock,
@@ -27,6 +28,10 @@ import {
     faUserMd
 } from '@fortawesome/free-solid-svg-icons';
 import { useParams, useNavigate } from 'react-router-dom';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
+import TextField from '@mui/material/TextField';
 
 const cx = classNames.bind(styles);
 
@@ -44,16 +49,191 @@ function ServiceDetailsPage() {
     const [loadingDoctors, setLoadingDoctors] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [notification, setNotification] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(null);
+    const [isSingleService, setIsSingleService] = useState(false);
+    const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+    const [loadingTimeSlots, setLoadingTimeSlots] = useState(false);
+    
+    // Single Service Booking in Left Column
+    const [singleServiceSelectedDoctor, setSingleServiceSelectedDoctor] = useState(null);
+    const [singleServiceSelectedDate, setSingleServiceSelectedDate] = useState(null);
+    const debouncedSingleServiceDate = useDebounce(singleServiceSelectedDate, 800);
+    const [singleServiceAvailableTimeSlots, setSingleServiceAvailableTimeSlots] = useState([]);
+    const [loadingSingleServiceTimeSlots, setLoadingSingleServiceTimeSlots] = useState(false);
+    const [showDoctorSelectorModal, setShowDoctorSelectorModal] = useState(false);
+    
+    // Single Service Payment Flow
+    const [singleServiceSelectedTime, setSingleServiceSelectedTime] = useState(null);
+    const debouncedSingleServiceTime = useDebounce(singleServiceSelectedTime, 3000);
+    const [singleServiceSelectedPaymentMethod, setSingleServiceSelectedPaymentMethod] = useState(null);
+    const debouncedSingleServicePaymentMethod = useDebounce(singleServiceSelectedPaymentMethod, 3000);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [paymentMessage, setPaymentMessage] = useState(null);
 
     useEffect(() => {
-        fetchTreatmentPlans(serviceId);
+        fetchServiceData(serviceId);
     }, [serviceId]);
 
     useEffect(() => {
         if (selectedPlan?.serviceId) {
-            fetchDoctorsList(selectedPlan.serviceId);
+            fetchDoctorsList(selectedPlan.serviceInfo?.serviceTypeId);
+        } else if (isSingleService && service?.serviceTypeId) {
+            fetchDoctorsList(service.serviceTypeId);
         }
-    }, [selectedPlan?.serviceId]);
+    }, [selectedPlan?.serviceInfo?.serviceTypeId, isSingleService, service?.serviceTypeId]);
+
+    useEffect(() => {
+        if (selectedDate && isSingleService && service?.id && selectedDoctor) {
+            fetchAvailableTimeSlots();
+        } else {
+            setAvailableTimeSlots([]);
+        }
+    }, [selectedDate, isSingleService, service?.id, selectedDoctor]);
+
+    // Auto-fetch available time slots for single service booking when doctor + date(debounced) selected
+    useEffect(() => {
+        if (isSingleService && singleServiceSelectedDoctor && debouncedSingleServiceDate && service?.id) {
+            fetchSingleServiceAvailableTimeSlots();
+        } else {
+            setSingleServiceAvailableTimeSlots([]);
+        }
+    }, [isSingleService, singleServiceSelectedDoctor, debouncedSingleServiceDate, service?.id]);
+
+    // Show payment modal automatically after time slot selection with 3s debounce
+    useEffect(() => {
+        if (debouncedSingleServiceTime) {
+            setShowPaymentModal(true);
+            setPaymentMessage(null);
+        }
+    }, [debouncedSingleServiceTime]);
+
+    // Handle payment method selection with 3s debounce to create appointment
+    useEffect(() => {
+        if (!singleServiceSelectedPaymentMethod || !debouncedSingleServicePaymentMethod) {
+            return;
+        }
+
+        setPaymentLoading(true);
+        setPaymentMessage(null);
+
+        // The debounce timer is already applied via debouncedSingleServicePaymentMethod
+        handleCreateAppointmentWithPayment(singleServiceSelectedPaymentMethod);
+    }, [debouncedSingleServicePaymentMethod]);
+
+    const fetchServiceData = async (svcId) => {
+        setLoading(true);
+        try {
+            // First, try to fetch treatment plans to see if it's a course service
+            const plansResponse = await axios.post(
+                'http://localhost:5122/api/TreatmentPlan/gettreatmentplanlist',
+                {
+                    pageNo: 1,
+                    pageSize: 8,
+                    serviceId: parseInt(svcId)
+                }
+            );
+
+            let rawPlansData = [];
+            if (Array.isArray(plansResponse.data)) {
+                rawPlansData = plansResponse.data;
+            } else if (plansResponse.data?.baseDatas && Array.isArray(plansResponse.data.baseDatas)) {
+                rawPlansData = plansResponse.data.baseDatas;
+            }
+
+            // If no treatment plans found, try to fetch as single service
+            if (rawPlansData.length === 0) {
+                fetchSingleService(svcId);
+            } else {
+                // It's a course service, use treatment plans
+                const transformedPlans = rawPlansData.map(item => ({
+                    id: item.treatmentPlanInfomation?.id,
+                    planName: item.treatmentPlanInfomation?.planName,
+                    totalSessions: item.treatmentPlanInfomation?.totalSessions,
+                    price: item.treatmentPlanInfomation?.price,
+                    sessionInterval: item.treatmentPlanInfomation?.sessionInterval,
+                    description: item.treatmentPlanInfomation?.description,
+                    serviceId: item.treatmentPlanInfomation?.serviceId,
+                    serviceInfo: item.serviceInformation || {},
+                    treatmentSessions: (item.treatmentSessionInformation || []).map(session => ({
+                        id: session.treatmentSessionId,
+                        sessionNumber: session.sessionNumber,
+                        sessionName: session.sessionName,
+                        description: session.description,
+                        duration: session.duration,
+                        treatmentSessionId: session.treatmentSessionId
+                    })),
+                    sessionProducts: item.sessionProductInformation || []
+                }));
+                
+                setTreatmentPlans(transformedPlans);
+                setIsSingleService(false);
+                
+                const firstPlan = transformedPlans[0];
+                if (firstPlan) {
+                    setService({
+                        id: parseInt(svcId),
+                        isCourse: 1,
+                        serviceID: parseInt(svcId),
+                        priceService: firstPlan.price || 0,
+                        description: firstPlan.description || '',
+                        serviceName: firstPlan.serviceInfo?.serviceName || '',
+                        serviceTypeId: firstPlan.serviceInfo?.serviceTypeId || null
+                    });
+                    
+                    setSelectedPlan(firstPlan);
+                    setSessionDetails(firstPlan.treatmentSessions || []);
+                }
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Error fetching service data:', error);
+            // If error, try to fetch as single service
+            fetchSingleService(svcId);
+        }
+    };
+
+    const fetchSingleService = async (svcId) => {
+        try {
+            const response = await axios.post(
+                'http://localhost:5122/api/Service/getservicelist',
+                {
+                    pageNo: 1,
+                    pageSize: 1,
+                    id: parseInt(svcId)
+                }
+            );
+
+            let servicesData = [];
+            if (Array.isArray(response.data)) {
+                servicesData = response.data;
+            } else if (response.data?.baseDatas && Array.isArray(response.data.baseDatas)) {
+                servicesData = response.data.baseDatas;
+            }
+
+            if (servicesData.length > 0) {
+                const singleService = servicesData[0];
+                setService({
+                    id: singleService.id,
+                    isCourse: singleService.isCourse === 0 ? 0 : 1,
+                    serviceID: singleService.id,
+                    priceService: singleService.price || 0,
+                    description: singleService.description || '',
+                    serviceName: singleService.serviceName || '',
+                    duration: singleService.duration || 60,
+                    serviceTypeId: singleService.serviceTypeId || null
+                });
+                setIsSingleService(true);
+                setTreatmentPlans([]);
+                setSelectedPlan(null);
+            }
+        } catch (error) {
+            console.error('Error fetching single service:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchTreatmentPlans = async (svcId) => {
         setLoading(true);
@@ -109,7 +289,8 @@ function ServiceDetailsPage() {
                     serviceID: parseInt(svcId),
                     priceService: firstPlan.price || 0,
                     description: firstPlan.description || '',
-                    serviceName: firstPlan.serviceInfo?.serviceName || ''
+                    serviceName: firstPlan.serviceInfo?.serviceName || '',
+                    serviceTypeId: firstPlan.serviceInfo?.serviceTypeId || null
                 });
                 
                 setSelectedPlan(firstPlan);
@@ -168,7 +349,7 @@ function ServiceDetailsPage() {
                 'http://localhost:5122/api/Staff/get-list',
                 {
                     isDoctor: true,
-                    servicetypeId: parseInt(serviceTypeId)
+                    serviceTypeId: parseInt(serviceTypeId)
                 }
             );
 
@@ -189,9 +370,167 @@ function ServiceDetailsPage() {
         }
     };
 
+    // Helper function to format date in local timezone (not UTC)
+    const getLocalDateISO = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}T00:00:00.000Z`;
+    };
+
+    const fetchAvailableTimeSlots = async () => {
+        setLoadingTimeSlots(true);
+        try {
+            const response = await axios.post(
+                'http://localhost:5122/api/Appointment/getdoctoravailability',
+                {
+                    doctorId: selectedDoctor.id,
+                    serviceId: service.id,
+                    date: getLocalDateISO(selectedDate)
+                }
+            );
+
+            if (Array.isArray(response.data)) {
+                setAvailableTimeSlots(response.data);
+            } else if (response.data?.availableTimeSlots && Array.isArray(response.data.availableTimeSlots)) {
+                setAvailableTimeSlots(response.data.availableTimeSlots);
+            } else {
+                setAvailableTimeSlots([]);
+            }
+        } catch (error) {
+            console.error('Error fetching available time slots:', error);
+            setAvailableTimeSlots([]);
+        } finally {
+            setLoadingTimeSlots(false);
+        }
+    };
+
+    // Fetch available time slots for single service booking (used in left column)
+    const fetchSingleServiceAvailableTimeSlots = async () => {
+        setLoadingSingleServiceTimeSlots(true);
+        try {
+            const response = await axios.post(
+                'http://localhost:5122/api/Appointment/getdoctoravailability',
+                {
+                    doctorId: singleServiceSelectedDoctor.id,
+                    serviceId: service.id,
+                    date: getLocalDateISO(debouncedSingleServiceDate)
+                }
+            );
+
+            if (Array.isArray(response.data)) {
+                setSingleServiceAvailableTimeSlots(response.data);
+            } else if (response.data?.availableTimeSlots && Array.isArray(response.data.availableTimeSlots)) {
+                setSingleServiceAvailableTimeSlots(response.data.availableTimeSlots);
+            } else {
+                setSingleServiceAvailableTimeSlots([]);
+            }
+        } catch (error) {
+            console.error('Error fetching single service available time slots:', error);
+            setSingleServiceAvailableTimeSlots([]);
+        } finally {
+            setLoadingSingleServiceTimeSlots(false);
+        }
+    };
+
+    // Handle appointment creation with payment method after 3s debounce
+    const handleCreateAppointmentWithPayment = async (paymentMethod) => {
+        if (!singleServiceSelectedDoctor || !singleServiceSelectedDate || !singleServiceSelectedTime) {
+            setPaymentMessage('❌ Thiếu thông tin để đặt lịch');
+            setPaymentLoading(false);
+            return;
+        }
+
+        try {
+            // Get customerId from localStorage
+            const customerId = parseInt(localStorage.getItem('customerId') || 0);
+            
+            if (!customerId || customerId === 0) {
+                setPaymentMessage('❌ Vui lòng đăng nhập để tiếp tục');
+                setPaymentLoading(false);
+                return;
+            }
+
+            // Map payment method to typeInvoice
+            const typeInvoiceMap = {
+                'completion': 0,  // 0 = trả sau (thanh toán khi hoàn thành)
+                'full': 1,        // 1 = trả trước toàn bộ (100%)
+                'partial': 2      // 2 = thanh toán 1 phần (30%)
+            };
+
+            // Format startTime to ISO format: YYYY-MM-DDTHH:mm:ss.sssZ
+            const dateStr = singleServiceSelectedDate.toISOString().split('T')[0];
+            const startTime = `${dateStr}T${singleServiceSelectedTime}:00.000Z`;
+
+            const requestData = {
+                customerId: customerId,
+                serviceId: service.id,
+                staffId: singleServiceSelectedDoctor.id,
+                customerTreatmentSessionId: null,
+                customerTreatmentPlanId: null,
+                sessionNumber: null,
+                startTime: startTime,
+                paidAmount: 0,
+                typeInvoice: typeInvoiceMap[paymentMethod] || 0,
+                paymentStatus: 0,
+                voucherId: 0,
+                paymentMethod: 'ThanhToanOnline'
+            };
+
+            console.log('Creating appointment with payment method:', {
+                paymentMethod: paymentMethod,
+                requestData: requestData
+            });
+
+            const response = await axios.post(
+                'http://localhost:5122/api/Appointment/createappointment',
+                requestData
+            );
+
+            console.log('Appointment creation response:', response.data);
+
+            // Check if result is true (boolean) or if result.success is true (object response)
+            if (response.data === true || response.data?.success === true) {
+                const paymentMethodText = {
+                    'partial': 'Trả trước 1 phần (30%)',
+                    'full': 'Trả trước toàn bộ (100%)',
+                    'completion': 'Thanh toán khi hoàn thành'
+                };
+                
+                setPaymentMessage(`✓ Tạo lịch khám thành công! Phương thức: ${paymentMethodText[paymentMethod]}`);
+                
+                setTimeout(() => {
+                    setShowPaymentModal(false);
+                    // Reset states
+                    setSingleServiceSelectedTime(null);
+                    setSingleServiceSelectedPaymentMethod(null);
+                    setPaymentMessage(null);
+                    // Navigate to services page
+                    navigate('/servicesPage');
+                }, 1500);
+            } else {
+                setPaymentMessage('❌ Tạo lịch khám thất bại. Vui lòng thử lại.');
+                setSingleServiceSelectedPaymentMethod(null);
+            }
+        } catch (error) {
+            console.error('Error creating appointment:', error);
+            setPaymentMessage('❌ Lỗi: ' + (error.response?.data?.message || error.message));
+            setSingleServiceSelectedPaymentMethod(null);
+        } finally {
+            setPaymentLoading(false);
+        }
+    };
+
     const handleCreateCustomerTreatmentPlan = async (isFullPackage = true) => {
         try {
             console.log('🔔 handleCreateCustomerTreatmentPlan called with isFullPackage:', isFullPackage);
+            
+            // For single service, create appointment directly
+            if (isSingleService) {
+                await handleBookingSingleService();
+                return;
+            }
+
             // Get user info from localStorage
             let customerId = parseInt(localStorage.getItem('customerId') || 0);
             const staffIdFromStorage = parseInt(localStorage.getItem('staffId') || 0);
@@ -265,6 +604,82 @@ function ServiceDetailsPage() {
         }
     };
 
+    const handleBookingSingleService = async () => {
+        if (!selectedDoctor) {
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Vui lòng chọn bác sĩ'
+            });
+            return;
+        }
+
+        if (!selectedDate) {
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Vui lòng chọn ngày'
+            });
+            return;
+        }
+
+        if (!selectedTime) {
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Vui lòng chọn giờ'
+            });
+            return;
+        }
+
+        try {
+            const customerId = parseInt(localStorage.getItem('customerId') || 0);
+            const dateStr = selectedDate.toISOString().split('T')[0];
+            const startTime = `${dateStr}T${selectedTime}:00.000Z`;
+
+            const requestData = {
+                customerId: customerId,
+                serviceId: service.id,
+                staffId: selectedDoctor.id,
+                customerTreatmentSessionId: 0,
+                customerTreatmentPlanId: 0,
+                sessionNumber: 0,
+                startTime: startTime,
+                paidAmount: 0,
+                typeInvoice: 0,
+                paymentStatus: 0,
+                voucherId: 0,
+                paymentMethod: 'ThanhToanOnline'
+            };
+
+            console.log('Creating single service appointment:', requestData);
+
+            const response = await axios.post(
+                'http://localhost:5122/api/Appointment/createappointment',
+                requestData
+            );
+
+            console.log('Appointment response:', response.data);
+
+            setNotification({
+                type: 'success',
+                title: 'Đặt lịch thành công!',
+                message: 'Lịch hẹn của bạn đã được xác nhận'
+            });
+
+            setTimeout(() => {
+                navigate('/servicesPage');
+            }, 2000);
+        } catch (error) {
+            console.error('Error creating appointment:', error);
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Lỗi khi đặt lịch: ' + (error.response?.data?.message || error.message)
+            });
+        }
+    };
+
     if (loading) {
         return (
             <div className={cx('wrapper')}>
@@ -289,19 +704,20 @@ function ServiceDetailsPage() {
         );
     }
 
-    const isCourseService = service.isCourse === 1;
+    const isCourseService = service?.isCourse === 1 && !isSingleService;
 
     return (
-        <div className={cx('wrapper')}>
-            {notification && (
-                <NotificationToast
-                    message={notification.message}
-                    type={notification.type}
-                    title={notification.title}
-                    onClose={() => setNotification(null)}
-                    duration={3500}
-                />
-            )}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <div className={cx('wrapper')}>
+                {notification && (
+                    <NotificationToast
+                        message={notification.message}
+                        type={notification.type}
+                        title={notification.title}
+                        onClose={() => setNotification(null)}
+                        duration={3500}
+                    />
+                )}
             {/* Hero Header with Social Proof & Benefits */}
             <div className={cx('headerModern')}>
                 <div className={cx('headerBackdrop')}>
@@ -323,40 +739,55 @@ function ServiceDetailsPage() {
                         </div>
 
                         <h1 className={cx('heroTitle')}>
-                            {selectedPlan?.planName || 'Dịch vụ chăm sóc da cao cấp'}
+                            {isSingleService ? service?.serviceName : (selectedPlan?.planName || 'Dịch vụ chăm sóc da cao cấp')}
                         </h1>
 
                         <div className={cx('serviceMetaHeader')}>
-                            {selectedPlan?.serviceInfo?.serviceName && (
-                                <div className={cx('metaItem')}>
-                                    <span className={cx('metaLabel')}>Dịch vụ:</span>
-                                    <span className={cx('metaValue')}>{selectedPlan.serviceInfo.serviceName}</span>
-                                </div>
-                            )}
-                            {selectedPlan?.serviceInfo?.price && (
-                                <div className={cx('metaItem')}>
-                                    <span className={cx('metaLabel')}>Giá từng buổi:</span>
-                                                                        <span className={cx('metaValue', 'price')}>{selectedPlan.price.toLocaleString('vi-VN')}đ</span>
-                                    
-                                </div>
-                            )}
-                            {selectedPlan?.price && (
-                                <div className={cx('metaItem')}>
-                                    <span className={cx('metaLabel')}>Giá gói trọn:</span>
-                                    <span className={cx('metaValue')}>{selectedPlan.serviceInfo.price.toLocaleString('vi-VN')}đ</span>
-                                </div>
-                            )}
-                            {selectedPlan?.serviceInfo?.duration && (
-                                <div className={cx('metaItem')}>
-                                    <span className={cx('metaLabel')}>Thời lượng:</span>
-                                    <span className={cx('metaValue')}>{selectedPlan.serviceInfo.duration} phút/buổi</span>
-                                </div>
-                            )}
-                            {selectedPlan?.totalSessions && (
-                                <div className={cx('metaItem')}>
-                                    <span className={cx('metaLabel')}>Số buổi:</span>
-                                    <span className={cx('metaValue')}>{selectedPlan.totalSessions} buổi</span>
-                                </div>
+                            {isSingleService ? (
+                                <>
+                                    <div className={cx('metaItem')}>
+                                        <span className={cx('metaLabel')}>Giá:</span>
+                                        <span className={cx('metaValue', 'price')}>{service?.priceService?.toLocaleString('vi-VN')}đ</span>
+                                    </div>
+                                    <div className={cx('metaItem')}>
+                                        <span className={cx('metaLabel')}>Thời lượng:</span>
+                                        <span className={cx('metaValue')}>{service?.duration} phút</span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {selectedPlan?.serviceInfo?.serviceName && (
+                                        <div className={cx('metaItem')}>
+                                            <span className={cx('metaLabel')}>Dịch vụ:</span>
+                                            <span className={cx('metaValue')}>{selectedPlan.serviceInfo.serviceName}</span>
+                                        </div>
+                                    )}
+                                    {selectedPlan?.serviceInfo?.price && (
+                                        <div className={cx('metaItem')}>
+                                            <span className={cx('metaLabel')}>Giá từng buổi:</span>
+                                                                                    <span className={cx('metaValue', 'price')}>{selectedPlan.price.toLocaleString('vi-VN')}đ</span>
+                                            
+                                        </div>
+                                    )}
+                                    {selectedPlan?.price && (
+                                        <div className={cx('metaItem')}>
+                                            <span className={cx('metaLabel')}>Giá gói trọn:</span>
+                                            <span className={cx('metaValue')}>{selectedPlan.serviceInfo.price.toLocaleString('vi-VN')}đ</span>
+                                        </div>
+                                    )}
+                                    {selectedPlan?.serviceInfo?.duration && (
+                                        <div className={cx('metaItem')}>
+                                            <span className={cx('metaLabel')}>Thời lượng:</span>
+                                            <span className={cx('metaValue')}>{selectedPlan.serviceInfo.duration} phút/buổi</span>
+                                        </div>
+                                    )}
+                                    {selectedPlan?.totalSessions && (
+                                        <div className={cx('metaItem')}>
+                                            <span className={cx('metaLabel')}>Số buổi:</span>
+                                            <span className={cx('metaValue')}>{selectedPlan.totalSessions} buổi</span>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
 
@@ -489,7 +920,14 @@ function ServiceDetailsPage() {
                     >
                         Tổng quan
                     </button>
-                    {isCourseService ? (
+                    {isSingleService ? (
+                        <button
+                            className={cx('tabBtn', { active: activeTab === 'booking' })}
+                            onClick={() => setActiveTab('booking')}
+                        >
+                            Đặt lịch
+                        </button>
+                    ) : (
                         <>
                             <button
                                 className={cx('tabBtn', { active: activeTab === 'plans' })}
@@ -504,7 +942,7 @@ function ServiceDetailsPage() {
                                 Chi tiết liệu trình
                             </button>
                         </>
-                    ) : null}
+                    )}
                 </div>
 
                 {/* Two Column Layout: Service Details (Left) + Doctors (Right) */}
@@ -521,31 +959,31 @@ function ServiceDetailsPage() {
                                     <div className={cx('overviewItem')}>
                                         <span className={cx('label')}>Loại dịch vụ:</span>
                                         <span className={cx('value')}>
-                                            {isCourseService ? 'Gói liệu trình' : 'Dịch vụ đơn lẻ'}
+                                            {isSingleService ? 'Dịch vụ đơn lẻ' : 'Gói liệu trình'}
                                         </span>
                                     </div>
-                                    {/* <div className={cx('overviewItem')}>
-                                        <span className={cx('label')}>Mã dịch vụ:</span>
-                                        <span className={cx('value')}>{service.serviceID}</span>
-                                    </div> */}
                                     <div className={cx('overviewItem')}>
                                         <span className={cx('label')}>Tên dịch vụ:</span>
                                         <span className={cx('value')}>{service.serviceName}</span>
                                     </div>
-                                    <div className={cx('overviewItem')}>
-                                        <span className={cx('label')}>Gói liệu trình:</span>
-                                        <span className={cx('value')}>{selectedPlan.planName}</span>
-                                    </div>
+                                    {!isSingleService && (
+                                        <div className={cx('overviewItem')}>
+                                            <span className={cx('label')}>Gói liệu trình:</span>
+                                            <span className={cx('value')}>{selectedPlan.planName}</span>
+                                        </div>
+                                    )}
                                     <div className={cx('overviewItem')}>
                                         <span className={cx('label')}>Giá dịch vụ:</span>
                                         <span className={cx('value', 'price')}>
-                                            {service.priceService?.toLocaleString('vi-VN')} VNĐ/lần
+                                            {service.priceService?.toLocaleString('vi-VN')} VNĐ
+                                            {isSingleService && '/lần'}
+                                            {!isSingleService && '/buổi'}
                                         </span>
                                     </div>
-                                    {isCourseService && (
+                                    {!isSingleService && selectedPlan?.totalSessions && (
                                         <div className={cx('overviewItem')}>
                                             <span className={cx('label')}>Số buổi liệu trình:</span>
-                                            <span className={cx('value')}>{selectedPlan?.totalSessions || (treatmentPlans.length > 0 ? treatmentPlans[0].totalSessions : 0)} buổi</span>
+                                            <span className={cx('value')}>{selectedPlan?.totalSessions} buổi</span>
                                         </div>
                                     )}
                                 </div>
@@ -553,6 +991,158 @@ function ServiceDetailsPage() {
                                     <div className={cx('descriptionBox')}>
                                         <h4>Chi tiết</h4>
                                         <p>{service.description}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Single Service Booking Tab */}
+                    {activeTab === 'booking' && isSingleService && (
+                        <div className={cx('tabPane')}>
+                            <div className={cx('card')}>
+                                <h4 style={{marginTop: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '18px', fontWeight: '700'}}>
+                                    <FontAwesomeIcon icon={faCalendarAlt} />
+                                    Đặt lịch dịch vụ
+                                </h4>
+
+                                {/* Service Name */}
+                                <div style={{marginBottom: '20px'}}>
+                                    <label style={{display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333'}}>
+                                        Dịch vụ:
+                                    </label>
+                                    <div style={{
+                                        padding: '12px',
+                                        background: '#f5f5f5',
+                                        borderRadius: '8px',
+                                        border: '1px solid #ddd',
+                                        fontSize: '14px',
+                                        color: '#333',
+                                        fontWeight: '500'
+                                    }}>
+                                        {service.serviceName}
+                                    </div>
+                                </div>
+
+                                {/* Doctor Selector Button */}
+                                <div style={{marginBottom: '20px'}}>
+                                    <label style={{display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333'}}>
+                                        <FontAwesomeIcon icon={faUserMd} style={{marginRight: '6px', color: '#1ca07d'}} />
+                                        Chọn bác sĩ:
+                                    </label>
+                                    <button
+                                        onClick={() => setShowDoctorSelectorModal(true)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px 16px',
+                                            background: singleServiceSelectedDoctor ? '#e8f7f3' : '#f5f5f5',
+                                            color: singleServiceSelectedDoctor ? '#1ca07d' : '#666',
+                                            border: '2px solid ' + (singleServiceSelectedDoctor ? '#1ca07d' : '#ddd'),
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            fontWeight: '600',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s ease',
+                                            textAlign: 'left',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}
+                                    >
+                                        <span>
+                                            {singleServiceSelectedDoctor 
+                                                ? `✓ ${singleServiceSelectedDoctor.fullName || singleServiceSelectedDoctor.accountName}`
+                                                : 'Chọn bác sĩ...'
+                                            }
+                                        </span>
+                                        <FontAwesomeIcon icon={faArrowRight} style={{fontSize: '12px'}} />
+                                    </button>
+                                </div>
+
+                                {/* Date Picker */}
+                                {singleServiceSelectedDoctor && (
+                                    <div style={{marginBottom: '20px'}}>
+                                        <label style={{display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333'}}>
+                                            <FontAwesomeIcon icon={faCalendarAlt} style={{marginRight: '6px', color: '#1ca07d'}} />
+                                            Chọn ngày:
+                                        </label>
+                                        <MuiDatePicker
+                                            value={singleServiceSelectedDate}
+                                            onChange={(newDate) => setSingleServiceSelectedDate(newDate)}
+                                            minDate={new Date()}
+                                            slotProps={{
+                                                textField: {
+                                                    fullWidth: true,
+                                                    size: 'small'
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Available Time Slots */}
+                                {singleServiceSelectedDate && singleServiceSelectedDoctor && (
+                                    <div style={{marginBottom: '20px'}}>
+                                        <label style={{display: 'block', marginBottom: '12px', fontWeight: '600', fontSize: '14px', color: '#333'}}>
+                                            <FontAwesomeIcon icon={faClock} style={{marginRight: '6px', color: '#1ca07d'}} />
+                                            Giờ trống:
+                                        </label>
+                                        
+                                        {loadingSingleServiceTimeSlots ? (
+                                            <div style={{textAlign: 'center', padding: '20px', color: '#999'}}>
+                                                <div style={{fontSize: '24px', marginBottom: '8px'}}>⏳</div>
+                                                <p>Đang tải giờ trống...</p>
+                                            </div>
+                                        ) : singleServiceAvailableTimeSlots && singleServiceAvailableTimeSlots.length > 0 ? (
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))',
+                                                gap: '8px'
+                                            }}>
+                                                {singleServiceAvailableTimeSlots.map((slot, index) => {
+                                                    const slotTime = typeof slot === 'string' ? slot.split('-')[0].trim() : slot.startTime;
+                                                    const isSelected = singleServiceSelectedTime === slotTime;
+                                                    
+                                                    return (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => setSingleServiceSelectedTime(slotTime)}
+                                                        style={{
+                                                            padding: '10px',
+                                                            background: isSelected ? '#1ca07d' : '#f0faf8',
+                                                            color: isSelected ? 'white' : '#1ca07d',
+                                                            border: '2px solid ' + (isSelected ? '#1ca07d' : '#1ca07d'),
+                                                            borderRadius: '6px',
+                                                            fontSize: '13px',
+                                                            fontWeight: '600',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.3s ease',
+                                                            textAlign: 'center',
+                                                            whiteSpace: 'nowrap'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            if (!isSelected) {
+                                                                e.target.style.background = '#1ca07d';
+                                                                e.target.style.color = 'white';
+                                                            }
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            if (!isSelected) {
+                                                                e.target.style.background = '#f0faf8';
+                                                                e.target.style.color = '#1ca07d';
+                                                            }
+                                                        }}
+                                                    >
+                                                        {typeof slot === 'string' ? slot : `${slot.startTime} - ${slot.endTime}`}
+                                                    </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <div style={{textAlign: 'center', padding: '20px', color: '#999', background: '#f5f5f5', borderRadius: '8px'}}>
+                                                <p>Không có giờ trống</p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -931,13 +1521,53 @@ function ServiceDetailsPage() {
                                 ) : doctors && doctors.length > 0 ? (
                                     <div className={cx('doctorsSidebarList')}>
                                         {doctors.map((doctor, index) => (
-                                            <div key={doctor.id} className={cx('doctorSidebarCard')}>
+                                            <div 
+                                                key={doctor.id} 
+                                                className={cx('doctorSidebarCard', { 'doctor-selected': selectedDoctor?.id === doctor.id })}
+                                                onClick={() => {
+                                                    // Always view doctor detail
+                                                    setSelectedDoctor(doctor);
+                                                    // If it's a single service, also select the doctor for booking
+                                                    if (isSingleService) {
+                                                        setSingleServiceSelectedDoctor(doctor);
+                                                    }
+                                                }}
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s ease',
+                                                    border: selectedDoctor?.id === doctor.id ? '2px solid #1ca07d' : '1px solid #e0e0e0',
+                                                    backgroundColor: selectedDoctor?.id === doctor.id ? '#f0faf8' : 'white',
+                                                    borderRadius: '12px',
+                                                    padding: '12px',
+                                                    marginBottom: '12px'
+                                                }}
+                                            >
                                                 {/* Doctor Image */}
-                                                <div className={cx('doctorSidebarImage')}>
+                                                <div className={cx('doctorSidebarImage')} style={{marginBottom: '12px'}}>
                                                     {doctor.staffImage ? (
-                                                        <img src={`http://localhost:5122/Images/${doctor.staffImage}`} alt={doctor.fullName || doctor.accountName} onError={(e) => { e.target.style.display = 'none'; }} />
+                                                        <img 
+                                                            src={`http://localhost:5122/Images/${doctor.staffImage}`} 
+                                                            alt={doctor.fullName || doctor.accountName} 
+                                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                                            style={{
+                                                                width: '100%',
+                                                                height: '120px',
+                                                                borderRadius: '8px',
+                                                                objectFit: 'cover'
+                                                            }}
+                                                        />
                                                     ) : (
-                                                        <div className={cx('doctorImagePlaceholder')}>
+                                                        <div className={cx('doctorImagePlaceholder')} style={{
+                                                            width: '100%',
+                                                            height: '120px',
+                                                            borderRadius: '8px',
+                                                            background: '#e8f7f3',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '40px',
+                                                            color: '#1ca07d'
+                                                        }}>
                                                             <FontAwesomeIcon icon={faUserMd} />
                                                         </div>
                                                     )}
@@ -945,38 +1575,72 @@ function ServiceDetailsPage() {
 
                                                 {/* Doctor Info */}
                                                 <div className={cx('doctorSidebarInfo')}>
-                                                    <h4 className={cx('doctorSidebarName')}>
+                                                    <h4 className={cx('doctorSidebarName')} style={{
+                                                        margin: '0 0 6px 0',
+                                                        fontSize: '15px',
+                                                        fontWeight: '700',
+                                                        color: '#333'
+                                                    }}>
                                                         {doctor.fullName || doctor.accountName}
                                                     </h4>
                                                     {doctor.specialization && (
-                                                        <p className={cx('doctorSidebarSpecialty')}>
+                                                        <p className={cx('doctorSidebarSpecialty')} style={{
+                                                            margin: '0 0 8px 0',
+                                                            fontSize: '13px',
+                                                            color: '#1ca07d',
+                                                            fontWeight: '600'
+                                                        }}>
                                                             {doctor.specialization}
                                                         </p>
                                                     )}
 
-                                                    {/* Compact Details */}
-                                                    <div className={cx('doctorSidebarDetails')}>
-                                                        {doctor.degree && (
-                                                            <div className={cx('sidebarDetailItem')}>
-                                                                <FontAwesomeIcon icon={faGraduationCap} />
-                                                                <span>{doctor.degree}</span>
+                                                    {/* Experience & Degree */}
+                                                    <div className={cx('doctorSidebarDetails')} style={{
+                                                        display: 'grid',
+                                                        gridTemplateColumns: '1fr 1fr',
+                                                        gap: '8px',
+                                                        marginTop: '10px',
+                                                        paddingTop: '10px',
+                                                        borderTop: '1px solid #f0f0f0'
+                                                    }}>
+                                                        {doctor.experienceYears && (
+                                                            <div className={cx('sidebarDetailItem')} style={{
+                                                                fontSize: '12px',
+                                                                color: '#666'
+                                                            }}>
+                                                                <FontAwesomeIcon icon={faBriefcase} style={{marginRight: '4px', color: '#1ca07d'}} />
+                                                                <span>{doctor.experienceYears}+ năm</span>
                                                             </div>
                                                         )}
-                                                        {doctor.experienceYears && (
-                                                            <div className={cx('sidebarDetailItem')}>
-                                                                <FontAwesomeIcon icon={faBriefcase} />
-                                                                <span>{doctor.experienceYears} năm</span>
+                                                        {doctor.degree && (
+                                                            <div className={cx('sidebarDetailItem')} style={{
+                                                                fontSize: '12px',
+                                                                color: '#666'
+                                                            }}>
+                                                                <FontAwesomeIcon icon={faGraduationCap} style={{marginRight: '4px', color: '#1ca07d'}} />
+                                                                <span>{doctor.degree}</span>
                                                             </div>
                                                         )}
                                                     </div>
 
-                                                    {/* Book Button */}
-                                                    <button 
-                                                        className={cx('doctorSidebarBookBtn')}
-                                                        onClick={() => handleViewDoctorInfo(doctor)}
+                                                    {/* View Details Button */}
+                                                    <button
+                                                        onClick={() => setSelectedDoctor(doctor)}
+                                                        style={{
+                                                            width: '100%',
+                                                            marginTop: '10px',
+                                                            padding: '8px',
+                                                            background: selectedDoctor?.id === doctor.id ? '#1ca07d' : '#f5f5f5',
+                                                            color: selectedDoctor?.id === doctor.id ? 'white' : '#333',
+                                                            border: 'none',
+                                                            borderRadius: '6px',
+                                                            fontSize: '12px',
+                                                            fontWeight: '600',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.3s ease'
+                                                        }}
                                                     >
-                                                        <FontAwesomeIcon icon={faCalendarAlt} />
-                                                        Xem thông tin
+                                                        {selectedDoctor?.id === doctor.id ? '✓ Đã chọn' : 'Xem chi tiết'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -992,8 +1656,424 @@ function ServiceDetailsPage() {
                         )}
                     </div>
                 </div>
+
+                {/* Doctor Selector Modal */}
+                {showDoctorSelectorModal && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 9999
+                    }}>
+                        <div style={{
+                            background: 'white',
+                            borderRadius: '12px',
+                            padding: '24px',
+                            maxWidth: '500px',
+                            width: '90%',
+                            maxHeight: '80vh',
+                            overflowY: 'auto',
+                            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)'
+                        }}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+                                <h3 style={{margin: 0, fontSize: '18px', fontWeight: '700', color: '#333'}}>
+                                    <FontAwesomeIcon icon={faUserMd} style={{marginRight: '8px', color: '#1ca07d'}} />
+                                    Chọn bác sĩ
+                                </h3>
+                                <button
+                                    onClick={() => setShowDoctorSelectorModal(false)}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        fontSize: '24px',
+                                        cursor: 'pointer',
+                                        color: '#999'
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+
+                            {loadingDoctors ? (
+                                <div style={{textAlign: 'center', padding: '40px 20px', color: '#999'}}>
+                                    <div style={{fontSize: '32px', marginBottom: '12px'}}>⏳</div>
+                                    <p>Đang tải danh sách bác sĩ...</p>
+                                </div>
+                            ) : doctors && doctors.length > 0 ? (
+                                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                                    {doctors.map((doctor) => (
+                                        <div
+                                            key={doctor.id}
+                                            style={{
+                                                padding: '16px',
+                                                border: singleServiceSelectedDoctor?.id === doctor.id ? '2px solid #1ca07d' : '1px solid #e0e0e0',
+                                                borderRadius: '8px',
+                                                background: singleServiceSelectedDoctor?.id === doctor.id ? '#f0faf8' : '#fafafa',
+                                                transition: 'all 0.3s ease',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px'
+                                            }}
+                                        >
+                                            {/* Doctor Image */}
+                                            <div style={{
+                                                width: '60px',
+                                                height: '60px',
+                                                borderRadius: '8px',
+                                                overflow: 'hidden',
+                                                flexShrink: 0,
+                                                background: '#e8f7f3'
+                                            }}>
+                                                {doctor.staffImage ? (
+                                                    <img
+                                                        src={`http://localhost:5122/Images/${doctor.staffImage}`}
+                                                        alt={doctor.fullName}
+                                                        style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                                    />
+                                                ) : (
+                                                    <div style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '24px',
+                                                        color: '#1ca07d'
+                                                    }}>
+                                                        <FontAwesomeIcon icon={faUserMd} />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Doctor Info */}
+                                            <div style={{flex: 1}}>
+                                                <h5 style={{margin: '0 0 4px 0', fontSize: '14px', fontWeight: '700', color: '#333'}}>
+                                                    {doctor.fullName || doctor.accountName}
+                                                </h5>
+                                                {doctor.specialization && (
+                                                    <p style={{margin: '0 0 6px 0', fontSize: '12px', color: '#1ca07d', fontWeight: '600'}}>
+                                                        {doctor.specialization}
+                                                    </p>
+                                                )}
+                                                <div style={{fontSize: '11px', color: '#999', display: 'flex', gap: '12px'}}>
+                                                    {doctor.experienceYears && <span>📅 {doctor.experienceYears}+ năm</span>}
+                                                    {doctor.degree && <span>🎓 {doctor.degree}</span>}
+                                                </div>
+                                            </div>
+
+                                            {/* Select Button */}
+                                            <button
+                                                onClick={() => {
+                                                    // Toggle selection: first click selects, second click deselects
+                                                    if (singleServiceSelectedDoctor?.id === doctor.id) {
+                                                        // Already selected, deselect
+                                                        setSingleServiceSelectedDoctor(null);
+                                                    } else {
+                                                        // Not selected, select
+                                                        setSingleServiceSelectedDoctor(doctor);
+                                                    }
+                                                    // Keep modal open so user can see details and compare doctors
+                                                }}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    background: singleServiceSelectedDoctor?.id === doctor.id ? '#1ca07d' : '#e8e8e8',
+                                                    color: singleServiceSelectedDoctor?.id === doctor.id ? 'white' : '#333',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s ease',
+                                                    whiteSpace: 'nowrap',
+                                                    flexShrink: 0
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (singleServiceSelectedDoctor?.id !== doctor.id) {
+                                                        e.target.style.background = '#1ca07d';
+                                                        e.target.style.color = 'white';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (singleServiceSelectedDoctor?.id !== doctor.id) {
+                                                        e.target.style.background = '#e8e8e8';
+                                                        e.target.style.color = '#333';
+                                                    }
+                                                }}
+                                            >
+                                                {singleServiceSelectedDoctor?.id === doctor.id ? '✓ Đã chọn' : 'Chọn'}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div style={{textAlign: 'center', padding: '40px 20px', color: '#999'}}>
+                                    <p>Không có bác sĩ nào</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
-        </div>
+
+            {/* Payment Method Modal - Single Service */}
+            {showPaymentModal && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 10000
+                }}>
+                    <div style={{
+                        background: 'white',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        maxWidth: '500px',
+                        width: '90%',
+                        maxHeight: '80vh',
+                        overflowY: 'auto',
+                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)'
+                    }}>
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+                            <h3 style={{margin: 0, fontSize: '18px', fontWeight: '700', color: '#333'}}>
+                                💳 Chọn phương thức thanh toán
+                            </h3>
+                            <button
+                                onClick={() => {
+                                    if (!paymentLoading) {
+                                        setShowPaymentModal(false);
+                                        setSingleServiceSelectedTime(null);
+                                        setSingleServiceSelectedPaymentMethod(null);
+                                        setPaymentMessage(null);
+                                    }
+                                }}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    fontSize: '24px',
+                                    cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                                    color: '#999',
+                                    opacity: paymentLoading ? 0.5 : 1
+                                }}
+                                disabled={paymentLoading}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div style={{
+                            paddingBottom: '16px',
+                            marginBottom: '16px',
+                            borderBottom: '1px solid #f0f0f0',
+                            fontSize: '14px',
+                            color: '#666'
+                        }}>
+                            <p style={{margin: 0, marginBottom: '8px'}}>
+                                <strong>Dịch vụ:</strong> {service?.serviceName}
+                            </p>
+                            <p style={{margin: 0, marginBottom: '8px'}}>
+                                <strong>Bác sĩ:</strong> {singleServiceSelectedDoctor?.fullName || singleServiceSelectedDoctor?.accountName}
+                            </p>
+                            <p style={{margin: 0, marginBottom: '8px'}}>
+                                <strong>Ngày:</strong> {singleServiceSelectedDate?.toLocaleDateString('vi-VN')}
+                            </p>
+                            <p style={{margin: 0}}>
+                                <strong>Giờ:</strong> {singleServiceSelectedTime}
+                            </p>
+                        </div>
+
+                        {paymentMessage && (
+                            <div style={{
+                                padding: '12px 16px',
+                                borderRadius: '8px',
+                                marginBottom: '16px',
+                                fontSize: '14px',
+                                background: paymentMessage.includes('✓') ? '#e8f7f3' : '#fee',
+                                color: paymentMessage.includes('✓') ? '#1ca07d' : '#c33',
+                                border: '1px solid ' + (paymentMessage.includes('✓') ? '#c2e8e0' : '#fcc')
+                            }}>
+                                {paymentMessage}
+                            </div>
+                        )}
+
+                        {paymentLoading && (
+                            <div style={{
+                                textAlign: 'center',
+                                padding: '20px',
+                                marginBottom: '16px',
+                                background: '#f5f5f5',
+                                borderRadius: '8px'
+                            }}>
+                                <div style={{fontSize: '24px', marginBottom: '8px'}}>⏳</div>
+                                <p style={{margin: 0, color: '#666', fontSize: '14px'}}>Đang xử lý thanh toán...</p>
+                            </div>
+                        )}
+
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '12px',
+                            marginBottom: '16px'
+                        }}>
+                            {/* Payment Method 1: Partial Payment */}
+                            <label style={{
+                                padding: '16px',
+                                border: singleServiceSelectedPaymentMethod === 'partial' ? '2px solid #1ca07d' : '1px solid #e0e0e0',
+                                borderRadius: '8px',
+                                background: singleServiceSelectedPaymentMethod === 'partial' ? '#f0faf8' : '#fafafa',
+                                cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.3s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                opacity: paymentLoading ? 0.6 : 1
+                            }}>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="partial"
+                                    checked={singleServiceSelectedPaymentMethod === 'partial'}
+                                    onChange={() => setSingleServiceSelectedPaymentMethod('partial')}
+                                    disabled={paymentLoading}
+                                    style={{cursor: 'pointer', width: '16px', height: '16px'}}
+                                />
+                                <div style={{flex: 1}}>
+                                    <div style={{fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '4px'}}>
+                                        💳 Trả trước 1 phần
+                                    </div>
+                                    <div style={{fontSize: '12px', color: '#666'}}>
+                                        Thanh toán 30% ngay, 70% khi hoàn thành
+                                    </div>
+                                </div>
+                            </label>
+
+                            {/* Payment Method 2: Full Payment */}
+                            <label style={{
+                                padding: '16px',
+                                border: singleServiceSelectedPaymentMethod === 'full' ? '2px solid #1ca07d' : '1px solid #e0e0e0',
+                                borderRadius: '8px',
+                                background: singleServiceSelectedPaymentMethod === 'full' ? '#f0faf8' : '#fafafa',
+                                cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.3s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                opacity: paymentLoading ? 0.6 : 1
+                            }}>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="full"
+                                    checked={singleServiceSelectedPaymentMethod === 'full'}
+                                    onChange={() => setSingleServiceSelectedPaymentMethod('full')}
+                                    disabled={paymentLoading}
+                                    style={{cursor: 'pointer', width: '16px', height: '16px'}}
+                                />
+                                <div style={{flex: 1}}>
+                                    <div style={{fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '4px'}}>
+                                        ✅ Trả trước toàn bộ
+                                    </div>
+                                    <div style={{fontSize: '12px', color: '#666'}}>
+                                        Thanh toán 100% ngay lập tức
+                                    </div>
+                                </div>
+                            </label>
+
+                            {/* Payment Method 3: Payment After Completion */}
+                            <label style={{
+                                padding: '16px',
+                                border: singleServiceSelectedPaymentMethod === 'completion' ? '2px solid #1ca07d' : '1px solid #e0e0e0',
+                                borderRadius: '8px',
+                                background: singleServiceSelectedPaymentMethod === 'completion' ? '#f0faf8' : '#fafafa',
+                                cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.3s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                opacity: paymentLoading ? 0.6 : 1
+                            }}>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="completion"
+                                    checked={singleServiceSelectedPaymentMethod === 'completion'}
+                                    onChange={() => setSingleServiceSelectedPaymentMethod('completion')}
+                                    disabled={paymentLoading}
+                                    style={{cursor: 'pointer', width: '16px', height: '16px'}}
+                                />
+                                <div style={{flex: 1}}>
+                                    <div style={{fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '4px'}}>
+                                        🎯 Thanh toán khi hoàn thành
+                                    </div>
+                                    <div style={{fontSize: '12px', color: '#666'}}>
+                                        Thanh toán 100% sau khi dịch vụ hoàn tất
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div style={{display: 'flex', gap: '12px'}}>
+                            <button
+                                onClick={() => {
+                                    if (!paymentLoading) {
+                                        setShowPaymentModal(false);
+                                        setSingleServiceSelectedTime(null);
+                                        setSingleServiceSelectedPaymentMethod(null);
+                                        setPaymentMessage(null);
+                                    }
+                                }}
+                                disabled={paymentLoading}
+                                style={{
+                                    flex: 1,
+                                    padding: '12px 16px',
+                                    background: '#f5f5f5',
+                                    color: '#333',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    opacity: paymentLoading ? 0.6 : 1
+                                }}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                disabled={!singleServiceSelectedPaymentMethod || paymentLoading}
+                                style={{
+                                    flex: 1,
+                                    padding: '12px 16px',
+                                    background: (singleServiceSelectedPaymentMethod && !paymentLoading) ? '#1ca07d' : '#ccc',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: (singleServiceSelectedPaymentMethod && !paymentLoading) ? 'pointer' : 'not-allowed',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                {paymentLoading ? '⏳ Đang xử lý...' : '✓ Xác nhận'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            </div>
+        </LocalizationProvider>
     );
 }
 

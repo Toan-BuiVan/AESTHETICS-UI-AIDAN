@@ -237,13 +237,24 @@ function MyBookings() {
         try {
             setCancelLoading(true);
             
-            const customerTreatmentSessionId = cancelConfirmation.booking.customerTreatmentSession?.id;
-            console.log('🗑️ Canceling appointment:', cancelConfirmation.appointmentId, 'Session ID:', customerTreatmentSessionId);
+            const booking = cancelConfirmation.booking;
+            const customerTreatmentSessionId = booking.customerTreatmentSession?.id || 0;
+            const customerId = booking.customer?.id || parseInt(localStorage.getItem('customerId') || 0);
+            const serviceId = booking.service?.id || 0;
+            
+            console.log('🗑️ Canceling appointment:', cancelConfirmation.appointmentId, {
+                customerTreatmentSessionId: customerTreatmentSessionId,
+                customerId: customerId,
+                serviceId: serviceId,
+                status: 4
+            });
 
             const response = await axios.post(
                 'http://localhost:5122/api/Appointment/updateappointmentstatus',
                 { 
                     customerTreatmentSessionId: customerTreatmentSessionId,
+                    serviceId: serviceId,
+                    customerId: customerId,
                     status: 4
                 }
             );
@@ -371,7 +382,16 @@ function MyBookings() {
                             <div className={cx('bookingHeader')}>
                                 <div className={cx('bookingInfo')}>
                                     <h3 className={cx('sessionName')}>
-                                        {booking.treatmentSession?.sessionName || booking.sessionName || `Buổi ${booking.sessionNumber}`}
+                                        {(() => {
+                                            const sessionNum = booking.treatmentSession?.sessionNumber || booking.sessionNumber;
+                                            const sessionName = booking.treatmentSession?.sessionName || booking.sessionName;
+                                            
+                                            if (sessionNum && sessionName) {
+                                                return `Buổi: ${sessionNum} : ${sessionName}`;
+                                            } else {
+                                                return booking.service?.serviceName || booking.serviceName || `Buổi ${sessionNum || 'N/A'}`;
+                                            }
+                                        })()}
                                     </h3>
                                     <p className={cx('planName')}>
                                         {booking.service?.serviceName || booking.serviceName || 'Dịch vụ'}
@@ -438,9 +458,14 @@ function MyBookings() {
                                             className={cx('cancelButton')}
                                             onClick={(e) => {
                                                 e.stopPropagation();
+                                                const sessionNum = booking.treatmentSession?.sessionNumber || booking.sessionNumber;
+                                                const sessionName = booking.treatmentSession?.sessionName || booking.sessionName;
+                                                const displayName = (sessionNum && sessionName) 
+                                                    ? `Buổi: ${sessionNum} : ${sessionName}`
+                                                    : booking.service?.serviceName || booking.serviceName || `Buổi ${sessionNum || 'N/A'}`;
                                                 handleCancelClick(
                                                     booking.id, 
-                                                    booking.treatmentSession?.sessionName || booking.sessionName || `Buổi ${booking.sessionNumber}`,
+                                                    displayName,
                                                     booking
                                                 );
                                             }}
@@ -625,7 +650,18 @@ function MyBookings() {
                                         <div className={cx('formGrid')}>
                                             <div className={cx('formGroup')}>
                                                 <label>Tên Buổi</label>
-                                                <span>{selectedAppointment.treatmentSession.sessionName || 'N/A'}</span>
+                                                <span>
+                                                    {(() => {
+                                                        const sessionNum = selectedAppointment.treatmentSession?.sessionNumber || selectedAppointment.sessionNumber;
+                                                        const sessionName = selectedAppointment.treatmentSession?.sessionName || selectedAppointment.sessionName;
+                                                        
+                                                        if (sessionNum && sessionName) {
+                                                            return `Buổi: ${sessionNum} : ${sessionName}`;
+                                                        } else {
+                                                            return selectedAppointment.service?.serviceName || selectedAppointment.serviceName || `Buổi ${sessionNum || 'N/A'}`;
+                                                        }
+                                                    })()}
+                                                </span>
                                             </div>
                                             <div className={cx('formGroup')}>
                                                 <label>Buổi Thứ</label>
