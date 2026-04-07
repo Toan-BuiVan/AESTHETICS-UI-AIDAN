@@ -8,7 +8,6 @@ import DoctorCard from './DoctorCard';
 import BookingSummary from './BookingSummary';
 import BookingSuccessNotification from './BookingSuccessNotification';
 import TimeSlotPicker from './TimeSlotPicker';
-import SingleServiceBookingForm from './SingleServiceBookingForm';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -1078,16 +1077,6 @@ function ServicesPage() {
                 />
             )}
             <div className={cx('container')}>
-                {/* SINGLE SERVICE BOOKING MODE */}
-                {isSingleServiceBooking && services.length > 0 && (
-                    <div className={cx('singleServiceContainer')}>
-                        <SingleServiceBookingForm 
-                            services={services}
-                            serviceType={location.state?.serviceType}
-                        />
-                    </div>
-                )}
-
                 {/* TREATMENT PLAN MODE - Original Multi-Panel Layout */}
                 {!isSingleServiceBooking && (
                     <>
