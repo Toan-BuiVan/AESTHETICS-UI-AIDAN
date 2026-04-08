@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './PaymentOrder.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faTruck, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { 
+    faTruck, faSpinner, faBox, faStethoscope, faChevronRight, 
+    faCalendarAlt, faCheckCircle, faClock, faTimesCircle, faTasks 
+} from '@fortawesome/free-solid-svg-icons';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 
 const cx = classNames.bind(styles);
@@ -11,257 +14,122 @@ function PaymentOrder() {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [invoiceDetails, setInvoiceDetails] = useState({});
     const [expandedInvoice, setExpandedInvoice] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
-    const [ratingForm, setRatingForm] = useState({
-        isOpen: false,
-        itemType: '',
-        itemID: '',
-        itemName: '',
-        invoiceDetailID: '',
-    });
-    const [ratingContent, setRatingContent] = useState('');
-    const [ratedItems, setRatedItems] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const pageSize = 6;
 
-    useEffect(() => {
-        const fetchInvoices = async () => {
-            const deviceName = localStorage.getItem('deviceName') || '';
-            const refreshToken = localStorage.getItem('refreshToken') || '';
+    // Hàm gọi API lấy danh sách đơn hàng
+    const fetchInvoices = async (page = 1) => {
+        try {
+            setLoading(true);
+            const customerId = localStorage.getItem('customerId');
             const token = localStorage.getItem('token') || '';
-            const userID = localStorage.getItem('userID') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+
+            if (!customerId) {
+                setLoading(false);
+                return;
+            }
 
             const requestData = {
-                customerID: userID,
-                employeeID: null,
-                invoiceID: null,
-                invoiceType: 'Output',
-                status: 'Paid',
+                pageNo: page,
+                pageSize: pageSize,
+                customerId: parseInt(customerId),
+                staffId: 0,
+                orderStatuses: ['DangXuLy', 'DangGiao', 'DaGiao', 'DaHuy'],
+                type: '',
+                status: '',
                 startDate: null,
                 endDate: null,
-                paymentMethod: 'Thanh Toán Khi Nhận Hàng',
             };
 
             const headers = {
                 'Content-Type': 'application/json',
-                DeviceName: deviceName,
-                RefreshToken: refreshToken,
-                Authorization: token ? `Bearer ${token}` : '',
-                UserID: userID,
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
             };
 
-            try {
-                const response = await fetch('http://localhost:5262/api/Invoice/GetList_SearchInvoice', {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(requestData),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Lỗi khi gọi API');
-                }
-
-                const result = await response.json();
-                setInvoices(result.data || []);
-                setLoading(false);
-            } catch (error) {
-                setError(error.message);
-                setLoading(false);
-            }
-        };
-
-        fetchInvoices();
-    }, []);
-
-    const fetchInvoiceDetails = async (invoiceID) => {
-        const requestData = {
-            invoiceID: invoiceID,
-            invoiceDetailType: null,
-            startDate: null,
-            endDate: null,
-        };
-
-        const headers = {
-            'Content-Type': 'application/json',
-            DeviceName: localStorage.getItem('deviceName') || '',
-            RefreshToken: localStorage.getItem('refreshToken') || '',
-            Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
-            UserID: localStorage.getItem('userID') || '',
-        };
-
-        try {
-            const response = await fetch('http://localhost:5262/api/Invoice/GetList_SearchInvoiceDetail', {
+            const response = await fetch('http://localhost:5122/api/Invoice/getinvoicelist', {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(requestData),
             });
 
             if (!response.ok) {
-                throw new Error('Lỗi khi gọi API chi tiết hóa đơn');
+                throw new Error('Lỗi khi gọi API');
             }
 
             const result = await response.json();
-            setInvoiceDetails((prev) => ({
-                ...prev,
-                [invoiceID]: result.data || [],
-            }));
-        } catch (error) {
-            console.error('Lỗi khi lấy chi tiết hóa đơn:', error);
+            console.log('Order status response:', result);
+
+            const invoiceList = result.baseDatas || [];
+            setInvoices(invoiceList);
+            setTotalRecords(result.totalRecordCount || 0);
+            setTotalPages(result.pageCount || 1);
+            setCurrentPage(result.pageIndex || 1);
+            setLoading(false);
+        } catch (err) {
+            console.error('Lỗi khi lấy danh sách đơn hàng:', err);
+            setError(err.message);
+            setLoading(false);
         }
     };
 
+    useEffect(() => {
+        fetchInvoices(1);
+    }, []);
+
+    // Xử lý toggle expand details
     const handleToggleDetails = (invoiceID) => {
-        if (expandedInvoice === invoiceID) {
-            setExpandedInvoice(null);
-        } else {
-            setExpandedInvoice(invoiceID);
-            if (!invoiceDetails[invoiceID]) {
-                fetchInvoiceDetails(invoiceID);
-            }
+        setExpandedInvoice(expandedInvoice === invoiceID ? null : invoiceID);
+    };
+
+    // Phân trang - trang trước
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            fetchInvoices(currentPage - 1);
         }
     };
 
-    const handleCompleteOrder = async (invoiceID) => {
-        const invoice = invoices.find((inv) => inv.invoiceID === invoiceID);
-        if (!invoice) {
-            console.error('Không tìm thấy hóa đơn');
-            return;
+    // Phân trang - trang sau
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            fetchInvoices(currentPage + 1);
         }
+    };
 
-        const deviceName = localStorage.getItem('deviceName') || '';
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-        const token = localStorage.getItem('token') || '';
-        const userID = localStorage.getItem('userID') || '';
+    // Hàm format tiền tệ
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        }).format(amount);
+    };
 
-        const headers = {
-            'Content-Type': 'application/json',
-            DeviceName: deviceName,
-            RefreshToken: refreshToken,
-            Authorization: token ? `Bearer ${token}` : '',
-            UserID: userID,
+    // Hàm lấy màu và icon cho status
+    const getStatusStyle = (status) => {
+        const statusMap = {
+            'DangXuLy': { color: '#FF9800', icon: faClock, text: '⏳ Đang Xử Lý' },
+            'DangGiao': { color: '#2196F3', icon: faTruck, text: '🚚 Đang Giao' },
+            'DaGiao': { color: '#4CAF50', icon: faCheckCircle, text: '✓ Đã Giao' },
+            'DaHuy': { color: '#F44336', icon: faTimesCircle, text: '✕ Đã Hủy' },
         };
-
-        try {
-            let response;
-            if (invoice.paymentMethod === 'Thanh Toán Khi Nhận Hàng') {
-                const requestData = {
-                    invoiceID: invoiceID,
-                };
-                response = await fetch('http://localhost:5262/api/Invoice/ConfirmCodPaymentSuccess', {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(requestData),
-                });
-            } else {
-                const requestData = {
-                    invoiceID: invoiceID,
-                    status: 'Đã Nhận Hàng',
-                };
-                response = await fetch('http://localhost:5262/api/Invoice/UpdateOrderStatus', {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(requestData),
-                });
-            }
-
-            const data = await response.json();
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-            setSuccessMessage(data.resposeMessage);
-            setTimeout(() => {
-                setSuccessMessage(null);
-            }, 2000);
-
-            if (!response.ok) {
-                throw new Error('Lỗi khi cập nhật trạng thái đơn hàng');
-            }
-
-            const updatedInvoices = invoices.map((inv) =>
-                inv.invoiceID === invoiceID ? { ...inv, orderStatus: 'Đã Nhận Hàng' } : inv,
-            );
-            setInvoices(updatedInvoices);
-        } catch (error) {
-            console.error('Lỗi khi cập nhật trạng thái đơn hàng:', error);
-        }
+        return statusMap[status] || { color: '#999', icon: faTasks, text: status };
     };
 
-    const openRatingForm = (itemType, itemID, itemName, invoiceDetailID) => {
-        setRatingForm({ isOpen: true, itemType, itemID, itemName, invoiceDetailID });
-        setRatingContent('');
-    };
-
-    const closeRatingForm = () => {
-        setRatingForm({ isOpen: false, itemType: '', itemID: '', itemName: '', invoiceDetailID: '' });
-        setRatingContent('');
-    };
-
-    const handleSubmitRating = async () => {
-        const { itemType, itemID, invoiceDetailID } = ratingForm;
-        const userID = localStorage.getItem('userID');
-
-        if (!userID || isNaN(userID)) {
-            setSuccessMessage('Bạn cần đăng nhập để đánh giá.');
-            setTimeout(() => {
-                setSuccessMessage(null);
-            }, 2000);
-            return;
-        }
-
-        const requestData = {
-            userID: parseInt(userID, 10),
-            productID: itemType === 'sản phẩm' ? itemID : null,
-            serviceID: itemType === 'dịch vụ' ? itemID : null,
-            comment_Content: ratingContent,
-            invoiceDetailID: invoiceDetailID,
-        };
-
-        const headers = {
-            'Content-Type': 'application/json',
-            DeviceName: localStorage.getItem('deviceName') || '',
-            RefreshToken: localStorage.getItem('refreshToken') || '',
-            Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
-            UserID: userID,
-        };
-
-        try {
-            const response = await fetch('http://localhost:5262/api/Comment/Insert_Comment', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(requestData),
-            });
-            const newAccessToken = response.headers.get('New-AccessToken');
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.resposeMessage || 'Lỗi khi gửi đánh giá');
-            }
-
-            setSuccessMessage('Đánh giá đã được gửi thành công');
-            setRatedItems((prev) => [...prev, invoiceDetailID]);
-            closeRatingForm();
-            setTimeout(() => {
-                setSuccessMessage(null);
-            }, 2000);
-        } catch (error) {
-            console.error('Lỗi khi gửi đánh giá:', error);
-            setSuccessMessage(error.message || 'Có lỗi xảy ra khi gửi đánh giá');
-            setTimeout(() => {
-                setSuccessMessage(null);
-            }, 2000);
-        }
-    };
-
-    if (loading) {
+    if (loading && invoices.length === 0) {
         return (
             <div className={cx('payment-order')}>
-                <div className={cx('loading')}>
-                    <FontAwesomeIcon icon={faSpinner} style={{ fontSize: '2.5rem', marginBottom: '16px', animation: 'spin 1s linear infinite', color: '#4299e1' }} />
-                    <p>Đang tải danh sách hóa đơn...</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', textAlign: 'center' }}>
+                    <FontAwesomeIcon 
+                        icon={faSpinner} 
+                        className={cx('spinner')} 
+                        style={{ fontSize: '48px', color: '#FF9800', marginBottom: '16px', animation: 'spin 1s linear infinite' }}
+                    />
+                    <p style={{ fontSize: '16px', color: '#666', margin: '0' }}>Đang tải danh sách đơn hàng...</p>
                 </div>
             </div>
         );
@@ -270,8 +138,9 @@ function PaymentOrder() {
     if (error) {
         return (
             <div className={cx('payment-order')}>
-                <div className={cx('error')}>
-                    <p>Lỗi: {error}</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', textAlign: 'center' }}>
+                    <FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: '48px', color: '#F44336', marginBottom: '16px' }} />
+                    <p style={{ fontSize: '16px', color: '#666' }}>Lỗi: {error}</p>
                 </div>
             </div>
         );
@@ -280,187 +149,267 @@ function PaymentOrder() {
     return (
         <div className={cx('payment-order')}>
             {successMessage && <SuccessMessage message={successMessage} />}
-            <h2><FontAwesomeIcon icon={faTruck} style={{marginRight: '12px', color: '#ed8936'}} /> Hóa đơn đang chuẩn bị hoặc đang giao</h2>
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                <FontAwesomeIcon icon={faTruck} style={{ fontSize: '28px', color: '#FF9800' }} />
+                <h3 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>Trạng Thái Đơn Hàng</h3>
+            </div>
+            <div style={{ fontSize: '14px', color: '#999', marginTop: '12px', marginBottom: '24px' }}>
+                Danh sách đơn hàng với trạng thái: Đang xử lý, Đang giao, Đã giao, Đã hủy ({totalRecords} đơn hàng)
+            </div>
+
+            {/* Empty State */}
             {invoices.length === 0 ? (
-                <p>Không có hóa đơn nào đang chuẩn bị hoặc đang giao.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', textAlign: 'center' }}>
+                    <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: '56px', color: '#FF9800', marginBottom: '16px', opacity: 0.7 }} />
+                    <p style={{ fontSize: '18px', fontWeight: '600', color: '#333', margin: '8px 0 16px 0' }}>Không có đơn hàng</p>
+                    <p style={{ fontSize: '14px', color: '#666', margin: '0' }}>Bạn không có đơn hàng nào cần theo dõi</p>
+                </div>
             ) : (
-                <div className={cx('table-wrapper')}>
-                    <table className={cx('invoice-table')}>
-                        <thead>
-                            <tr>
-                                <th>Mã Hóa Đơn</th>
-                                <th>Khách Hàng</th>
-                                <th>Giảm Giá</th>
-                                <th>Tổng Tiền</th>
-                                <th>Thanh Toán</th>
-                                <th>Ngày Tạo</th>
-                                <th>Trạng Thái</th>
-                                <th>Giao Hàng</th>
-                                <th>Chi Tiết</th>
-                                <th>Hoàn Thành</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {invoices.map((invoice) => (
-                                <React.Fragment key={invoice.invoiceID}>
-                                    <tr>
-                                        <td>{invoice.invoiceID}</td>
-                                        <td>{invoice.customerName}</td>
-                                        <td>{invoice.discountValue}%</td>
-                                        <td>{invoice.totalMoney.toLocaleString('vi-VN')} đ</td>
-                                        <td>{invoice.totalAmountAfterDiscount.toLocaleString('vi-VN')} đ</td>
-                                        <td>{new Date(invoice.dateCreated).toLocaleString('vi-VN')}</td>
-                                        <td>{invoice.status}</td>
-                                        <td>{invoice.orderStatus}</td>
-                                        <td>
-                                            <FontAwesomeIcon
-                                                icon={faCaretDown}
-                                                className={cx('caret-icon')}
-                                                onClick={() => handleToggleDetails(invoice.invoiceID)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <button
-                                                className={cx('complete-button')}
-                                                onClick={() => handleCompleteOrder(invoice.invoiceID)}
-                                            >
-                                                {invoice.orderStatus === 'Đã Nhận Hàng' ? 'Đồng ý' : 'Nhận hàng'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    {expandedInvoice === invoice.invoiceID && invoiceDetails[invoice.invoiceID] && (
-                                        <tr>
-                                            <td colSpan="10">
-                                                <div className={cx('detail-table-wrapper')}>
-                                                    <table className={cx('detail-table')}>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Loại</th>
-                                                                <th>Tên</th>
-                                                                <th>Giá</th>
-                                                                <th>Số Lượng</th>
-                                                                <th>Tổng Tiền</th>
-                                                                {invoice.orderStatus === 'Đã Nhận Hàng' && (
-                                                                    <th>Đánh Giá</th>
-                                                                )}
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {invoiceDetails[invoice.invoiceID].map((detail) => (
-                                                                <React.Fragment key={detail.invoiceDetailID}>
-                                                                    {detail.productName && (
-                                                                        <tr>
-                                                                            <td>Sản phẩm</td>
-                                                                            <td>{detail.productName}</td>
-                                                                            <td>
-                                                                                {detail.priceProduct.toLocaleString(
-                                                                                    'vi-VN',
-                                                                                )}{' '}
-                                                                                đ
-                                                                            </td>
-                                                                            <td>{detail.totalQuantityProduct}</td>
-                                                                            <td>
-                                                                                {(
-                                                                                    detail.priceProduct *
-                                                                                    detail.totalQuantityProduct
-                                                                                ).toLocaleString('vi-VN')}{' '}
-                                                                                đ
-                                                                            </td>
-                                                                            {invoice.orderStatus === 'Đã Nhận Hàng' &&
-                                                                                !ratedItems.includes(
-                                                                                    detail.invoiceDetailID,
-                                                                                ) &&
-                                                                                detail.statusComment === 1 && (
-                                                                                    <td>
-                                                                                        <button
-                                                                                            className={cx(
-                                                                                                'rate-button',
-                                                                                            )}
-                                                                                            onClick={() =>
-                                                                                                openRatingForm(
-                                                                                                    'sản phẩm',
-                                                                                                    detail.productID,
-                                                                                                    detail.productName,
-                                                                                                    detail.invoiceDetailID,
-                                                                                                )
-                                                                                            }
-                                                                                        >
-                                                                                            Đánh giá
-                                                                                        </button>
-                                                                                    </td>
-                                                                                )}
-                                                                        </tr>
-                                                                    )}
-                                                                    {detail.serviceName && (
-                                                                        <tr>
-                                                                            <td>Dịch vụ</td>
-                                                                            <td>{detail.serviceName}</td>
-                                                                            <td>
-                                                                                {detail.priceService.toLocaleString(
-                                                                                    'vi-VN',
-                                                                                )}{' '}
-                                                                                đ
-                                                                            </td>
-                                                                            <td>{detail.totalQuantityService}</td>
-                                                                            <td>
-                                                                                {(
-                                                                                    detail.priceService *
-                                                                                    detail.totalQuantityService
-                                                                                ).toLocaleString('vi-VN')}{' '}
-                                                                                đ
-                                                                            </td>
-                                                                            {invoice.orderStatus === 'Đã Nhận Hàng' &&
-                                                                                !ratedItems.includes(
-                                                                                    detail.invoiceDetailID,
-                                                                                ) &&
-                                                                                detail.statusComment === 1 && (
-                                                                                    <td>
-                                                                                        <button
-                                                                                            className={cx(
-                                                                                                'rate-button',
-                                                                                            )}
-                                                                                            onClick={() =>
-                                                                                                openRatingForm(
-                                                                                                    'dịch vụ',
-                                                                                                    detail.serviceID,
-                                                                                                    detail.serviceName,
-                                                                                                    detail.invoiceDetailID,
-                                                                                                )
-                                                                                            }
-                                                                                        >
-                                                                                            Đánh giá
-                                                                                        </button>
-                                                                                    </td>
-                                                                                )}
-                                                                        </tr>
-                                                                    )}
-                                                                </React.Fragment>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
+                <>
+                    {/* Invoice List */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100%, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                        {invoices.map((item) => {
+                            const statusStyle = getStatusStyle(item.invoice.orderStatus);
+                            return (
+                                <div key={item.invoice.id} style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.3s ease', backgroundColor: '#fff' }}>
+                                    {/* Invoice Header */}
+                                    <div
+                                        onClick={() => handleToggleDetails(item.invoice.id)}
+                                        style={{
+                                            padding: '18px 20px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            borderBottom: expandedInvoice === item.invoice.id ? '2px solid #FF9800' : '1px solid #E8E8E8',
+                                            transition: 'all 0.3s ease',
+                                            backgroundColor: expandedInvoice === item.invoice.id ? '#FFF8F0' : '#fff',
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8F8FA'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = expandedInvoice === item.invoice.id ? '#FFF8F0' : '#fff'}
+                                    >
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', gap: '20px' }}>
+                                            {/* Left: Invoice ID & Type */}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{ width: '4px', height: '40px', backgroundColor: statusStyle.color, borderRadius: '2px' }}></div>
+                                                <div>
+                                                    <div style={{ fontSize: '16px', fontWeight: '700', color: '#1e1e1e', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        #{item.invoice.id}
+                                                        <span style={{ fontSize: '12px', fontWeight: '600', padding: '2px 8px', borderRadius: '4px', backgroundColor: '#DBF0FE', color: '#0066CC' }}>
+                                                            {item.invoice.type === 'BanHang' ? 'Sản phẩm' : 'Dịch vụ'}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ fontSize: '12px', color: '#999', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <FontAwesomeIcon icon={faCalendarAlt} style={{ fontSize: '11px' }} />
+                                                        {new Date(item.invoice.dateCreated).toLocaleDateString('vi-VN')}
+                                                    </div>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            </div>
+
+                                            {/* Middle: Customer Info */}
+                                            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                                <div style={{ fontSize: '13px', color: '#666', marginBottom: '2px' }}>Khách hàng</div>
+                                                <div style={{ fontSize: '15px', fontWeight: '600', color: '#1e1e1e' }}>{item.invoice.customerName}</div>
+                                            </div>
+
+                                            {/* Right: Amount & Status */}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontSize: '12px', color: '#999', marginBottom: '2px' }}>Tổng tiền</div>
+                                                    <div style={{ fontSize: '18px', fontWeight: '700', color: '#FF9800' }}>
+                                                        {formatCurrency(item.invoice.finalPrice).split(' ')[0]}
+                                                    </div>
+                                                </div>
+                                                <div style={{ textAlign: 'center', minWidth: '120px' }}>
+                                                    <div style={{ 
+                                                        display: 'inline-flex', 
+                                                        alignItems: 'center', 
+                                                        gap: '6px', 
+                                                        fontSize: '13px', 
+                                                        fontWeight: '600', 
+                                                        padding: '6px 12px', 
+                                                        borderRadius: '6px', 
+                                                        backgroundColor: statusStyle.color + '15',
+                                                        color: statusStyle.color
+                                                    }}>
+                                                        <FontAwesomeIcon icon={statusStyle.icon} />
+                                                        {statusStyle.text}
+                                                    </div>
+                                                </div>
+                                                <FontAwesomeIcon 
+                                                    icon={faChevronRight} 
+                                                    style={{ 
+                                                        fontSize: '16px', 
+                                                        color: '#999',
+                                                        transform: expandedInvoice === item.invoice.id ? 'rotate(90deg)' : 'rotate(0deg)',
+                                                        transition: 'transform 0.3s ease'
+                                                    }} 
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Expandable Details */}
+                                    {expandedInvoice === item.invoice.id && (
+                                        <div style={{ padding: '20px', backgroundColor: '#FAFBFC', borderTop: '2px solid #FF9800', animation: 'slideDown 0.3s ease' }}>
+                                            {/* Invoice Info Grid */}
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                                                <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>
+                                                    <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: '4px' }}>Khách hàng</div>
+                                                    <div style={{ fontSize: '13px', color: '#1e1e1e', fontWeight: '500' }}>{item.invoice.customerName}</div>
+                                                </div>
+                                                <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>
+                                                    <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: '4px' }}>Điện thoại</div>
+                                                    <div style={{ fontSize: '13px', color: '#1e1e1e', fontWeight: '500' }}>{item.invoice.customerPhone}</div>
+                                                </div>
+                                            </div>
+
+                                            {/* Status & Payment */}
+                                            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px 0', borderTop: '1px solid #E8E8E8', borderBottom: '1px solid #E8E8E8', marginBottom: '16px' }}>
+                                                <div>
+                                                    <span style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginRight: '8px' }}>Trạng thái đơn</span>
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', padding: '4px 10px', borderRadius: '6px', backgroundColor: statusStyle.color + '15', color: statusStyle.color }}>
+                                                        <FontAwesomeIcon icon={statusStyle.icon} />
+                                                        {statusStyle.text}
+                                                    </span>
+                                                </div>
+                                                <div style={{ marginLeft: 'auto' }}>
+                                                    <span style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginRight: '8px' }}>Phương thức</span>
+                                                    <span style={{ fontSize: '13px', color: '#1e1e1e', fontWeight: '600' }}>
+                                                        {item.invoice.paymentMethod || 'Chưa xác định'}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Invoice Items */}
+                                            {item.invoiceDetails && item.invoiceDetails.length > 0 && (
+                                                <div style={{ marginBottom: '16px' }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#333', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Chi tiết đơn hàng</div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        {item.invoiceDetails.map((detail, idx) => (
+                                                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '10px', backgroundColor: '#fff', borderRadius: '6px', border: '1px solid #E8E8E8' }}>
+                                                                <div style={{ flex: 1 }}>
+                                                                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#1e1e1e', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                        {detail.type === 'SanPham' ? (
+                                                                            <>
+                                                                                <FontAwesomeIcon icon={faBox} style={{ fontSize: '12px', color: '#3498db' }} />
+                                                                                {detail.productName} (x{detail.quantity})
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <FontAwesomeIcon icon={faStethoscope} style={{ fontSize: '12px', color: '#9b59b6' }} />
+                                                                                {detail.serviceName}
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                    {detail.type === 'DichVu' && detail.treatmentPlanName && (
+                                                                        <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>{detail.treatmentPlanName}</div>
+                                                                    )}
+                                                                </div>
+                                                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#FF9800', marginLeft: '12px', whiteSpace: 'nowrap' }}>
+                                                                    {formatCurrency(detail.finalPrice).split(' ')[0]}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Price Summary */}
+                                            <div style={{ backgroundColor: '#FFE8D0', borderRadius: '8px', padding: '14px', border: '2px solid #FF9800' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #FFCC99' }}>
+                                                    <span style={{ fontSize: '13px', color: '#666' }}>Tổng tiền</span>
+                                                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e1e1e' }}>{formatCurrency(item.invoice.totalMoney).split(' ')[0]}</span>
+                                                </div>
+                                                {item.invoice.discountValue > 0 && (
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #FFCC99' }}>
+                                                        <span style={{ fontSize: '13px', color: '#666' }}>Giảm giá</span>
+                                                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#FF9800' }}>-{formatCurrency(item.invoice.discountValue).split(' ')[0]}</span>
+                                                    </div>
+                                                )}
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <span style={{ fontSize: '13px', color: '#666' }}>Thành tiền</span>
+                                                    <span style={{ fontSize: '16px', fontWeight: '700', color: '#FF9800' }}>{formatCurrency(item.invoice.finalPrice).split(' ')[0]}</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
-                                </React.Fragment>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            {ratingForm.isOpen && (
-                <div className={cx('rating-form')}>
-                    <h3>
-                        Đánh giá {ratingForm.itemType}: {ratingForm.itemName}
-                    </h3>
-                    <textarea
-                        value={ratingContent}
-                        onChange={(e) => setRatingContent(e.target.value)}
-                        placeholder="Nhập nội dung đánh giá của bạn..."
-                    />
-                    <button onClick={handleSubmitRating}>Gửi đánh giá</button>
-                    <button onClick={closeRatingForm}>Hủy</button>
-                </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #E8E8E8' }}>
+                            <button
+                                style={{
+                                    padding: '10px 16px',
+                                    borderRadius: '6px',
+                                    border: '1px solid #E8E8E8',
+                                    backgroundColor: currentPage === 1 ? '#F0F0F0' : '#fff',
+                                    color: currentPage === 1 ? '#999' : '#FF9800',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    opacity: currentPage === 1 ? 0.6 : 1,
+                                }}
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                                onMouseEnter={(e) => {
+                                    if (currentPage > 1) {
+                                        e.currentTarget.style.backgroundColor = '#FF9800';
+                                        e.currentTarget.style.color = '#fff';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (currentPage > 1) {
+                                        e.currentTarget.style.backgroundColor = '#fff';
+                                        e.currentTarget.style.color = '#FF9800';
+                                    }
+                                }}
+                            >
+                                ← Trước
+                            </button>
+                            <span style={{ fontSize: '14px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                Trang <strong style={{ color: '#FF9800', fontSize: '16px' }}>{currentPage}</strong> / <strong>{totalPages}</strong>
+                            </span>
+                            <button
+                                style={{
+                                    padding: '10px 16px',
+                                    borderRadius: '6px',
+                                    border: '1px solid #E8E8E8',
+                                    backgroundColor: currentPage === totalPages ? '#F0F0F0' : '#fff',
+                                    color: currentPage === totalPages ? '#999' : '#FF9800',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    opacity: currentPage === totalPages ? 0.6 : 1,
+                                }}
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                                onMouseEnter={(e) => {
+                                    if (currentPage < totalPages) {
+                                        e.currentTarget.style.backgroundColor = '#FF9800';
+                                        e.currentTarget.style.color = '#fff';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (currentPage < totalPages) {
+                                        e.currentTarget.style.backgroundColor = '#fff';
+                                        e.currentTarget.style.color = '#FF9800';
+                                    }
+                                }}
+                            >
+                                Sau →
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

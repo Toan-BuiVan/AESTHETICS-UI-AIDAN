@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './ContinuePayment.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faCalendarAlt, faBox, faStethoscope, faCreditCard, faMoneyBill, faSpinner, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faCalendarAlt, faBox, faStethoscope, faCreditCard, faMoneyBill, faSpinner, faCheckCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
+import useDebounce from '~/hooks/useDebounce';
 
 const cx = classNames.bind(styles);
 
@@ -15,9 +16,14 @@ function ContinuePayment({ onCountChange }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
-    const pageSize = 8;
+    const pageSize = 6;
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const debouncedPaymentMethod = useDebounce(selectedPaymentMethod, 3000);
 
-    // Hàm gọi API getinvoicelist với status ThanhToanMotPhan + type DichVu
+    // Hàm gọi API getinvoicelist với status ThanhToanMotPhan và ThanhToanToanBo
     const fetchInvoices = async (page = 1) => {
         try {
             setLoading(true);
@@ -30,42 +36,70 @@ function ContinuePayment({ onCountChange }) {
                 return;
             }
 
-            const requestData = {
-                pageNo: page,
-                pageSize: pageSize,
-                customerId: parseInt(customerId),
-                staffId: null,
-                type: 'DichVu', // Fixed: only services
-                status: 'ThanhToanMotPhan', // Partially paid
-                startDate: null,
-                endDate: null,
-            };
-
             const headers = {
                 'Content-Type': 'application/json',
                 'Authorization': token ? `Bearer ${token}` : '',
                 'RefreshToken': refreshToken,
             };
 
-            const response = await fetch('http://localhost:5122/api/Invoice/getinvoicelist', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(requestData),
-            });
+            // Fetch invoices with status ThanhToanMotPhan (Partially Paid)
+            const requestDataPartial = {
+                pageNo: page,
+                pageSize: pageSize,
+                customerId: parseInt(customerId),
+                staffId: null,
+                type: 'DichVu',
+                status: 'ThanhToanMotPhan',
+                startDate: null,
+                endDate: null,
+            };
 
-            if (!response.ok) {
+            // Fetch invoices with status ThanhToanToanBo (Fully Paid)
+            const requestDataFull = {
+                pageNo: page,
+                pageSize: pageSize,
+                customerId: parseInt(customerId),
+                staffId: null,
+                type: 'DichVu',
+                status: 'ThanhToanToanBo',
+                startDate: null,
+                endDate: null,
+            };
+
+            const [responsePartial, responseFull] = await Promise.all([
+                fetch('http://localhost:5122/api/Invoice/getinvoicelist', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestDataPartial),
+                }),
+                fetch('http://localhost:5122/api/Invoice/getinvoicelist', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestDataFull),
+                }),
+            ]);
+
+            if (!responsePartial.ok || !responseFull.ok) {
                 throw new Error('Lỗi khi gọi API');
             }
 
-            const result = await response.json();
-            console.log('Continue payment list response:', result);
+            const resultPartial = await responsePartial.json();
+            const resultFull = await responseFull.json();
+            console.log('Continue payment - Partially Paid:', resultPartial);
+            console.log('Continue payment - Fully Paid:', resultFull);
 
-            const invoiceList = result.baseDatas || [];
-            setInvoices(invoiceList);
-            setTotalRecords(result.totalRecordCount || 0);
-            setTotalPages(result.pageCount || 1);
-            setCurrentPage(result.pageIndex || 1);
-            onCountChange(invoiceList.length);
+            const invoiceListPartial = resultPartial.baseDatas || [];
+            const invoiceListFull = resultFull.baseDatas || [];
+            
+            // Merge results
+            const mergedInvoices = [...invoiceListPartial, ...invoiceListFull];
+            const totalRecords = (resultPartial.totalRecordCount || 0) + (resultFull.totalRecordCount || 0);
+
+            setInvoices(mergedInvoices);
+            setTotalRecords(totalRecords);
+            setTotalPages(Math.ceil(totalRecords / pageSize));
+            setCurrentPage(page);
+            onCountChange(mergedInvoices.length);
             setLoading(false);
         } catch (err) {
             console.error('Lỗi khi lấy danh sách hóa đơn:', err);
@@ -77,6 +111,13 @@ function ContinuePayment({ onCountChange }) {
     useEffect(() => {
         fetchInvoices(1);
     }, []);
+
+    // Effect để gọi API khi payment method được chọn
+    useEffect(() => {
+        if (debouncedPaymentMethod && selectedInvoice) {
+            handlePaymentSubmit();
+        }
+    }, [debouncedPaymentMethod]);
 
     // Xử lý toggle expand details
     const handleToggleDetails = (invoiceID) => {
@@ -97,12 +138,103 @@ function ContinuePayment({ onCountChange }) {
         }
     };
 
+    // Xử lý mở payment modal
+    const handleOpenPaymentModal = (invoice) => {
+        setSelectedInvoice(invoice);
+        setShowPaymentModal(true);
+        setSelectedPaymentMethod(null);
+    };
+
+    // Xử lý đóng payment modal
+    const handleClosePaymentModal = () => {
+        setShowPaymentModal(false);
+        setSelectedInvoice(null);
+        setSelectedPaymentMethod(null);
+        setPaymentLoading(false);
+    };
+
+    // Xử lý chọn phương thức thanh toán
+    const handleSelectPaymentMethod = (method) => {
+        setSelectedPaymentMethod(method);
+    };
+
+    // Xử lý gọi API thanh toán
+    const handlePaymentSubmit = async () => {
+        if (!selectedPaymentMethod || !selectedInvoice) return;
+
+        try {
+            setPaymentLoading(true);
+            const token = localStorage.getItem('token') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+
+            const apiUrl = selectedPaymentMethod === 'vnpay'
+                ? 'http://localhost:5122/api/InvoicePayment/vnpay/create-payment-url'
+                : 'http://localhost:5122/api/InvoicePayment/momo/create-payment-url';
+
+            const requestData = {
+                invoiceId: selectedInvoice.invoice.id,
+            };
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(requestData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Lỗi khi gọi API thanh toán');
+            }
+
+            const result = await response.json();
+            console.log('Payment response:', result);
+
+            // Nếu API trả về URL, điều hướng đến đó
+            if (result.data && result.data.paymentUrl) {
+                window.location.href = result.data.paymentUrl;
+            } else if (result.paymentUrl) {
+                window.location.href = result.paymentUrl;
+            } else {
+                console.error('Không có URL thanh toán trong response');
+            }
+
+            setPaymentLoading(false);
+            handleClosePaymentModal();
+        } catch (err) {
+            console.error('Lỗi khi xử lý thanh toán:', err);
+            setPaymentLoading(false);
+        }
+    };
+
     // Hàm format tiền tệ
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND',
         }).format(amount);
+    };
+
+    // Hàm lấy statusBadge
+    const getStatusBadge = (invoice) => {
+        const isFullyPaid = invoice.status === 'ThanhToanToanBo';
+        return isFullyPaid ? '✓ Thanh toán toàn bộ' : '⏳ Thanh toán một phần';
+    };
+
+    // Hàm lấy statusColor
+    const getStatusColor = (invoice) => {
+        const isFullyPaid = invoice.status === 'ThanhToanToanBo';
+        return isFullyPaid ? '#FFF3E0' : '#FFF3E0';
+    };
+
+    // Hàm lấy statusTextColor
+    const getStatusTextColor = (invoice) => {
+        const isFullyPaid = invoice.status === 'ThanhToanToanBo';
+        return isFullyPaid ? '#4CAF50' : '#E65100';
     };
 
     return (
@@ -171,8 +303,8 @@ function ContinuePayment({ onCountChange }) {
                                                     <span style={{ fontSize: '12px', fontWeight: '600', padding: '2px 8px', borderRadius: '4px', backgroundColor: '#FFE8D0', color: '#E65100' }}>
                                                         Dịch vụ
                                                     </span>
-                                                    <span style={{ fontSize: '11px', fontWeight: '600', padding: '3px 8px', borderRadius: '4px', backgroundColor: '#FFF3E0', color: '#FF9800', marginLeft: 'auto' }}>
-                                                        ⏳ Thanh toán một phần
+                                                    <span style={{ fontSize: '11px', fontWeight: '600', padding: '3px 8px', borderRadius: '4px', backgroundColor: getStatusColor(item.invoice), color: getStatusTextColor(item.invoice), marginLeft: 'auto' }}>
+                                                        {getStatusBadge(item.invoice)}
                                                     </span>
                                                 </div>
                                                 <div style={{ fontSize: '12px', color: '#999', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -258,9 +390,18 @@ function ContinuePayment({ onCountChange }) {
                                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px 0', borderTop: '1px solid #E8E8E8', borderBottom: '1px solid #E8E8E8', marginBottom: '16px' }}>
                                             <div>
                                                 <span style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginRight: '8px' }}>Trạng thái</span>
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', padding: '4px 10px', borderRadius: '6px', backgroundColor: '#FFF3E0', color: '#E65100' }}>
-                                                    <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: '12px' }} />
-                                                    Thanh toán một phần
+                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', padding: '4px 10px', borderRadius: '6px', backgroundColor: getStatusColor(item.invoice), color: getStatusTextColor(item.invoice) }}>
+                                                    {item.invoice.status === 'ThanhToanToanBo' ? (
+                                                        <>
+                                                            <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: '12px' }} />
+                                                            Thanh toán toàn bộ
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: '12px' }} />
+                                                            Thanh toán một phần
+                                                        </>
+                                                    )}
                                                 </span>
                                             </div>
                                             <div style={{ marginLeft: 'auto' }}>
@@ -318,6 +459,7 @@ function ContinuePayment({ onCountChange }) {
                                             </div>
                                             <button 
                                                 className={cx('btn-pay')} 
+                                                onClick={() => handleOpenPaymentModal(item)}
                                                 style={{
                                                     width: '100%',
                                                     marginTop: '12px',
@@ -425,6 +567,350 @@ function ContinuePayment({ onCountChange }) {
                         </div>
                     )}
                 </>
+            )}
+
+            {/* Payment Method Modal */}
+            {showPaymentModal && (
+                <div className={cx('modal-overlay')} style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000,
+                }}>
+                    <div className={cx('modal-content')} style={{
+                        backgroundColor: '#fff',
+                        borderRadius: '12px',
+                        padding: '32px',
+                        maxWidth: '500px',
+                        width: '90%',
+                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+                        animation: 'slideUp 0.3s ease',
+                    }}>
+                        {/* Modal Header */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '24px',
+                            paddingBottom: '16px',
+                            borderBottom: '2px solid #F0F0F0',
+                        }}>
+                            <h2 style={{
+                                margin: 0,
+                                fontSize: '20px',
+                                fontWeight: '700',
+                                color: '#1e1e1e',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <FontAwesomeIcon icon={faCreditCard} style={{ color: '#FF9800' }} />
+                                Chọn Phương Thức Thanh Toán
+                            </h2>
+                            <button
+                                onClick={handleClosePaymentModal}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    fontSize: '24px',
+                                    cursor: 'pointer',
+                                    color: '#999',
+                                    transition: 'all 0.3s ease',
+                                    padding: 0,
+                                    width: '32px',
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color = '#FF6B6B';
+                                    e.currentTarget.style.backgroundColor = '#FFE8E8';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = '#999';
+                                    e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                        </div>
+
+                        {/* Invoice Info */}
+                        {selectedInvoice && (
+                            <div style={{
+                                backgroundColor: '#FFF3E0',
+                                borderRadius: '8px',
+                                padding: '14px',
+                                marginBottom: '24px',
+                                border: '1px solid #FFE0B2',
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}>
+                                    <div>
+                                        <div style={{
+                                            fontSize: '11px',
+                                            fontWeight: '600',
+                                            color: '#999',
+                                            textTransform: 'uppercase',
+                                            marginBottom: '4px',
+                                        }}>
+                                            Hóa đơn
+                                        </div>
+                                        <div style={{
+                                            fontSize: '14px',
+                                            fontWeight: '700',
+                                            color: '#1e1e1e',
+                                        }}>
+                                            #{selectedInvoice.invoice.id}
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{
+                                            fontSize: '11px',
+                                            fontWeight: '600',
+                                            color: '#999',
+                                            textTransform: 'uppercase',
+                                            marginBottom: '4px',
+                                        }}>
+                                            Số tiền
+                                        </div>
+                                        <div style={{
+                                            fontSize: '16px',
+                                            fontWeight: '700',
+                                            color: '#FF9800',
+                                        }}>
+                                            {formatCurrency(selectedInvoice.invoice.outstandingBalance).split(' ')[0]}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Payment Methods */}
+                        <div style={{ marginBottom: '24px' }}>
+                            <div style={{
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                color: '#666',
+                                marginBottom: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                            }}>
+                                Chọn phương thức thanh toán
+                            </div>
+
+                            {/* VNpay Option */}
+                            <label style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '14px 16px',
+                                marginBottom: '12px',
+                                border: selectedPaymentMethod === 'vnpay' ? '2px solid #FF9800' : '1px solid #E8E8E8',
+                                borderRadius: '8px',
+                                backgroundColor: selectedPaymentMethod === 'vnpay' ? '#FFF3E0' : '#fff',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                if (selectedPaymentMethod !== 'vnpay') {
+                                    e.currentTarget.style.backgroundColor = '#F8F8FA';
+                                    e.currentTarget.style.borderColor = '#FFD699';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (selectedPaymentMethod !== 'vnpay') {
+                                    e.currentTarget.style.backgroundColor = '#fff';
+                                    e.currentTarget.style.borderColor = '#E8E8E8';
+                                }
+                            }}
+                            >
+                                <input
+                                    type="radio"
+                                    name="payment-method"
+                                    value="vnpay"
+                                    checked={selectedPaymentMethod === 'vnpay'}
+                                    onChange={(e) => handleSelectPaymentMethod(e.target.value)}
+                                    style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        cursor: 'pointer',
+                                        accentColor: '#FF9800',
+                                        marginRight: '12px',
+                                    }}
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        color: '#1e1e1e',
+                                    }}>
+                                        VNPay
+                                    </div>
+                                    <div style={{
+                                        fontSize: '12px',
+                                        color: '#999',
+                                        marginTop: '2px',
+                                    }}>
+                                        Thanh toán qua cổng VNPay
+                                    </div>
+                                </div>
+                            </label>
+
+                            {/* Momo Option */}
+                            <label style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '14px 16px',
+                                border: selectedPaymentMethod === 'momo' ? '2px solid #FF9800' : '1px solid #E8E8E8',
+                                borderRadius: '8px',
+                                backgroundColor: selectedPaymentMethod === 'momo' ? '#FFF3E0' : '#fff',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                if (selectedPaymentMethod !== 'momo') {
+                                    e.currentTarget.style.backgroundColor = '#F8F8FA';
+                                    e.currentTarget.style.borderColor = '#FFD699';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (selectedPaymentMethod !== 'momo') {
+                                    e.currentTarget.style.backgroundColor = '#fff';
+                                    e.currentTarget.style.borderColor = '#E8E8E8';
+                                }
+                            }}
+                            >
+                                <input
+                                    type="radio"
+                                    name="payment-method"
+                                    value="momo"
+                                    checked={selectedPaymentMethod === 'momo'}
+                                    onChange={(e) => handleSelectPaymentMethod(e.target.value)}
+                                    style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        cursor: 'pointer',
+                                        accentColor: '#FF9800',
+                                        marginRight: '12px',
+                                    }}
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        color: '#1e1e1e',
+                                    }}>
+                                        Momo
+                                    </div>
+                                    <div style={{
+                                        fontSize: '12px',
+                                        color: '#999',
+                                        marginTop: '2px',
+                                    }}>
+                                        Thanh toán qua ví điện tử Momo
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div style={{
+                            display: 'flex',
+                            gap: '12px',
+                            paddingTop: '16px',
+                            borderTop: '1px solid #E8E8E8',
+                        }}>
+                            <button
+                                onClick={handleClosePaymentModal}
+                                disabled={paymentLoading}
+                                style={{
+                                    flex: 1,
+                                    padding: '12px 16px',
+                                    border: '1px solid #E8E8E8',
+                                    borderRadius: '8px',
+                                    backgroundColor: '#fff',
+                                    color: '#FF9800',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    opacity: paymentLoading ? 0.6 : 1,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!paymentLoading) {
+                                        e.currentTarget.style.backgroundColor = '#FFF3E0';
+                                        e.currentTarget.style.borderColor = '#FF9800';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!paymentLoading) {
+                                        e.currentTarget.style.backgroundColor = '#fff';
+                                        e.currentTarget.style.borderColor = '#E8E8E8';
+                                    }
+                                }}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handlePaymentSubmit}
+                                disabled={!selectedPaymentMethod || paymentLoading}
+                                style={{
+                                    flex: 1,
+                                    padding: '12px 16px',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    backgroundColor: !selectedPaymentMethod ? '#DDD' : '#FF9800',
+                                    color: '#fff',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: !selectedPaymentMethod || paymentLoading ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    opacity: paymentLoading ? 0.8 : 1,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (selectedPaymentMethod && !paymentLoading) {
+                                        e.currentTarget.style.backgroundColor = '#F57C00';
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 152, 0, 0.3)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (selectedPaymentMethod && !paymentLoading) {
+                                        e.currentTarget.style.backgroundColor = '#FF9800';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }
+                                }}
+                            >
+                                {paymentLoading ? (
+                                    <>
+                                        <FontAwesomeIcon icon={faSpinner} style={{ animation: 'spin 1s linear infinite' }} />
+                                        <span>Đang xử lý...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <FontAwesomeIcon icon={faCreditCard} />
+                                        <span>Xác Nhận Thanh Toán</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

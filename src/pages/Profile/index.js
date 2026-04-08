@@ -5,7 +5,7 @@ import DeviceHistory from './DeviceHistory';
 import AwaitingPayment from './AwaitingPayment';
 import ContinuePayment from './ContinuePayment';
 import PaymentSuccessful from './PaymentSuccessful';
-import PaymentCanceled from './PaymentCanceled';
+import CancelledInvoice from './CancelledInvoice';
 import PaymentOrder from './PaymentOrder';
 import UseVoucher from './UseVoucher';
 import CustomerForm from './CustomerForm';
@@ -28,7 +28,7 @@ function Profile() {
     const [awaitingPaymentCount, setAwaitingPaymentCount] = useState(0);
     const [continuePaymentCount, setContinuePaymentCount] = useState(0);
     const [paymentSuccessfulCount, setPaymentSuccessfulCount] = useState(0);
-    const [paymentCanceledCount, setPaymentCanceledCount] = useState(0);
+    const [cancelledInvoiceCount, setCancelledInvoiceCount] = useState(0);
     const location = useLocation();
 
     useEffect(() => {
@@ -107,8 +107,8 @@ function Profile() {
         setPaymentSuccessfulCount(count);
     };
 
-    const handlePaymentCanceledCount = (count) => {
-        setPaymentCanceledCount(count);
+    const handleCancelledInvoiceCount = (count) => {
+        setCancelledInvoiceCount(count);
     };
 
     return (
@@ -198,10 +198,10 @@ function Profile() {
                                 Hoàn thành {paymentSuccessfulCount > 0 && `(${paymentSuccessfulCount})`}
                             </li>
                             <li
-                                className={cx('tab', { active: selectedMenu === 'paymentCanceled' })}
-                                onClick={() => setSelectedMenu('paymentCanceled')}
+                                className={cx('tab', { active: selectedMenu === 'cancelledInvoice' })}
+                                onClick={() => setSelectedMenu('cancelledInvoice')}
                             >
-                                Đã hủy {paymentCanceledCount > 0 && `(${paymentCanceledCount})`}
+                                Hủy {cancelledInvoiceCount > 0 && `(${cancelledInvoiceCount})`}
                             </li>
                             <li
                                 className={cx('tab', { active: selectedMenu === 'paymentOrder' })}
@@ -228,8 +228,8 @@ function Profile() {
                     {selectedMenu === 'paymentSuccessful' && (
                         <PaymentSuccessful onCountChange={handlePaymentSuccessfulCount} />
                     )}
-                    {selectedMenu === 'paymentCanceled' && (
-                        <PaymentCanceled onCountChange={handlePaymentCanceledCount} />
+                    {selectedMenu === 'cancelledInvoice' && (
+                        <CancelledInvoice onCountChange={handleCancelledInvoiceCount} />
                     )}
                     {selectedMenu === 'paymentOrder' && <PaymentOrder />}
                     {selectedMenu === 'useVoucher' && <UseVoucher />}

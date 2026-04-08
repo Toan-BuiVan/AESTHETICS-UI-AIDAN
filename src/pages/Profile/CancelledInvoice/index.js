@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
-import styles from './PaymentSuccessful.module.scss';
+import styles from './CancelledInvoice.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faSpinner, faChevronRight, faCalendarAlt, faBox, faStethoscope, faCreditCard, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
-import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
+import { faTimesCircle, faSpinner, faChevronRight, faCalendarAlt, faBox, faStethoscope } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
-function PaymentSuccessful({ onCountChange }) {
+function CancelledInvoice({ onCountChange }) {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedInvoice, setExpandedInvoice] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
     const pageSize = 6;
 
-    // Hàm gọi API getinvoicelist với status DaThanhToan
+    // Hàm gọi API getinvoicelist với status KhachHuy
     const fetchInvoices = async (page = 1) => {
         try {
             setLoading(true);
@@ -36,7 +34,7 @@ function PaymentSuccessful({ onCountChange }) {
                 customerId: parseInt(customerId),
                 staffId: null,
                 type: null,
-                status: 'DaThanhToan',
+                status: 'KhachHuy',
                 startDate: null,
                 endDate: null,
             };
@@ -58,7 +56,7 @@ function PaymentSuccessful({ onCountChange }) {
             }
 
             const result = await response.json();
-            console.log('Payment successful list response:', result);
+            console.log('Cancelled invoice list response:', result);
 
             const invoiceList = result.baseDatas || [];
             setInvoices(invoiceList);
@@ -68,7 +66,7 @@ function PaymentSuccessful({ onCountChange }) {
             onCountChange(invoiceList.length);
             setLoading(false);
         } catch (err) {
-            console.error('Lỗi khi lấy danh sách hóa đơn:', err);
+            console.error('Lỗi khi lấy danh sách hóa đơn bị hủy:', err);
             setLoading(false);
         }
     };
@@ -106,19 +104,17 @@ function PaymentSuccessful({ onCountChange }) {
     };
 
     return (
-        <div className={cx('payment-successful')}>
-            {successMessage && <SuccessMessage message={successMessage} />}
-
+        <div className={cx('cancelled-invoice')}>
             {/* Premium Header */}
             <div className={cx('header')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                    <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: '28px', color: '#4CAF50' }} />
-                    <h3 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>Hóa Đơn Đã Thanh Toán</h3>
+                    <FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: '28px', color: '#FF6B6B' }} />
+                    <h3 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>Hóa Đơn Bị Hủy</h3>
                 </div>
                 <div style={{ display: 'flex', gap: '16px', marginTop: '12px', alignItems: 'center' }}>
                     <span style={{ fontSize: '14px', color: '#666', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <FontAwesomeIcon icon={faCheckCircle} style={{ color: '#4CAF50' }} />
-                        <strong>{totalRecords} hóa đơn</strong> đã thanh toán
+                        <FontAwesomeIcon icon={faTimesCircle} style={{ color: '#FF6B6B' }} />
+                        <strong>{totalRecords} hóa đơn</strong> đã bị hủy
                     </span>
                 </div>
             </div>
@@ -129,15 +125,15 @@ function PaymentSuccessful({ onCountChange }) {
                     <FontAwesomeIcon 
                         icon={faSpinner} 
                         className={cx('spinner')} 
-                        style={{ fontSize: '48px', color: '#4CAF50', marginBottom: '16px', animation: 'spin 1s linear infinite' }}
+                        style={{ fontSize: '48px', color: '#FF6B6B', marginBottom: '16px', animation: 'spin 1s linear infinite' }}
                     />
                     <p style={{ fontSize: '16px', color: '#666', margin: '0' }}>Đang tải dữ liệu hóa đơn...</p>
                 </div>
             ) : invoices.length === 0 ? (
                 <div className={cx('empty-state')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: '56px', color: '#4CAF50', marginBottom: '16px', opacity: 0.7 }} />
-                    <p style={{ fontSize: '18px', fontWeight: '600', color: '#333', margin: '8px 0 16px 0' }}>Tuyệt vời!</p>
-                    <p style={{ fontSize: '14px', color: '#666', margin: '0' }}>Bạn không có hóa đơn nào để hiển thị</p>
+                    <FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: '56px', color: '#FF6B6B', marginBottom: '16px', opacity: 0.7 }} />
+                    <p style={{ fontSize: '18px', fontWeight: '600', color: '#333', margin: '8px 0 16px 0' }}>Không có hóa đơn bị hủy</p>
+                    <p style={{ fontSize: '14px', color: '#666', margin: '0' }}>Bạn không có hóa đơn nào bị hủy để hiển thị</p>
                 </div>
             ) : (
                 <>
@@ -155,7 +151,7 @@ function PaymentSuccessful({ onCountChange }) {
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        borderBottom: expandedInvoice === item.invoice.id ? '2px solid #4CAF50' : '1px solid #E8E8E8',
+                                        borderBottom: expandedInvoice === item.invoice.id ? '2px solid #FF6B6B' : '1px solid #E8E8E8',
                                         transition: 'all 0.3s ease',
                                     }}
                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8F8FA'}
@@ -171,8 +167,8 @@ function PaymentSuccessful({ onCountChange }) {
                                                     <span style={{ fontSize: '12px', fontWeight: '600', padding: '2px 8px', borderRadius: '4px', backgroundColor: item.invoice.type === 'BanHang' ? '#DBF0FE' : '#EDD5FF', color: item.invoice.type === 'BanHang' ? '#0066CC' : '#7C3AED' }}>
                                                         {item.invoice.type === 'BanHang' ? 'Sản phẩm' : 'Dịch vụ'}
                                                     </span>
-                                                    <span style={{ fontSize: '11px', fontWeight: '600', padding: '3px 8px', borderRadius: '4px', backgroundColor: '#E8F5E9', color: '#4CAF50', marginLeft: 'auto' }}>
-                                                        ✓ Đã thanh toán
+                                                    <span style={{ fontSize: '11px', fontWeight: '600', padding: '3px 8px', borderRadius: '4px', backgroundColor: '#FFE8E8', color: '#FF6B6B', marginLeft: 'auto' }}>
+                                                        ✕ Đã hủy
                                                     </span>
                                                 </div>
                                                 <div style={{ fontSize: '12px', color: '#999', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -191,8 +187,8 @@ function PaymentSuccessful({ onCountChange }) {
                                         {/* Right: Amount & Status */}
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                             <div style={{ textAlign: 'right' }}>
-                                                <div style={{ fontSize: '12px', color: '#999', marginBottom: '2px' }}>Thanh toán</div>
-                                                <div style={{ fontSize: '18px', fontWeight: '700', color: '#4CAF50' }}>
+                                                <div style={{ fontSize: '12px', color: '#999', marginBottom: '2px' }}>Hóa đơn</div>
+                                                <div style={{ fontSize: '18px', fontWeight: '700', color: '#FF6B6B' }}>
                                                     {formatCurrency(item.invoice.finalPrice).split(' ')[0]}
                                                 </div>
                                             </div>
@@ -211,7 +207,7 @@ function PaymentSuccessful({ onCountChange }) {
 
                                 {/* Expandable Details */}
                                 {expandedInvoice === item.invoice.id && (
-                                    <div className={cx('invoice-details')} style={{ padding: '20px', backgroundColor: '#FAFBFC', borderTop: '2px solid #4CAF50', animation: 'slideDown 0.3s ease' }}>
+                                    <div className={cx('invoice-details')} style={{ padding: '20px', backgroundColor: '#FAFBFC', borderTop: '2px solid #FF6B6B', animation: 'slideDown 0.3s ease' }}>
                                         {/* Invoice Info Grid */}
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
                                             <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>
@@ -221,37 +217,6 @@ function PaymentSuccessful({ onCountChange }) {
                                             <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>
                                                 <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: '4px' }}>Điện thoại</div>
                                                 <div style={{ fontSize: '13px', color: '#1e1e1e', fontWeight: '500' }}>{item.invoice.customerPhone}</div>
-                                            </div>
-                                            <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>
-                                                <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: '4px' }}>Trạng thái thanh toán</div>
-                                                <div style={{ fontSize: '13px', color: '#1e1e1e', fontWeight: '500' }}>
-                                                    {item.invoice.status === 'DaThanhToan' ? '✓ Đã thanh toán' : 'Chưa thanh toán'}
-                                                </div>
-                                            </div>
-                                            <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>
-                                                <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: '4px' }}>Trạng thái đơn hàng</div>
-                                                <div style={{ fontSize: '13px', color: '#1e1e1e', fontWeight: '500' }}>
-                                                    {item.invoice.orderStatus === 'DangXuLy' && 'Đang xử lý'}
-                                                    {item.invoice.orderStatus === 'ChuaThanhToan' && 'Chưa thanh toán'}
-                                                    {item.invoice.orderStatus === 'DaThanhToan' && 'Đã thanh toán'}
-                                                    {item.invoice.orderStatus === 'ThanhToanOnline' && 'Thanh toán online'}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Payment Info */}
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px', padding: '12px', backgroundColor: '#FFF9E6', borderRadius: '8px', border: '1px solid #FFE66D' }}>
-                                            <div>
-                                                <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', marginBottom: '4px' }}>Số tiền đã thanh toán</div>
-                                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#4CAF50' }}>
-                                                    {formatCurrency(item.invoice.paidAmount).split(' ')[0]}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', marginBottom: '4px' }}>Số tiền còn nợ</div>
-                                                <div style={{ fontSize: '14px', fontWeight: '700', color: item.invoice.outstandingBalance > 0 ? '#FF6B6B' : '#4CAF50' }}>
-                                                    {formatCurrency(item.invoice.outstandingBalance).split(' ')[0]}
-                                                </div>
                                             </div>
                                         </div>
 
@@ -287,7 +252,7 @@ function PaymentSuccessful({ onCountChange }) {
                                                                 </div>
                                                             </div>
                                                             <div style={{ textAlign: 'right', marginLeft: '12px' }}>
-                                                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#4CAF50', whiteSpace: 'nowrap' }}>
+                                                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#FF6B6B', whiteSpace: 'nowrap' }}>
                                                                     {formatCurrency(detail.finalPrice).split(' ')[0]}
                                                                 </div>
                                                             </div>
@@ -298,20 +263,20 @@ function PaymentSuccessful({ onCountChange }) {
                                         )}
 
                                         {/* Price Summary Card */}
-                                        <div style={{ backgroundColor: '#E8F5E9', borderRadius: '8px', padding: '14px', border: '2px solid #4CAF50' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #C8E6C9' }}>
+                                        <div style={{ backgroundColor: '#FFE8E8', borderRadius: '8px', padding: '14px', border: '2px solid #FF6B6B' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #FFCCCC' }}>
                                                 <span style={{ fontSize: '13px', color: '#666' }}>Tổng tiền</span>
                                                 <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e1e1e' }}>{formatCurrency(item.invoice.totalMoney).split(' ')[0]}</span>
                                             </div>
                                             {item.invoice.discountValue > 0 && (
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #C8E6C9' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #FFCCCC' }}>
                                                     <span style={{ fontSize: '13px', color: '#666' }}>Giảm giá</span>
                                                     <span style={{ fontSize: '13px', fontWeight: '600', color: '#FF9800' }}>-{formatCurrency(item.invoice.discountValue).split(' ')[0]}</span>
                                                 </div>
                                             )}
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <span style={{ fontSize: '13px', color: '#666' }}>Thành tiền</span>
-                                                <span style={{ fontSize: '16px', fontWeight: '700', color: '#4CAF50' }}>{formatCurrency(item.invoice.finalPrice).split(' ')[0]}</span>
+                                                <span style={{ fontSize: '16px', fontWeight: '700', color: '#FF6B6B' }}>{formatCurrency(item.invoice.finalPrice).split(' ')[0]}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -329,7 +294,7 @@ function PaymentSuccessful({ onCountChange }) {
                                     borderRadius: '6px',
                                     border: '1px solid #E8E8E8',
                                     backgroundColor: currentPage === 1 ? '#F0F0F0' : '#fff',
-                                    color: currentPage === 1 ? '#999' : '#4CAF50',
+                                    color: currentPage === 1 ? '#999' : '#FF6B6B',
                                     fontSize: '13px',
                                     fontWeight: '600',
                                     cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
@@ -340,21 +305,21 @@ function PaymentSuccessful({ onCountChange }) {
                                 disabled={currentPage === 1}
                                 onMouseEnter={(e) => {
                                     if (currentPage > 1) {
-                                        e.currentTarget.style.backgroundColor = '#4CAF50';
+                                        e.currentTarget.style.backgroundColor = '#FF6B6B';
                                         e.currentTarget.style.color = '#fff';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
                                     if (currentPage > 1) {
                                         e.currentTarget.style.backgroundColor = '#fff';
-                                        e.currentTarget.style.color = '#4CAF50';
+                                        e.currentTarget.style.color = '#FF6B6B';
                                     }
                                 }}
                             >
                                 ← Trước
                             </button>
                             <span style={{ fontSize: '14px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                Trang <strong style={{ color: '#4CAF50', fontSize: '16px' }}>{currentPage}</strong> / <strong>{totalPages}</strong>
+                                Trang <strong style={{ color: '#FF6B6B', fontSize: '16px' }}>{currentPage}</strong> / <strong>{totalPages}</strong>
                             </span>
                             <button
                                 style={{
@@ -362,7 +327,7 @@ function PaymentSuccessful({ onCountChange }) {
                                     borderRadius: '6px',
                                     border: '1px solid #E8E8E8',
                                     backgroundColor: currentPage === totalPages ? '#F0F0F0' : '#fff',
-                                    color: currentPage === totalPages ? '#999' : '#4CAF50',
+                                    color: currentPage === totalPages ? '#999' : '#FF6B6B',
                                     fontSize: '13px',
                                     fontWeight: '600',
                                     cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
@@ -373,14 +338,14 @@ function PaymentSuccessful({ onCountChange }) {
                                 disabled={currentPage === totalPages}
                                 onMouseEnter={(e) => {
                                     if (currentPage < totalPages) {
-                                        e.currentTarget.style.backgroundColor = '#4CAF50';
+                                        e.currentTarget.style.backgroundColor = '#FF6B6B';
                                         e.currentTarget.style.color = '#fff';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
                                     if (currentPage < totalPages) {
                                         e.currentTarget.style.backgroundColor = '#fff';
-                                        e.currentTarget.style.color = '#4CAF50';
+                                        e.currentTarget.style.color = '#FF6B6B';
                                     }
                                 }}
                             >
@@ -394,4 +359,4 @@ function PaymentSuccessful({ onCountChange }) {
     );
 }
 
-export default PaymentSuccessful;
+export default CancelledInvoice;

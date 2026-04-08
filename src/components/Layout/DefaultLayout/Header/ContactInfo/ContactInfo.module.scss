@@ -1199,6 +1199,7 @@
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1385,6 +1386,7 @@
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1904,6 +1906,260 @@
     color: #666;
     margin: 0;
     line-height: 1.5;
+}
+
+/* Products By Price Range */
+.products-by-price-container {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f9f8 100%);
+    border: 2px solid rgba(21, 105, 83, 0.15);
+    border-radius: 16px;
+    padding: 16px;
+    animation: slideInCard 0.5s ease-out;
+}
+
+.price-range-message {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 12px 0;
+    font-weight: 500;
+}
+
+.price-range-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.product-price-card {
+    background: linear-gradient(135deg, #e8f5f1 0%, #d4e8e3 100%);
+    border: 2px solid rgba(21, 105, 83, 0.15);
+    border-radius: 12px;
+    padding: 12px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.product-price-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(21, 105, 83, 0.15);
+    border-color: #156953;
+}
+
+.product-price-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff9800 0%, #ff8c00 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.product-price-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #156953;
+    margin: 0 0 6px 0;
+}
+
+.product-price-desc {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price-info {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.stock-info {
+    font-size: 11px;
+    color: #666;
+    background: rgba(21, 105, 83, 0.08);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.product-price-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ff9800;
+    margin: 0;
+}
+
+/* Add Product to Cart */
+.add-to-cart-container {
+    background: linear-gradient(135deg, #e8f5f1 0%, #d4e8e3 100%);
+    border: 2px solid rgba(21, 105, 83, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+    animation: slideInCard 0.5s ease-out;
+}
+
+.add-to-cart-card {
+    background: white;
+    border: 2px solid #156953;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(21, 105, 83, 0.12);
+}
+
+.cart-success-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    animation: scaleIn 0.4s ease-out;
+}
+
+.cart-success-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #156953;
+    margin: 0 0 8px 0;
+}
+
+.cart-message {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 12px 0;
+    font-weight: 500;
+}
+
+.cart-item-info {
+    background: linear-gradient(135deg, #f5f9f8 0%, #e8f4f2 100%);
+    border-radius: 10px;
+    padding: 12px;
+    border-left: 4px solid #156953;
+}
+
+.cart-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.cart-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #156953;
+    flex: 1;
+    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cart-item-qty {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ff9800;
+    background: rgba(255, 152, 0, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+.cart-item-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ff9800;
+    text-align: right;
+}
+
+/* Remove Product from Cart */
+.remove-from-cart-container {
+    background: linear-gradient(135deg, #fef3e2 0%, #ffe8cc 100%);
+    border: 2px solid rgba(244, 67, 54, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+    animation: slideInCard 0.5s ease-out;
+}
+
+.remove-from-cart-card {
+    background: white;
+    border: 2px solid #f44336;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.12);
+}
+
+.cart-remove-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    animation: scaleIn 0.4s ease-out;
+}
+
+.cart-remove-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f44336;
+    margin: 0 0 8px 0;
+}
+
+.cart-remove-message {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 12px 0;
+    font-weight: 500;
+}
+
+.remove-item-info {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border-radius: 10px;
+    padding: 12px;
+    border-left: 4px solid #f44336;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.remove-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f44336;
+    flex: 1;
+    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.remove-status {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f44336;
+    background: rgba(244, 67, 54, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes slideInCard {

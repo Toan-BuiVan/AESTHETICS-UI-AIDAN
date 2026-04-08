@@ -296,6 +296,27 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                     data: apiData.data,
                     isSystem: true
                 }]);
+            } else if (apiData?.toolUsed === 'getProductsByPriceRange' && apiData.data?.products) {
+                // Kiểu: Products by price range
+                setMessages((prev) => [...prev, {
+                    type: 'productsByPriceRange',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'addProductToCart' && apiData.data?.cartProductId) {
+                // Kiểu: Add product to cart
+                setMessages((prev) => [...prev, {
+                    type: 'addProductToCart',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
+            } else if (apiData?.toolUsed === 'removeProductFromCart' && apiData.data?.productId) {
+                // Kiểu: Remove product from cart
+                setMessages((prev) => [...prev, {
+                    type: 'removeProductFromCart',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
             } else if ((apiData?.toolUsed === 'chatbot_llm' || apiData?.toolUsed === 'chatbot_friendly') && !apiData.data) {
                 // Kiểu 16-17: Chatbot responses (data: null)
                 const message = apiData.conversationUpdate?.content || apiData.message;
@@ -673,6 +694,57 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+                            </div>
+                        ) : msg.type === 'productsByPriceRange' ? (
+                            // Type: Products by price range
+                            <div className={cx('products-by-price-container')}>
+                                <p className={cx('price-range-message')}>{msg.data.message}</p>
+                                <div className={cx('price-range-grid')}>
+                                    {msg.data.products && msg.data.products.map((product, idx) => (
+                                        <div key={idx} className={cx('product-price-card')}>
+                                            <div className={cx('product-price-badge')}>💰 Trong giá</div>
+                                            <h4 className={cx('product-price-name')}>{product.productName}</h4>
+                                            <p className={cx('product-price-desc')}>{product.description}</p>
+                                            <div className={cx('product-price-info')}>
+                                                <span className={cx('stock-info')}>📦 {product.quantity} sản phẩm</span>
+                                            </div>
+                                            <p className={cx('product-price-value')}>
+                                                {Number(product.price).toLocaleString('vi-VN')} VND
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : msg.type === 'addProductToCart' ? (
+                            // Type: Add product to cart
+                            <div className={cx('add-to-cart-container')}>
+                                <div className={cx('add-to-cart-card')}>
+                                    <div className={cx('cart-success-icon')}>✅</div>
+                                    <h3 className={cx('cart-success-title')}>Thêm vào giỏ hàng thành công!</h3>
+                                    <p className={cx('cart-message')}>{msg.data.message}</p>
+                                    <div className={cx('cart-item-info')}>
+                                        <div className={cx('cart-item-header')}>
+                                            <span className={cx('cart-item-name')}>{msg.data.productName}</span>
+                                            <span className={cx('cart-item-qty')}>x{msg.data.quantity}</span>
+                                        </div>
+                                        <div className={cx('cart-item-price')}>
+                                            {Number(msg.data.price).toLocaleString('vi-VN')} VND
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : msg.type === 'removeProductFromCart' ? (
+                            // Type: Remove product from cart
+                            <div className={cx('remove-from-cart-container')}>
+                                <div className={cx('remove-from-cart-card')}>
+                                    <div className={cx('cart-remove-icon')}>🗑️</div>
+                                    <h3 className={cx('cart-remove-title')}>Xóa khỏi giỏ hàng thành công!</h3>
+                                    <p className={cx('cart-remove-message')}>{msg.data.message}</p>
+                                    <div className={cx('remove-item-info')}>
+                                        <span className={cx('remove-item-name')}>{msg.data.productName}</span>
+                                        <span className={cx('remove-status')}>Đã xóa</span>
+                                    </div>
                                 </div>
                             </div>
                         ) : msg.type === 'topSellingProducts' ? (
