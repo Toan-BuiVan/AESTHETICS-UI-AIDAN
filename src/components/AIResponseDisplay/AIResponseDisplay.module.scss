@@ -301,6 +301,7 @@
     color: #666;
     line-height: 1.6;
     display: -webkit-box;
+    line-clamp: 3;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -522,4 +523,136 @@
     font-size: 14px;
     color: #666;
     line-height: 1.6;
+}
+
+/* Product Detail */
+.productDetailContainer {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
+
+    .header {
+        background: linear-gradient(135deg, rgba(28, 160, 125, 0.05) 0%, rgba(28, 160, 125, 0.02) 100%);
+        border-radius: 8px;
+        padding: 16px;
+        margin: -24px -24px 20px -24px;
+        border: none;
+    }
+}
+
+.productDetailCard {
+    padding: 16px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+}
+
+.productDesc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.productDetailsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: #f5f7f8;
+    border-radius: 6px;
+    border-left: 3px solid #1ca07d;
+
+    .label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a1a1a;
+
+        &.price {
+            color: #1ca07d;
+            font-size: 15px;
+        }
+    }
+}
+
+.benefitsSection,
+.approvalSection {
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(28, 160, 125, 0.03);
+    border-left: 3px solid #1ca07d;
+    border-radius: 4px;
+
+    h5 {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    p {
+        margin: 0;
+        font-size: 12px;
+        color: #666;
+        line-height: 1.6;
+    }
+}
+
+/* LLM Response */
+.llmContainer {
+    background: white;
+    border: 1px solid rgba(28, 160, 125, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.llmMessage {
+    padding: 16px;
+    background: white;
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        color: #333;
+        line-height: 1.8;
+        font-weight: 500;
+    }
+}
+
+/* Friendly Response */
+.friendlyContainer {
+    background: linear-gradient(135deg, rgba(28, 160, 125, 0.08) 0%, rgba(28, 160, 125, 0.04) 100%);
+    border: 1px solid rgba(28, 160, 125, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.friendlyMessage {
+    padding: 20px;
+    background: white;
+    border-top: 2px solid #1ca07d;
+
+    p {
+        margin: 0;
+        font-size: 15px;
+        color: #1a1a1a;
+        line-height: 1.8;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+    }
 }

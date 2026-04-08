@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './ServicesPage.module.scss';
 import classNames from 'classnames/bind';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ServicePackageCard from './ServicePackageCard';
 import DoctorCard from './DoctorCard';
 import BookingSummary from './BookingSummary';
@@ -68,6 +68,7 @@ function ServicesPage() {
     const [selectedSessionForBooking, setSelectedSessionForBooking] = useState(null); // Track which session is being booked
 
     const location = useLocation();
+    const navigate = useNavigate();
     const [isSingleServiceBooking, setIsSingleServiceBooking] = useState(false);
 
     useEffect(() => {
@@ -986,7 +987,7 @@ function ServicesPage() {
             return;
         }
 
-        // If appointment already created by BookingSummary API call, show success and return
+        // If appointment already created by BookingSummary API call, show success and redirect
         if (appointmentCreated) {
             const paymentMethodText = {
                 'partial': 'Trả trước 1 phần (30%)',
@@ -1001,7 +1002,7 @@ function ServicesPage() {
                 setSelectedDate(null);
                 setSelectedTime(null);
                 setSuccessMessage(null);
-            }, 3000);
+            }, 1500);
             return;
         }
 

@@ -1807,3 +1807,112 @@
         transform: translateY(-10px);
     }
 }
+
+/* ===== Product Detail Card ===== */
+.product-detail-container {
+    background: linear-gradient(135deg, #f5f9f8 0%, #e8f4f2 100%);
+    border: 2px solid rgba(21, 105, 83, 0.12);
+    border-radius: 16px;
+    padding: 16px;
+    animation: slideInCard 0.5s ease-out;
+}
+
+.product-detail-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%);
+    border: 1px solid rgba(21, 105, 83, 0.08);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.product-detail-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #156953;
+    margin: 0 0 8px 0;
+}
+
+.product-detail-description {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 14px 0;
+}
+
+.product-detail-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: linear-gradient(135deg, #e8f5f1 0%, #d4e8e3 100%);
+    border: 1px solid rgba(21, 105, 83, 0.1);
+    border-radius: 8px;
+}
+
+.spec-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.spec-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #156953;
+}
+
+.product-benefits {
+    background: linear-gradient(135deg, #e8f5f1 0%, #f0fdfb 100%);
+    border-left: 4px solid #1ca07d;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.product-benefits h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #156953;
+    margin: 0 0 8px 0;
+}
+
+.product-benefits p {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.product-approval {
+    background: linear-gradient(135deg, #f0f4f9 0%, #e8ecf1 100%);
+    border: 1px dashed rgba(21, 105, 83, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.product-approval p {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+@keyframes slideInCard {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

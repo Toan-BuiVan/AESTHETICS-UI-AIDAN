@@ -374,10 +374,90 @@ function AIResponseDisplay({ response }) {
         );
     }
 
+    // Type 17: Product Detail
+    if (toolUsed === 'getProductDetail') {
+        return (
+            <div className={cx('container', 'productDetailContainer')}>
+                <div className={cx('header')}>
+                    <FontAwesomeIcon icon={faShoppingBag} className={cx('headerIcon')} />
+                    <div className={cx('headerContent')}>
+                        <h3>Chi Tiết Sản Phẩm</h3>
+                        <p className={cx('productName')}>{data.productName}</p>
+                    </div>
+                </div>
+
+                <div className={cx('productDetailCard')}>
+                    <div className={cx('productDesc')}>{data.description}</div>
+                    
+                    <div className={cx('productDetailsGrid')}>
+                        <div className={cx('detailItem')}>
+                            <span className={cx('label')}>💰 Giá:</span>
+                            <span className={cx('value', 'price')}>
+                                {data.price?.toLocaleString('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                })}
+                            </span>
+                        </div>
+                        <div className={cx('detailItem')}>
+                            <span className={cx('label')}>📦 Kho:</span>
+                            <span className={cx('value')}>{data.quantity}</span>
+                        </div>
+                        <div className={cx('detailItem')}>
+                            <span className={cx('label')}>👥 Lượng sử dụng:</span>
+                            <span className={cx('value')}>{data.userCount}</span>
+                        </div>
+                        {data.improvementDays && (
+                            <div className={cx('detailItem')}>
+                                <span className={cx('label')}>📅 Thời gian hiệu quả:</span>
+                                <span className={cx('value')}>{data.improvementDays} ngày</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {data.benefits && (
+                        <div className={cx('benefitsSection')}>
+                            <h5>✨ Lợi Ích Chính</h5>
+                            <p>{data.benefits}</p>
+                        </div>
+                    )}
+
+                    {data.approvalResult && (
+                        <div className={cx('approvalSection')}>
+                            <p>{data.approvalResult}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // Type 16: Chatbot LLM Response (general message)
+    if (toolUsed === 'chatbot_llm') {
+        return (
+            <div className={cx('container', 'llmContainer')}>
+                <div className={cx('llmMessage')}>
+                    <p>{response.message}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Type 18: Chatbot Friendly Response
+    if (toolUsed === 'chatbot_friendly') {
+        return (
+            <div className={cx('container', 'friendlyContainer')}>
+                <div className={cx('friendlyMessage')}>
+                    <p>{response.message}</p>
+                </div>
+            </div>
+        );
+    }
+
     // Default fallback
     return (
         <div className={cx('container', 'defaultContainer')}>
-            <div className={cx('message')}>{data.message}</div>
+            <div className={cx('message')}>{data?.message || response.message}</div>
         </div>
     );
 }

@@ -60,84 +60,6 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
         }));
     };
 
-    const handleAddToCart = async (productID) => {
-        // Lấy các giá trị từ localStorage
-
-        const deviceName = localStorage.getItem('deviceName') || '';
-
-        const refreshToken = localStorage.getItem('refreshToken') || '';
-
-        const token = localStorage.getItem('token') || '';
-
-        const userID = localStorage.getItem('userID') || '';
-
-        if (!userID) {
-            setSuccessMessage('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
-
-            return;
-        }
-
-        const requestData = {
-            userID: userID,
-
-            productID: productID,
-
-            quantity: 1,
-        };
-
-        const headers = {
-            'Content-Type': 'application/json',
-
-            DeviceName: deviceName,
-
-            RefreshToken: refreshToken,
-
-            Authorization: token ? `Bearer ${token}` : '',
-
-            UserID: userID,
-        };
-
-        const apiUrl = 'http://localhost:5262/api/CartProduct/Insert_CartProduct';
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-
-                headers: headers,
-
-                body: JSON.stringify(requestData),
-            });
-
-            const responseData = await response.json();
-
-            // Cập nhật token mới nếu có
-
-            const newAccessToken = response.headers.get('New-AccessToken');
-
-            const newRefreshToken = response.headers.get('New-RefreshToken');
-
-            if (newAccessToken) localStorage.setItem('token', newAccessToken);
-
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-
-            if (response.ok) {
-                setSuccessMessage(responseData.resposeMessage); // Giả sử typo 'resposeMessage' là 'responseMessage'
-            } else {
-                throw new Error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
-            }
-        } catch (error) {
-            console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
-
-            // Tùy chọn: Thêm thông báo lỗi vào chat
-
-            setMessages((prev) => [
-                ...prev,
-
-                { type: 'text', text: 'Thêm vào giỏ hàng thất bại. Vui lòng thử lại.', isSystem: true },
-            ]);
-        }
-    };
-
     const handleBooking = (serviceID) => {
         setSelectedServiceID(serviceID);
 
@@ -367,6 +289,13 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                     data: apiData.data,
                     isSystem: true
                 }]);
+            } else if (apiData?.toolUsed === 'getProductDetail' && apiData.data?.productId) {
+                // Kiểu 18: Product detail
+                setMessages((prev) => [...prev, {
+                    type: 'productDetail',
+                    data: apiData.data,
+                    isSystem: true
+                }]);
             } else if ((apiData?.toolUsed === 'chatbot_llm' || apiData?.toolUsed === 'chatbot_friendly') && !apiData.data) {
                 // Kiểu 16-17: Chatbot responses (data: null)
                 const message = apiData.conversationUpdate?.content || apiData.message;
@@ -422,7 +351,7 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
         } catch (error) {
             console.error('Lỗi khi gửi tin nhắn:', error.message);
 
-            const errorMessage = 'Gửi tin nhắn thất bại. Vui lòng thử lại.';
+            const errorMessage = 'Gửi tin nhắn thất bại. Vui lòng thử lại! Vui lòng liên hệ hotline 0383102388.';
 
             setMessages((prev) => [...prev, { type: 'text', text: errorMessage, isSystem: true }]);
         } finally {
@@ -526,10 +455,6 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                                         style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '8px' }}
                                     />
                                 )}
-
-                                <button onClick={() => handleAddToCart(msg.data.productID || msg.data.productId)}>
-                                    <FontAwesomeIcon icon={faShoppingCart} /> Thêm vào giỏ hàng
-                                </button>
                             </div>
                         ) : msg.type === 'service' ? (
                             <div className={cx('service-item')}>
@@ -901,6 +826,50 @@ const ContactInfo = forwardRef(({ onClose, setSuccessMessage }, ref) => {
                                                     </li>
                                                 ))}
                                             </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : msg.type === 'productDetail' ? (
+                            // Type 18: Product detail
+                            <div className={cx('product-detail-container')}>
+                                <div className={cx('product-detail-card')}>
+                                    <h3 className={cx('product-detail-name')}>{msg.data.productName}</h3>
+                                    <p className={cx('product-detail-description')}>{msg.data.description}</p>
+                                    
+                                    <div className={cx('product-detail-specs')}>
+                                        <div className={cx('spec-item')}>
+                                            <span className={cx('spec-label')}>💰 Giá:</span>
+                                            <span className={cx('spec-value')}>
+                                                {Number(msg.data.price).toLocaleString('vi-VN')} VND
+                                            </span>
+                                        </div>
+                                        <div className={cx('spec-item')}>
+                                            <span className={cx('spec-label')}>📦 Kho:</span>
+                                            <span className={cx('spec-value')}>{msg.data.quantity}</span>
+                                        </div>
+                                        <div className={cx('spec-item')}>
+                                            <span className={cx('spec-label')}>👥 Lượng sử dụng:</span>
+                                            <span className={cx('spec-value')}>{msg.data.userCount}</span>
+                                        </div>
+                                        {msg.data.improvementDays && (
+                                            <div className={cx('spec-item')}>
+                                                <span className={cx('spec-label')}>📅 Hiệu quả:</span>
+                                                <span className={cx('spec-value')}>{msg.data.improvementDays} ngày</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {msg.data.benefits && (
+                                        <div className={cx('product-benefits')}>
+                                            <h4>✨ Lợi Ích Chính</h4>
+                                            <p>{msg.data.benefits}</p>
+                                        </div>
+                                    )}
+
+                                    {msg.data.approvalResult && (
+                                        <div className={cx('product-approval')}>
+                                            <p>{msg.data.approvalResult}</p>
                                         </div>
                                     )}
                                 </div>
