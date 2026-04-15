@@ -3,6 +3,7 @@ import classNames from 'classnames/bind';
 import styles from './CustomerForm.module.scss';
 import axios from 'axios';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
+import PaymentMethods from '../PaymentMethods';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faBirthdayCake, faPhone, faMapMarker, faIdCard, faTrophy, faStar, faShieldAlt, faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
@@ -287,6 +288,11 @@ function CustomerForm() {
                     </div>
                 </div>
             )}
+
+            {/* Payment Methods Section */}
+            <div style={{ marginTop: '40px', paddingTop: '40px', borderTop: '1px solid #E8E8E8' }}>
+                <PaymentMethods />
+            </div>
 
             <div className={cx('form-actions')}>
                 <button 

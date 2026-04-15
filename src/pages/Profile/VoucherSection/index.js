@@ -94,7 +94,7 @@ function VoucherSection() {
         Object.entries(debouncedVoucherPointTypes).forEach(async ([voucherId, selectedPointType]) => {
             const customerId = localStorage.getItem('customerId');
             if (!customerId) {
-                setSuccessMessage('Không tìm thấy customerId trong localStorage');
+                setSuccessMessage('Thêm thất bại');
                 return;
             }
 
@@ -138,7 +138,7 @@ function VoucherSection() {
     const handleClaimVoucher = async (voucher) => {
         const customerId = localStorage.getItem('customerId');
         if (!customerId) {
-            setSuccessMessage('Không tìm thấy customerId trong localStorage');
+            setSuccessMessage('Thêm thất bại!');
             return;
         }
 

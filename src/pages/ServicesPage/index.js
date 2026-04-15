@@ -653,7 +653,7 @@ function ServicesPage() {
             });
         } catch (error) {
             console.error('Error fetching doctor availability:', error);
-            setDoctorAvailabilityError('Không thể tải giờ trống bác sĩ: ' + error.message);
+            setDoctorAvailabilityError('Đã hết giờ trống hoặc bác sĩ không làm việc!');
         } finally {
             setLoadingTimeSlots(false);
         }
@@ -1358,8 +1358,8 @@ function ServicesPage() {
                                                         disabled={
                                                             !selectedSessions[index] || 
                                                             selectedSessions[index].length === 0 ||
-                                                            // Disable if any selected session doesn't have datetime selected
-                                                            !selectedSessions[index].every(sessionKey => inlineBookings[sessionKey])
+                                                            // Disable if any selected session doesn't have full datetime selected (date + time)
+                                                            !selectedSessions[index].every(sessionKey => inlineBookings[sessionKey] && inlineBookings[sessionKey].selectedTimeSlot)
                                                         }
                                                     >
                                                         Đặt lịch {selectedSessions[index]?.length > 0 ? `${selectedSessions[index].length} buổi` : 'buổi'}

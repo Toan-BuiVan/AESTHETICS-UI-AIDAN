@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './ContinuePayment.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faCalendarAlt, faBox, faStethoscope, faCreditCard, faMoneyBill, faSpinner, faCheckCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faCalendarAlt, faBox, faStethoscope, faCreditCard, faMoneyBill, faSpinner, faCheckCircle, faTimes, faUndo, faImage } from '@fortawesome/free-solid-svg-icons';
 import SuccessMessage from '~/components/Layout/DefaultLayout/Header/SuccessMessage';
 import useDebounce from '~/hooks/useDebounce';
 
@@ -22,6 +22,21 @@ function ContinuePayment({ onCountChange }) {
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
     const [paymentLoading, setPaymentLoading] = useState(false);
     const debouncedPaymentMethod = useDebounce(selectedPaymentMethod, 3000);
+
+    // Refund states
+    const [showReturnModal, setShowReturnModal] = useState(false);
+    const [selectedInvoiceForRefund, setSelectedInvoiceForRefund] = useState(null);
+    const [refundReason, setRefundReason] = useState('');
+    const [refundImages, setRefundImages] = useState([]);
+    const [refundMethod, setRefundMethod] = useState('TienMat');
+    const [isProcessingRefund, setIsProcessingRefund] = useState(false);
+    const refundFormData = {
+        reason: refundReason,
+        images: refundImages.length,
+        method: refundMethod,
+        timestamp: Date.now(),
+    };
+    const debouncedRefundData = useDebounce(refundFormData, 3000);
 
     // Hàm gọi API getinvoicelist với status ThanhToanMotPhan và ThanhToanToanBo
     const fetchInvoices = async (page = 1) => {
@@ -119,6 +134,70 @@ function ContinuePayment({ onCountChange }) {
         }
     }, [debouncedPaymentMethod]);
 
+    // Refund Effect - Auto-submit refund after 3 seconds of form changes
+    useEffect(() => {
+        if (!showReturnModal || !selectedInvoiceForRefund || !refundReason.trim() || !refundMethod || refundImages.length === 0 || isProcessingRefund) {
+            return;
+        }
+
+        const submitRefund = async () => {
+            try {
+                setIsProcessingRefund(true);
+                const customerId = localStorage.getItem('customerId');
+                const token = localStorage.getItem('token') || '';
+                const refreshToken = localStorage.getItem('refreshToken') || '';
+
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : '',
+                    'RefreshToken': refreshToken,
+                };
+
+                const requestData = {
+                    invoiceId: selectedInvoiceForRefund.invoice.id,
+                    customerId: parseInt(customerId),
+                    refundReason: refundReason.trim(),
+                    refundImages: refundImages.join(';'),
+                    refundMethod: refundMethod,
+                };
+
+                const response = await fetch('http://localhost:5122/api/Refund/create', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestData),
+                });
+
+                const result = await response.json();
+                console.log('Refund response:', result);
+
+                if (result.success) {
+                    // Reset form and close modal
+                    setRefundReason('');
+                    setRefundImages([]);
+                    setRefundMethod('TienMat');
+                    setShowReturnModal(false);
+                    setSelectedInvoiceForRefund(null);
+                    setSuccessMessage('✓ Yêu cầu hoàn tiền đã được gửi thành công');
+                    setTimeout(() => setSuccessMessage(null), 3000);
+                    
+                    // Refresh invoices list
+                    fetchInvoices(currentPage);
+                } else {
+                    setSuccessMessage(`❌ ${result.message || 'Gửi yêu cầu hoàn tiền thất bại'}`);
+                    setTimeout(() => setSuccessMessage(null), 3000);
+                }
+                setIsProcessingRefund(false);
+            } catch (err) {
+                console.error('Lỗi khi hoàn tiền:', err);
+                setSuccessMessage(`❌ Lỗi: ${err.message}`);
+                setIsProcessingRefund(false);
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        };
+
+        submitRefund();
+    }, [debouncedRefundData, showReturnModal, selectedInvoiceForRefund]);
+
     // Xử lý toggle expand details
     const handleToggleDetails = (invoiceID) => {
         setExpandedInvoice(expandedInvoice === invoiceID ? null : invoiceID);
@@ -211,12 +290,91 @@ function ContinuePayment({ onCountChange }) {
         }
     };
 
+    // Xử lý mở refund modal
+    const handleReturnProduct = (invoice) => {
+        setSelectedInvoiceForRefund(invoice);
+        setShowReturnModal(true);
+        setRefundReason('');
+    };
+
+    // Xử lý đóng refund modal
+    const handleCloseReturnModal = () => {
+        setShowReturnModal(false);
+        setSelectedInvoiceForRefund(null);
+        setRefundReason('');
+        setRefundImages([]);
+        setRefundMethod('TienMat');
+        setIsProcessingRefund(false);
+    };
+
+    // Xử lý chọn hình ảnh hoàn tiền
+    const handleRefundImageSelect = (e) => {
+        const files = Array.from(e.target.files || []);
+        const newImages = [];
+        let processedCount = 0;
+
+        files.forEach((file) => {
+            if (!file.type.startsWith('image/')) {
+                console.warn(`Tệp ${file.name} không phải là hình ảnh, sẽ bị bỏ qua`);
+                processedCount++;
+                if (processedCount === files.length) {
+                    setRefundImages(newImages);
+                }
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                newImages.push(reader.result);
+                processedCount++;
+                if (processedCount === files.length) {
+                    setRefundImages(newImages);
+                }
+            };
+            reader.onerror = () => {
+                console.error(`Lỗi đọc tệp ${file.name}`);
+                processedCount++;
+                if (processedCount === files.length) {
+                    setRefundImages(newImages);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Nếu không có tệp hợp lệ
+        if (files.length === 0) {
+            setRefundImages([]);
+        }
+    };
+
+    // Xóa hình ảnh hoàn tiền
+    const handleRemoveRefundImage = (index) => {
+        setRefundImages((prev) => prev.filter((_, i) => i !== index));
+    };
+
     // Hàm format tiền tệ
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND',
         }).format(amount);
+    };
+
+    // Hàm kiểm tra xem có sản phẩm trong đơn hàng không
+    const hasProducts = (invoiceDetails) => {
+        return invoiceDetails && invoiceDetails.some(detail => detail.type === 'BanHang' && detail.productId);
+    };
+
+    // Hàm kiểm tra xem có thể hiển thị button hoàn tiền
+    const canShowRefundButton = (invoice, invoiceDetails) => {
+        // ContinuePayment: Hiển thị button nếu có serviceId
+        const hasServiceId = invoiceDetails && invoiceDetails.some(detail => detail.serviceId);
+        return hasServiceId;
+    };
+
+    const isRefundDisabled = (invoice) => {
+        // Disable button khi isRefund = true hoặc paidAmount <= 0
+        return invoice.isRefund === true || invoice.paidAmount <= 0;
     };
 
     // Hàm lấy statusBadge
@@ -460,37 +618,87 @@ function ContinuePayment({ onCountChange }) {
                                             <button 
                                                 className={cx('btn-pay')} 
                                                 onClick={() => handleOpenPaymentModal(item)}
+                                                disabled={item.invoice.isRefund === true}
                                                 style={{
                                                     width: '100%',
                                                     marginTop: '12px',
                                                     padding: '12px',
-                                                    backgroundColor: '#FF9800',
-                                                    color: '#fff',
+                                                    backgroundColor: item.invoice.isRefund === true ? '#CCCCCC' : '#FF9800',
+                                                    color: item.invoice.isRefund === true ? '#999' : '#fff',
                                                     border: 'none',
                                                     borderRadius: '8px',
                                                     fontSize: '14px',
                                                     fontWeight: '600',
-                                                    cursor: 'pointer',
+                                                    cursor: item.invoice.isRefund === true ? 'not-allowed' : 'pointer',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     gap: '8px',
                                                     transition: 'all 0.3s ease',
+                                                    opacity: item.invoice.isRefund === true ? 0.5 : 1,
                                                 }}
                                                 onMouseEnter={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#F57C00';
-                                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 152, 0, 0.3)';
+                                                    if (item.invoice.isRefund !== true) {
+                                                        e.currentTarget.style.backgroundColor = '#F57C00';
+                                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 152, 0, 0.3)';
+                                                    }
                                                 }}
                                                 onMouseLeave={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#FF9800';
-                                                    e.currentTarget.style.transform = 'translateY(0)';
-                                                    e.currentTarget.style.boxShadow = 'none';
+                                                    if (item.invoice.isRefund !== true) {
+                                                        e.currentTarget.style.backgroundColor = '#FF9800';
+                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }
                                                 }}
+                                                title={item.invoice.isRefund === true ? 'Hóa đơn đã hoàn tiền, không thể thanh toán thêm' : ''}
                                             >
                                                 <FontAwesomeIcon icon={faCreditCard} />
                                                 <span>Tiếp tục thanh toán</span>
                                             </button>
+
+                                            {/* Refund Button - Show if has serviceId and no products */}
+                                            {canShowRefundButton(item.invoice, item.invoiceDetails) && (
+                                                <button
+                                                    onClick={() => handleReturnProduct(item)}
+                                                    disabled={isRefundDisabled(item.invoice)}
+                                                    style={{
+                                                        width: '100%',
+                                                        marginTop: '12px',
+                                                        padding: '12px',
+                                                        borderRadius: '8px',
+                                                        border: '2px solid #FF6B6B',
+                                                        backgroundColor: isRefundDisabled(item.invoice) ? '#E8E8E8' : '#FFF0F0',
+                                                        color: isRefundDisabled(item.invoice) ? '#999' : '#FF6B6B',
+                                                        fontSize: '14px',
+                                                        fontWeight: '600',
+                                                        cursor: isRefundDisabled(item.invoice) ? 'not-allowed' : 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px',
+                                                        transition: 'all 0.3s ease',
+                                                        opacity: isRefundDisabled(item.invoice) ? 0.5 : 1,
+                                                        borderColor: isRefundDisabled(item.invoice) ? '#DDD' : '#FF6B6B',
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        if (!isRefundDisabled(item.invoice)) {
+                                                            e.currentTarget.style.backgroundColor = '#FF6B6B';
+                                                            e.currentTarget.style.color = '#fff';
+                                                        }
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        if (!isRefundDisabled(item.invoice)) {
+                                                            e.currentTarget.style.backgroundColor = '#FFF0F0';
+                                                            e.currentTarget.style.color = '#FF6B6B';
+                                                        }
+                                                    }}
+                                                    title={item.invoice.isRefund === true ? 'Hóa đơn đã hoàn tiền' : item.invoice.paidAmount <= 0 ? 'Chỉ có thể hoàn tiền khi đã thanh toán' : ''}
+                                                >
+                                                    <FontAwesomeIcon icon={faUndo} style={{ fontSize: '14px' }} />
+                                                    Hoàn Tiền
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -907,6 +1115,506 @@ function ContinuePayment({ onCountChange }) {
                                         <span>Xác Nhận Thanh Toán</span>
                                     </>
                                 )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Refund Modal */}
+            {showReturnModal && (
+                <div className={cx('modal-overlay')} style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000,
+                }}>
+                    <div className={cx('modal-content')} style={{
+                        backgroundColor: '#fff',
+                        borderRadius: '12px',
+                        padding: '32px',
+                        maxWidth: '500px',
+                        width: '90%',
+                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+                        animation: 'slideUp 0.3s ease',
+                    }}>
+                        {/* Modal Header */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '24px',
+                            paddingBottom: '16px',
+                            borderBottom: '2px solid #F0F0F0',
+                        }}>
+                            <h2 style={{
+                                margin: 0,
+                                fontSize: '20px',
+                                fontWeight: '700',
+                                color: '#1e1e1e',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <FontAwesomeIcon icon={faUndo} style={{ color: '#FF6B6B' }} />
+                                Yêu Cầu Hoàn Tiền
+                            </h2>
+                            <button
+                                onClick={handleCloseReturnModal}
+                                disabled={isProcessingRefund}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    fontSize: '24px',
+                                    cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                    color: '#999',
+                                    transition: 'all 0.3s ease',
+                                    padding: 0,
+                                    width: '32px',
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    opacity: isProcessingRefund ? 0.5 : 1,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isProcessingRefund) {
+                                        e.currentTarget.style.color = '#FF6B6B';
+                                        e.currentTarget.style.backgroundColor = '#FFE8E8';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isProcessingRefund) {
+                                        e.currentTarget.style.color = '#999';
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                    }
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                        </div>
+
+                        {/* Invoice Info */}
+                        {selectedInvoiceForRefund && (
+                            <div style={{
+                                backgroundColor: '#FFF0F0',
+                                borderRadius: '8px',
+                                padding: '14px',
+                                marginBottom: '24px',
+                                border: '1px solid #FFD6D6',
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}>
+                                    <div>
+                                        <div style={{
+                                            fontSize: '11px',
+                                            fontWeight: '600',
+                                            color: '#999',
+                                            textTransform: 'uppercase',
+                                            marginBottom: '4px',
+                                        }}>
+                                            Hóa đơn
+                                        </div>
+                                        <div style={{
+                                            fontSize: '14px',
+                                            fontWeight: '700',
+                                            color: '#1e1e1e',
+                                        }}>
+                                            #{selectedInvoiceForRefund.invoice.id}
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{
+                                            fontSize: '11px',
+                                            fontWeight: '600',
+                                            color: '#999',
+                                            textTransform: 'uppercase',
+                                            marginBottom: '4px',
+                                        }}>
+                                            Số tiền
+                                        </div>
+                                        <div style={{
+                                            fontSize: '16px',
+                                            fontWeight: '700',
+                                            color: '#FF6B6B',
+                                        }}>
+                                            {formatCurrency(selectedInvoiceForRefund.invoice.paidAmount).split(' ')[0]}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Refund Reason */}
+                        <div style={{ marginBottom: '24px' }}>
+                            <label style={{
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                color: '#666',
+                                marginBottom: '8px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                display: 'block',
+                            }}>
+                                Lý Do Hoàn Tiền *
+                            </label>
+
+                            <textarea
+                                value={refundReason}
+                                onChange={(e) => setRefundReason(e.target.value)}
+                                placeholder="Vui lòng nhập lý do hoàn tiền..."
+                                disabled={isProcessingRefund}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 14px',
+                                    border: '1px solid #E8E8E8',
+                                    borderRadius: '8px',
+                                    fontSize: '13px',
+                                    fontFamily: 'inherit',
+                                    resize: 'vertical',
+                                    minHeight: '100px',
+                                    backgroundColor: isProcessingRefund ? '#F5F5F5' : '#fff',
+                                    color: '#1e1e1e',
+                                    cursor: isProcessingRefund ? 'not-allowed' : 'text',
+                                    transition: 'all 0.3s ease',
+                                    boxSizing: 'border-box',
+                                }}
+                                onFocus={(e) => {
+                                    if (!isProcessingRefund) {
+                                        e.currentTarget.style.borderColor = '#FF9800';
+                                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(255, 152, 0, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = '#E8E8E8';
+                                    e.currentTarget.style.boxShadow = 'none';
+                                }}
+                            />
+                            <div style={{
+                                fontSize: '11px',
+                                color: '#999',
+                                marginTop: '6px',
+                            }}>
+                                Tự động gửi sau 3 giây khi bạn dừng nhập
+                            </div>
+                        </div>
+
+                        {/* Refund Method */}
+                        <div style={{ marginBottom: '24px' }}>
+                            <label style={{
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                color: '#666',
+                                marginBottom: '8px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                display: 'block',
+                            }}>
+                                Phương Thức Hoàn Tiền *
+                            </label>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                {/* Tiền Mặt Option */}
+                                <label style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '14px 16px',
+                                    border: refundMethod === 'TienMat' ? '2px solid #FF9800' : '1px solid #E8E8E8',
+                                    borderRadius: '8px',
+                                    backgroundColor: refundMethod === 'TienMat' ? '#FFF3E0' : '#fff',
+                                    cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    opacity: isProcessingRefund ? 0.6 : 1,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (refundMethod !== 'TienMat' && !isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#F8F8FA';
+                                        e.currentTarget.style.borderColor = '#FFD699';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (refundMethod !== 'TienMat' && !isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#fff';
+                                        e.currentTarget.style.borderColor = '#E8E8E8';
+                                    }
+                                }}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="refund-method"
+                                        value="TienMat"
+                                        checked={refundMethod === 'TienMat'}
+                                        onChange={(e) => setRefundMethod(e.target.value)}
+                                        disabled={isProcessingRefund}
+                                        style={{
+                                            width: '18px',
+                                            height: '18px',
+                                            cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                            accentColor: '#FF9800',
+                                            marginRight: '10px',
+                                            flexShrink: 0,
+                                        }}
+                                    />
+                                    <div>
+                                        <div style={{
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            color: '#1e1e1e',
+                                        }}>
+                                            Tiền Mặt
+                                        </div>
+                                        <div style={{
+                                            fontSize: '11px',
+                                            color: '#999',
+                                            marginTop: '2px',
+                                        }}>
+                                            Nhận trực tiếp
+                                        </div>
+                                    </div>
+                                </label>
+
+                                {/* Chuyển Khoản Option */}
+                                <label style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '14px 16px',
+                                    border: refundMethod === 'ChuyenKhoan' ? '2px solid #FF9800' : '1px solid #E8E8E8',
+                                    borderRadius: '8px',
+                                    backgroundColor: refundMethod === 'ChuyenKhoan' ? '#FFF3E0' : '#fff',
+                                    cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    opacity: isProcessingRefund ? 0.6 : 1,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (refundMethod !== 'ChuyenKhoan' && !isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#F8F8FA';
+                                        e.currentTarget.style.borderColor = '#FFD699';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (refundMethod !== 'ChuyenKhoan' && !isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#fff';
+                                        e.currentTarget.style.borderColor = '#E8E8E8';
+                                    }
+                                }}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="refund-method"
+                                        value="ChuyenKhoan"
+                                        checked={refundMethod === 'ChuyenKhoan'}
+                                        onChange={(e) => setRefundMethod(e.target.value)}
+                                        disabled={isProcessingRefund}
+                                        style={{
+                                            width: '18px',
+                                            height: '18px',
+                                            cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                            accentColor: '#FF9800',
+                                            marginRight: '10px',
+                                            flexShrink: 0,
+                                        }}
+                                    />
+                                    <div>
+                                        <div style={{
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            color: '#1e1e1e',
+                                        }}>
+                                            Chuyển Khoản
+                                        </div>
+                                        <div style={{
+                                            fontSize: '11px',
+                                            color: '#999',
+                                            marginTop: '2px',
+                                        }}>
+                                            Vào tài khoản
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Refund Images Upload */}
+                        <div style={{ marginBottom: '24px' }}>
+                            <label style={{
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                color: '#666',
+                                marginBottom: '8px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                display: 'block',
+                            }}>
+                                Tải Lên Hình Ảnh Chứng Minh *
+                            </label>
+
+                            <label
+                                style={{
+                                    display: 'block',
+                                    padding: '20px',
+                                    border: '2px dashed #FF9800',
+                                    borderRadius: '8px',
+                                    backgroundColor: '#FFF9F5',
+                                    cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    textAlign: 'center',
+                                    opacity: isProcessingRefund ? 0.6 : 1,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#FFE8D0';
+                                        e.currentTarget.style.borderColor = '#F57C00';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#FFF9F5';
+                                        e.currentTarget.style.borderColor = '#FF9800';
+                                    }
+                                }}
+                            >
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={handleRefundImageSelect}
+                                    disabled={isProcessingRefund}
+                                    style={{
+                                        display: 'none',
+                                    }}
+                                />
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                                    <FontAwesomeIcon icon={faImage} style={{ fontSize: '28px', color: '#FF9800' }} />
+                                    <div>
+                                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#1e1e1e' }}>
+                                            Nhấp để tải lên hoặc kéo thả các tệp
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
+                                            PNG, JPG, GIF tối đa 10MB mỗi tệp
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            {/* Selected Images Preview */}
+                            {refundImages.length > 0 && (
+                                <div style={{ marginTop: '16px' }}>
+                                    <div style={{ fontSize: '12px', fontWeight: '600', color: '#666', marginBottom: '8px' }}>
+                                        Hình ảnh đã chọn ({refundImages.length})
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
+                                        {refundImages.map((image, index) => (
+                                            <div
+                                                key={index}
+                                                style={{
+                                                    position: 'relative',
+                                                    width: '80px',
+                                                    height: '80px',
+                                                    borderRadius: '6px',
+                                                    overflow: 'hidden',
+                                                    border: '1px solid #E8E8E8',
+                                                    backgroundColor: '#F5F5F5',
+                                                }}
+                                            >
+                                                <img
+                                                    src={image}
+                                                    alt={`Preview ${index + 1}`}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover',
+                                                    }}
+                                                />
+                                                <button
+                                                    onClick={() => handleRemoveRefundImage(index)}
+                                                    disabled={isProcessingRefund}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '2px',
+                                                        right: '2px',
+                                                        width: '24px',
+                                                        height: '24px',
+                                                        padding: 0,
+                                                        backgroundColor: '#FF6B6B',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        borderRadius: '50%',
+                                                        fontSize: '14px',
+                                                        cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transition: 'all 0.2s ease',
+                                                        opacity: isProcessingRefund ? 0.5 : 0.8,
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        if (!isProcessingRefund) {
+                                                            e.currentTarget.style.opacity = '1';
+                                                            e.currentTarget.style.transform = 'scale(1.1)';
+                                                        }
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        if (!isProcessingRefund) {
+                                                            e.currentTarget.style.opacity = '0.8';
+                                                            e.currentTarget.style.transform = 'scale(1)';
+                                                        }
+                                                    }}
+                                                >
+                                                    <FontAwesomeIcon icon={faTimes} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div style={{
+                            display: 'flex',
+                            gap: '12px',
+                            paddingTop: '16px',
+                            borderTop: '1px solid #E8E8E8',
+                        }}>
+                            <button
+                                onClick={handleCloseReturnModal}
+                                disabled={isProcessingRefund}
+                                style={{
+                                    flex: 1,
+                                    padding: '12px 16px',
+                                    border: '1px solid #E8E8E8',
+                                    borderRadius: '8px',
+                                    backgroundColor: '#fff',
+                                    color: '#FF6B6B',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: isProcessingRefund ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    opacity: isProcessingRefund ? 0.6 : 1,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#FFF0F0';
+                                        e.currentTarget.style.borderColor = '#FF6B6B';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isProcessingRefund) {
+                                        e.currentTarget.style.backgroundColor = '#fff';
+                                        e.currentTarget.style.borderColor = '#E8E8E8';
+                                    }
+                                }}
+                            >
+                                Đóng
                             </button>
                         </div>
                     </div>

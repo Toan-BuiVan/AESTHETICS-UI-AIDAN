@@ -476,7 +476,7 @@ function BookingSummary({ selectedService, selectedDoctor, selectedDate, selecte
                                     />
                                     <div className={cx('methodContent')}>
                                         <span className={cx('methodTitle')}>💳 Trả trước 1 phần</span>
-                                        <span className={cx('methodDescription')}>Thanh toán một phần trước khi dịch vụ bắt đầu</span>
+                                        <span className={cx('methodDescription')}>Thanh toán 30% ngay lập tức, phần còn lại thanh toán khi đến lịch hẹn</span>
                                     </div>
                                 </label>
 

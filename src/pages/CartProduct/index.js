@@ -80,16 +80,16 @@ function CartProduct() {
 
     const handleAddToInvoice = (item) => {
         // Validate item has required properties
-        if (!item.productName || !item.sellingPrice) {
-            setSuccessMessage('❌ Lỗi: Dữ liệu sản phẩm không hợp lệ');
+        if (!item.productName || !item.sellingPrice || !item.productId) {
+            setSuccessMessage('❌ Lỗi: Dữ liệu sản phẩm không đủ (thiếu ProductId)');
             setTimeout(() => setSuccessMessage(null), 2000);
             return;
         }
 
-        // Ensure all required properties exist
+        // Ensure all required properties exist with explicit productId
         const normalizedItem = {
             ...item,
-            productID: item.productId,
+            productId: item.productId,  // Explicitly store productId for API
             cartProductID: item.id,
             quantity: item.quantity || 1,
             sellingPrice: parseFloat(item.sellingPrice) || 0,
@@ -98,10 +98,8 @@ function CartProduct() {
         };
 
         // Check if product already exists in invoice
-        const itemId = normalizedItem.productID || normalizedItem.cartProductID;
         const alreadyExists = invoiceItems.some((i) => {
-            const prevItemId = i.productID || i.cartProductID;
-            return prevItemId === itemId;
+            return i.productId === item.productId;
         });
 
         if (alreadyExists) {
@@ -247,10 +245,23 @@ function CartProduct() {
             };
 
             // Build lineItems from invoiceItems
-            const lineItems = invoiceItems.map((item) => ({
-                productId: item.productID,
-                quantity: item.quantity,
-            }));
+            // Ensure all items have productId
+            const lineItems = invoiceItems.map((item) => {
+                if (!item.productId) {
+                    console.error('⚠️ Item missing productId:', item);
+                }
+                return {
+                    productId: item.productId,  // Required field from InvoiceLineItem class
+                    quantity: item.quantity || 1,
+                };
+            });
+
+            // Map payment method values
+            const paymentMethodMap = {
+                'now': 'ThanhToanNgay',
+                'later': 'ThanhToanSau'
+            };
+            const mappedPaymentMethod = paymentMethodMap[method] || method;
 
             const requestBody = {
                 customerId: parseInt(customerId),
@@ -258,7 +269,7 @@ function CartProduct() {
                 lineItems: lineItems,
                 voucherId: selectedVoucher ? selectedVoucher.voucherId : 0,
                 paidAmount: 0,
-                paymentMethod: method,
+                paymentMethod: mappedPaymentMethod,
                 typeInvoice: 0,
                 type: "BanHang",
                 notes: null,
@@ -374,7 +385,7 @@ function CartProduct() {
                                 <div className={cx('invoiceItems')}>
                                     {invoiceItems.map((item, index) => {
                                         // Generate stable key for React reconciliation
-                                        const itemKey = item.productID || item.id || item.cartProductID || index;
+                                        const itemKey = item.productId || item.id || item.cartProductID || index;
                                         return (
                                             <div key={itemKey} className={cx('invoiceItem')} style={{ animationDelay: `${index * 0.08}s` }}>
                                             {/* Product Status Badge */}

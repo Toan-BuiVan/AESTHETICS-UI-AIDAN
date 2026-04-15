@@ -6,10 +6,10 @@ import AwaitingPayment from './AwaitingPayment';
 import ContinuePayment from './ContinuePayment';
 import PaymentSuccessful from './PaymentSuccessful';
 import CancelledInvoice from './CancelledInvoice';
+import RefundedInvoice from './RefundedInvoice';
 import PaymentOrder from './PaymentOrder';
 import UseVoucher from './UseVoucher';
 import CustomerForm from './CustomerForm';
-import StaffForm from './StaffForm';
 import MyBookings from './MyBookings';
 
 import React, { useState, useEffect } from 'react';
@@ -29,6 +29,7 @@ function Profile() {
     const [continuePaymentCount, setContinuePaymentCount] = useState(0);
     const [paymentSuccessfulCount, setPaymentSuccessfulCount] = useState(0);
     const [cancelledInvoiceCount, setCancelledInvoiceCount] = useState(0);
+    const [refundedInvoiceCount, setRefundedInvoiceCount] = useState(0);
     const location = useLocation();
 
     useEffect(() => {
@@ -109,6 +110,10 @@ function Profile() {
 
     const handleCancelledInvoiceCount = (count) => {
         setCancelledInvoiceCount(count);
+    };
+
+    const handleRefundedInvoiceCount = (count) => {
+        setRefundedInvoiceCount(count);
     };
 
     return (
@@ -204,6 +209,12 @@ function Profile() {
                                 Hủy {cancelledInvoiceCount > 0 && `(${cancelledInvoiceCount})`}
                             </li>
                             <li
+                                className={cx('tab', { active: selectedMenu === 'refundedInvoice' })}
+                                onClick={() => setSelectedMenu('refundedInvoice')}
+                            >
+                                Hoàn Tiền {refundedInvoiceCount > 0 && `(${refundedInvoiceCount})`}
+                            </li>
+                            <li
                                 className={cx('tab', { active: selectedMenu === 'paymentOrder' })}
                                 onClick={() => setSelectedMenu('paymentOrder')}
                             >
@@ -214,7 +225,7 @@ function Profile() {
                 </div>
                 <div className={cx('content-content')}>
                     {selectedMenu === 'account' && userRole === 0 && <CustomerForm />}
-                    {selectedMenu === 'account' && (userRole === 1 || userRole === 2) && <StaffForm />}
+                    {selectedMenu === 'account' && (userRole === 1 || userRole === 2)}
                     {selectedMenu === 'myBookings' && <MyBookings />}
                     {selectedMenu === 'changePassword' && <ChangePasswordForm />}
                     {selectedMenu === 'voucher' && (userRole === 0 || userRole === 1 || userRole === 2  ) && <VoucherSection />}
@@ -230,6 +241,9 @@ function Profile() {
                     )}
                     {selectedMenu === 'cancelledInvoice' && (
                         <CancelledInvoice onCountChange={handleCancelledInvoiceCount} />
+                    )}
+                    {selectedMenu === 'refundedInvoice' && (
+                        <RefundedInvoice onCountChange={handleRefundedInvoiceCount} />
                     )}
                     {selectedMenu === 'paymentOrder' && <PaymentOrder />}
                     {selectedMenu === 'useVoucher' && <UseVoucher />}

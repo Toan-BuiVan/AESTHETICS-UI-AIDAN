@@ -27,6 +27,15 @@ $color-border: #e2e8f0;
     }
 }
 
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .payment-order {
     padding: 32px 20px;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);

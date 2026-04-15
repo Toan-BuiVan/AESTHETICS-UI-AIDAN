@@ -20,7 +20,7 @@ function UseVoucher() {
                 const customerId = parseInt(localStorage.getItem('customerId') || localStorage.getItem('staffId'));
                 
                 if (!customerId) {
-                    setError('Không tìm thấy customerId trong localStorage');
+                    setError('Thêm thất bại!');
                     setLoading(false);
                     return;
                 }
