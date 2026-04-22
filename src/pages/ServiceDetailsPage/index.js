@@ -25,7 +25,12 @@ import {
     faCertificate,
     faGraduationCap,
     faBriefcase,
-    faUserMd
+    faUserMd,
+    faPhone,
+    faMapMarkerAlt,
+    faEnvelope,
+    faMars,
+    faVenus
 } from '@fortawesome/free-solid-svg-icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -48,6 +53,9 @@ function ServiceDetailsPage() {
     const [doctors, setDoctors] = useState([]);
     const [loadingDoctors, setLoadingDoctors] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [showDoctorDetailModal, setShowDoctorDetailModal] = useState(false);
+    const [doctorImageLoaded, setDoctorImageLoaded] = useState(false);
+    const [doctorImageError, setDoctorImageError] = useState(false);
     const [notification, setNotification] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
@@ -810,7 +818,7 @@ function ServiceDetailsPage() {
                     <div className={cx('headerContent')}>
                         <div className={cx('headerBranding')}>
                             <span className={cx('headerTag')}>
-                                {isCourseService ? '✨ Gói chuyên biệt' : '⭐ Dịch vụ cao cấp'}
+                                {isCourseService ? '✓ Gói liệu trình chuyên nghiệp' : 'Dịch vụ chăm sóc da tiêu chuẩn'}
                             </span>
                         </div>
 
@@ -879,17 +887,54 @@ function ServiceDetailsPage() {
                                         <>
                                             <span className={cx('savingIcon')}>💰</span>
                                             <span className={cx('savingText')}>
-                                                Mua trọn gói tiết kiệm <strong>{saving.toLocaleString('vi-VN')}đ</strong> ({savingPercent}%) so với mua lẻ
+                                                Tiết kiệm <strong>{saving.toLocaleString('vi-VN')}đ</strong> ({savingPercent}%) khi mua gói trọn so với mua lẻ từng buổi
                                             </span>
+                                            
                                         </>
                                     );
+                                    
                                 })()}
                             </div>
                         )}
 
                         <p className={cx('heroDescription')}>
-                            {service?.description || selectedPlan?.description || 'Liệu trình chắp chải đặc biệt được thiết kế riêng cho từng loại da, mang lại hiệu quả tối đa'}
+                            {service?.description || selectedPlan?.description || 'Liệu trình chăm sóc da chuyên sâu được thiết kế riêng cho từng loại da, giúp cải thiện tông màu, kết cấu, và độ sáng tự nhiên của da'}
                         </p>
+
+                        {/* Benefits Section */}
+                        <div className={cx('benefitsSection')}>
+                            <div className={cx('benefitItem')}>
+                                <div className={cx('benefitIcon')}>💰</div>
+                                <div className={cx('benefitContent')}>
+                                    <span className={cx('benefitTitle')}>Hoàn tiền 100% nếu không hiệu quả</span>
+                                    <span className={cx('benefitDesc')}>Đảm bảo kết quả sau hoàn thành gói liệu trình</span>
+                                </div>
+                            </div>
+
+                            <div className={cx('benefitItem')}>
+                                <div className={cx('benefitIcon')}>🎁</div>
+                                <div className={cx('benefitContent')}>
+                                    <span className={cx('benefitTitle')}>Nhận lại 15% giá trị tại cửa hàng</span>
+                                    <span className={cx('benefitDesc')}>Sau khi hoàn thành tất cả các buổi điều trị</span>
+                                </div>
+                            </div>
+
+                            <div className={cx('benefitItem')}>
+                                <div className={cx('benefitIcon')}>✓</div>
+                                <div className={cx('benefitContent')}>
+                                    <span className={cx('benefitTitle')}>Bảo hành kết quả 3 tháng</span>
+                                    <span className={cx('benefitDesc')}>Tái điều trị miễn phí nếu cần thiết</span>
+                                </div>
+                            </div>
+
+                            <div className={cx('benefitItem')}>
+                                <div className={cx('benefitIcon')}>👨‍⚕️</div>
+                                <div className={cx('benefitContent')}>
+                                    <span className={cx('benefitTitle')}>Tư vấn chuyên gia miễn phí</span>
+                                    <span className={cx('benefitDesc')}>Hướng dẫn chăm sóc da sau điều trị</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div className={cx('heroCta')}>
                             <button 
@@ -1475,260 +1520,168 @@ function ServiceDetailsPage() {
 
                     {/* Right Column - Doctors Sidebar */}
                     <div className={cx('doctorsSidebar')}>
-                        {/* Doctor Detail View */}
-                        {selectedDoctor ? (
-                            <div className={cx('doctorDetailView')}>
-                                {/* Back Button */}
-                                <button 
-                                    className={cx('doctorDetailBackBtn')}
-                                    onClick={handleBackToDoctorsList}
-                                >
-                                    <FontAwesomeIcon icon={faArrowLeft} />
-                                    Quay lại
-                                </button>
-
-                                {/* Doctor Large Image */}
-                                <div className={cx('doctorDetailImage')}>
-                                    {selectedDoctor.staffImage ? (
-                                        <img src={`http://localhost:5122/Images/${selectedDoctor.staffImage}`} alt={selectedDoctor.fullName || selectedDoctor.accountName} onError={(e) => { e.target.style.display = 'none'; }} />
-                                    ) : (
-                                        <div className={cx('doctorImagePlaceholder')}>
-                                            <FontAwesomeIcon icon={faUserMd} />
-                                        </div>
-                                    )}
+                        {/* Doctors List View (Always Show) */}
+                        <div className={cx('sidebarHeader')}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div className={cx('sidebarIcon')}>
+                                    <FontAwesomeIcon icon={faUserMd} />
                                 </div>
+                                <h3>Đội ngũ bác sĩ</h3>
+                            </div>
+                            {doctors && doctors.length > 0 && (
+                                <div className={cx('doctorCountBadge')}>
+                                    {doctors.length} bác sĩ
+                                </div>
+                            )}
+                        </div>
 
-                                {/* Doctor Detail Info */}
-                                <div className={cx('doctorDetailContent')}>
-                                    <h2 className={cx('doctorDetailName')}>
-                                        {selectedDoctor.fullName || selectedDoctor.accountName}
-                                    </h2>
-                                    
-                                    {selectedDoctor.specialization && (
-                                        <p className={cx('doctorDetailSpecialty')}>
-                                            {selectedDoctor.specialization}
-                                        </p>
-                                    )}
-
-                                    {/* Full Details Grid */}
-                                    <div className={cx('doctorDetailGrid')}>
-                                        {selectedDoctor.degree && (
-                                            <div className={cx('detailGridItem')}>
-                                                <div className={cx('detailGridIcon')}>
-                                                    <FontAwesomeIcon icon={faGraduationCap} />
-                                                </div>
-                                                <div>
-                                                    <span className={cx('detailGridLabel')}>Bằng cấp</span>
-                                                    <span className={cx('detailGridValue')}>{selectedDoctor.degree}</span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {selectedDoctor.experienceYears && (
-                                            <div className={cx('detailGridItem')}>
-                                                <div className={cx('detailGridIcon')}>
-                                                    <FontAwesomeIcon icon={faBriefcase} />
-                                                </div>
-                                                <div>
-                                                    <span className={cx('detailGridLabel')}>Kinh nghiệm</span>
-                                                    <span className={cx('detailGridValue')}>{selectedDoctor.experienceYears} năm</span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {selectedDoctor.licenseNumber && (
-                                            <div className={cx('detailGridItem')}>
-                                                <div className={cx('detailGridIcon')}>
-                                                    <FontAwesomeIcon icon={faCertificate} />
-                                                </div>
-                                                <div>
-                                                    <span className={cx('detailGridLabel')}>Số giấy phép</span>
-                                                    <span className={cx('detailGridValue')}>{selectedDoctor.licenseNumber}</span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {selectedDoctor.doctorLevel !== undefined && selectedDoctor.doctorLevel !== null && (
-                                            <div className={cx('detailGridItem')}>
-                                                <div className={cx('detailGridIcon')}>
+                        {loadingDoctors ? (
+                            <div className={cx('doctorsSidebarLoading')}>
+                                <div className={cx('spinner')}></div>
+                                <p>Đang tải...</p>
+                            </div>
+                        ) : doctors && doctors.length > 0 ? (
+                            <div className={cx('doctorsSidebarList')}>
+                                {doctors.map((doctor, index) => (
+                                    <div 
+                                        key={doctor.id} 
+                                        className={cx('doctorSidebarCard', { 'doctor-selected': selectedDoctor?.id === doctor.id })}
+                                        onClick={() => {
+                                            // Open doctor detail modal
+                                            setSelectedDoctor(doctor);
+                                            setDoctorImageLoaded(false);
+                                            setDoctorImageError(false);
+                                            setShowDoctorDetailModal(true);
+                                            // If it's a single service, also select the doctor for booking
+                                            if (isSingleService) {
+                                                setSingleServiceSelectedDoctor(doctor);
+                                            }
+                                        }}
+                                        style={{
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s ease',
+                                            border: selectedDoctor?.id === doctor.id ? '2px solid #1ca07d' : '1px solid #e0e0e0',
+                                            backgroundColor: selectedDoctor?.id === doctor.id ? '#f0faf8' : 'white',
+                                            borderRadius: '12px',
+                                            padding: '12px',
+                                            marginBottom: '12px'
+                                        }}
+                                    >
+                                        {/* Doctor Image */}
+                                        <div className={cx('doctorSidebarImage')} style={{marginBottom: '12px'}}>
+                                            {doctor.staffImage ? (
+                                                <img 
+                                                    src={`http://localhost:5122/Images/${doctor.staffImage}`} 
+                                                    alt={doctor.fullName || doctor.accountName} 
+                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '120px',
+                                                        borderRadius: '8px',
+                                                        objectFit: 'cover'
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className={cx('doctorImagePlaceholder')} style={{
+                                                    width: '100%',
+                                                    height: '120px',
+                                                    borderRadius: '8px',
+                                                    background: '#e8f7f3',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '40px',
+                                                    color: '#1ca07d'
+                                                }}>
                                                     <FontAwesomeIcon icon={faUserMd} />
                                                 </div>
-                                                <div>
-                                                    <span className={cx('detailGridLabel')}>Chuyên gia</span>
-                                                    <span className={cx('detailGridValue')}>
-                                                        {selectedDoctor.doctorLevel === 0 ? 'Y tá' : 'Bác sĩ'}
-                                                    </span>
-                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Doctor Info */}
+                                        <div className={cx('doctorSidebarInfo')}>
+                                            <h4 className={cx('doctorSidebarName')} style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '15px',
+                                                fontWeight: '700',
+                                                color: '#333'
+                                            }}>
+                                                {doctor.fullName || doctor.accountName}
+                                            </h4>
+                                            {doctor.specialization && (
+                                                <p className={cx('doctorSidebarSpecialty')} style={{
+                                                    margin: '0 0 8px 0',
+                                                    fontSize: '13px',
+                                                    color: '#1ca07d',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    {doctor.specialization}
+                                                </p>
+                                            )}
+
+                                            {/* Experience & Degree */}
+                                            <div className={cx('doctorSidebarDetails')} style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: '8px',
+                                                marginTop: '10px',
+                                                paddingTop: '10px',
+                                                borderTop: '1px solid #f0f0f0'
+                                            }}>
+                                                {doctor.experienceYears && (
+                                                    <div className={cx('sidebarDetailItem')} style={{
+                                                        fontSize: '12px',
+                                                        color: '#666'
+                                                    }}>
+                                                        <FontAwesomeIcon icon={faBriefcase} style={{marginRight: '4px', color: '#1ca07d'}} />
+                                                        <span>{doctor.experienceYears}+ năm</span>
+                                                    </div>
+                                                )}
+                                                {doctor.degree && (
+                                                    <div className={cx('sidebarDetailItem')} style={{
+                                                        fontSize: '12px',
+                                                        color: '#666'
+                                                    }}>
+                                                        <FontAwesomeIcon icon={faGraduationCap} style={{marginRight: '4px', color: '#1ca07d'}} />
+                                                        <span>{doctor.degree}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
 
-                                    {/* Biography */}
-                                    {selectedDoctor.biography && (
-                                        <div className={cx('doctorDetailBio')}>
-                                            <h4>Giới thiệu</h4>
-                                            <p>{selectedDoctor.biography}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ) : (
-                            /* Doctors List View */
-                            <>
-                                <div className={cx('sidebarHeader')}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <div className={cx('sidebarIcon')}>
-                                            <FontAwesomeIcon icon={faUserMd} />
-                                        </div>
-                                        <h3>Đội ngũ bác sĩ</h3>
-                                    </div>
-                                    {doctors && doctors.length > 0 && (
-                                        <div className={cx('doctorCountBadge')}>
-                                            {doctors.length} bác sĩ
-                                        </div>
-                                    )}
-                                </div>
-
-                                {loadingDoctors ? (
-                                    <div className={cx('doctorsSidebarLoading')}>
-                                        <div className={cx('spinner')}></div>
-                                        <p>Đang tải...</p>
-                                    </div>
-                                ) : doctors && doctors.length > 0 ? (
-                                    <div className={cx('doctorsSidebarList')}>
-                                        {doctors.map((doctor, index) => (
-                                            <div 
-                                                key={doctor.id} 
-                                                className={cx('doctorSidebarCard', { 'doctor-selected': selectedDoctor?.id === doctor.id })}
-                                                onClick={() => {
-                                                    // Always view doctor detail
+                                            {/* View Details Button */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
                                                     setSelectedDoctor(doctor);
-                                                    // If it's a single service, also select the doctor for booking
-                                                    if (isSingleService) {
-                                                        setSingleServiceSelectedDoctor(doctor);
-                                                    }
+                                                    setDoctorImageLoaded(false);
+                                                    setDoctorImageError(false);
+                                                    setShowDoctorDetailModal(true);
                                                 }}
                                                 style={{
+                                                    width: '100%',
+                                                    marginTop: '10px',
+                                                    padding: '8px',
+                                                    background: selectedDoctor?.id === doctor.id ? '#1ca07d' : '#f5f5f5',
+                                                    color: selectedDoctor?.id === doctor.id ? 'white' : '#333',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
                                                     cursor: 'pointer',
-                                                    transition: 'all 0.3s ease',
-                                                    border: selectedDoctor?.id === doctor.id ? '2px solid #1ca07d' : '1px solid #e0e0e0',
-                                                    backgroundColor: selectedDoctor?.id === doctor.id ? '#f0faf8' : 'white',
-                                                    borderRadius: '12px',
-                                                    padding: '12px',
-                                                    marginBottom: '12px'
+                                                    transition: 'all 0.3s ease'
                                                 }}
                                             >
-                                                {/* Doctor Image */}
-                                                <div className={cx('doctorSidebarImage')} style={{marginBottom: '12px'}}>
-                                                    {doctor.staffImage ? (
-                                                        <img 
-                                                            src={`http://localhost:5122/Images/${doctor.staffImage}`} 
-                                                            alt={doctor.fullName || doctor.accountName} 
-                                                            onError={(e) => { e.target.style.display = 'none'; }}
-                                                            style={{
-                                                                width: '100%',
-                                                                height: '120px',
-                                                                borderRadius: '8px',
-                                                                objectFit: 'cover'
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <div className={cx('doctorImagePlaceholder')} style={{
-                                                            width: '100%',
-                                                            height: '120px',
-                                                            borderRadius: '8px',
-                                                            background: '#e8f7f3',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            fontSize: '40px',
-                                                            color: '#1ca07d'
-                                                        }}>
-                                                            <FontAwesomeIcon icon={faUserMd} />
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Doctor Info */}
-                                                <div className={cx('doctorSidebarInfo')}>
-                                                    <h4 className={cx('doctorSidebarName')} style={{
-                                                        margin: '0 0 6px 0',
-                                                        fontSize: '15px',
-                                                        fontWeight: '700',
-                                                        color: '#333'
-                                                    }}>
-                                                        {doctor.fullName || doctor.accountName}
-                                                    </h4>
-                                                    {doctor.specialization && (
-                                                        <p className={cx('doctorSidebarSpecialty')} style={{
-                                                            margin: '0 0 8px 0',
-                                                            fontSize: '13px',
-                                                            color: '#1ca07d',
-                                                            fontWeight: '600'
-                                                        }}>
-                                                            {doctor.specialization}
-                                                        </p>
-                                                    )}
-
-                                                    {/* Experience & Degree */}
-                                                    <div className={cx('doctorSidebarDetails')} style={{
-                                                        display: 'grid',
-                                                        gridTemplateColumns: '1fr 1fr',
-                                                        gap: '8px',
-                                                        marginTop: '10px',
-                                                        paddingTop: '10px',
-                                                        borderTop: '1px solid #f0f0f0'
-                                                    }}>
-                                                        {doctor.experienceYears && (
-                                                            <div className={cx('sidebarDetailItem')} style={{
-                                                                fontSize: '12px',
-                                                                color: '#666'
-                                                            }}>
-                                                                <FontAwesomeIcon icon={faBriefcase} style={{marginRight: '4px', color: '#1ca07d'}} />
-                                                                <span>{doctor.experienceYears}+ năm</span>
-                                                            </div>
-                                                        )}
-                                                        {doctor.degree && (
-                                                            <div className={cx('sidebarDetailItem')} style={{
-                                                                fontSize: '12px',
-                                                                color: '#666'
-                                                            }}>
-                                                                <FontAwesomeIcon icon={faGraduationCap} style={{marginRight: '4px', color: '#1ca07d'}} />
-                                                                <span>{doctor.degree}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* View Details Button */}
-                                                    <button
-                                                        onClick={() => setSelectedDoctor(doctor)}
-                                                        style={{
-                                                            width: '100%',
-                                                            marginTop: '10px',
-                                                            padding: '8px',
-                                                            background: selectedDoctor?.id === doctor.id ? '#1ca07d' : '#f5f5f5',
-                                                            color: selectedDoctor?.id === doctor.id ? 'white' : '#333',
-                                                            border: 'none',
-                                                            borderRadius: '6px',
-                                                            fontSize: '12px',
-                                                            fontWeight: '600',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.3s ease'
-                                                        }}
-                                                    >
-                                                        {selectedDoctor?.id === doctor.id ? '✓ Đã chọn' : 'Xem chi tiết'}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                                {selectedDoctor?.id === doctor.id ? '✓ Đã chọn' : 'Xem chi tiết'}
+                                            </button>
+                                        </div>
                                     </div>
-                                ) : (
-                                    <div className={cx('noDoctorsMessageSidebar')}>
-                                        <FontAwesomeIcon icon={faUserMd} />
-                                        <p>Chưa có bác sĩ</p>
-                                    </div>
-                                )}
-                            </>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className={cx('noDoctorsMessageSidebar')}>
+                                <FontAwesomeIcon icon={faUserMd} />
+                                <p>Chưa có bác sĩ</p>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -2300,6 +2253,186 @@ function ServiceDetailsPage() {
                             >
                                 Quay Lại
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Doctor Detail Modal */}
+            {showDoctorDetailModal && selectedDoctor && (
+                <div className={cx('doctorDetailModalOverlay')}>
+                    <div className={cx('doctorDetailModal')}>
+                        {/* Close Button */}
+                        <button 
+                            className={cx('doctorDetailModalClose')}
+                            onClick={() => setShowDoctorDetailModal(false)}
+                            title="Đóng"
+                        >
+                            ×
+                        </button>
+
+                        {/* Modal Content */}
+                        <div className={cx('doctorDetailModalContent')}>
+                            {/* Doctor Image */}
+                            <div className={cx('doctorDetailModalImage')}>
+                                {/* Loading Skeleton */}
+                                {(selectedDoctor.staffImage && selectedDoctor.staffImage !== 'false' && !doctorImageLoaded && !doctorImageError) && (
+                                    <div className={cx('doctorDetailModalImageSkeleton')} />
+                                )}
+                                
+                                {/* Doctor Photo */}
+                                {(selectedDoctor.staffImage && selectedDoctor.staffImage !== 'false' && !doctorImageError) && (
+                                    <img 
+                                        src={`http://localhost:5122/Images/${selectedDoctor.staffImage}`} 
+                                        alt={selectedDoctor.fullName || selectedDoctor.accountName}
+                                        className={cx('doctorDetailModalImagePhoto', { loaded: doctorImageLoaded })}
+                                        onLoad={() => setDoctorImageLoaded(true)}
+                                        onError={() => {
+                                            setDoctorImageError(true);
+                                            setDoctorImageLoaded(false);
+                                        }} 
+                                    />
+                                )}
+                                
+                                {/* Placeholder - Show when no image or image failed */}
+                                {(!selectedDoctor.staffImage || selectedDoctor.staffImage === 'false' || doctorImageError) && (
+                                    <div className={cx('doctorDetailModalImagePlaceholder')}>
+                                        <div className={cx('placeholderContent')}>
+                                            <FontAwesomeIcon icon={faUserMd} className={cx('placeholderIcon')} />
+                                            {selectedDoctor.fullName && (
+                                                <div className={cx('placeholderInitials')}>
+                                                    {selectedDoctor.fullName
+                                                        .split(' ')
+                                                        .map(n => n[0])
+                                                        .join('')
+                                                        .toUpperCase()
+                                                        .slice(0, 2)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Doctor Info */}
+                            <div className={cx('doctorDetailModalInfo')}>
+                                <h2 className={cx('doctorDetailModalName')}>
+                                    {selectedDoctor.fullName || selectedDoctor.accountName}
+                                </h2>
+                                
+                                {selectedDoctor.specialization && (
+                                    <p className={cx('doctorDetailModalSpecialty')}>
+                                        {selectedDoctor.specialization}
+                                    </p>
+                                )}
+
+                                {/* Professional Details Grid */}
+                                <div className={cx('doctorDetailModalGrid')}>
+                                    {selectedDoctor.degree && (
+                                        <div className={cx('doctorDetailModalGridItem')}>
+                                            <div className={cx('doctorDetailModalGridIcon')}>
+                                                <FontAwesomeIcon icon={faGraduationCap} />
+                                            </div>
+                                            <div>
+                                                <span className={cx('doctorDetailModalGridLabel')}>Bằng cấp</span>
+                                                <span className={cx('doctorDetailModalGridValue')}>{selectedDoctor.degree}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {selectedDoctor.experienceYears && (
+                                        <div className={cx('doctorDetailModalGridItem')}>
+                                            <div className={cx('doctorDetailModalGridIcon')}>
+                                                <FontAwesomeIcon icon={faBriefcase} />
+                                            </div>
+                                            <div>
+                                                <span className={cx('doctorDetailModalGridLabel')}>Kinh nghiệm</span>
+                                                <span className={cx('doctorDetailModalGridValue')}>{selectedDoctor.experienceYears} năm</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {selectedDoctor.licenseNumber && (
+                                        <div className={cx('doctorDetailModalGridItem')}>
+                                            <div className={cx('doctorDetailModalGridIcon')}>
+                                                <FontAwesomeIcon icon={faCertificate} />
+                                            </div>
+                                            <div>
+                                                <span className={cx('doctorDetailModalGridLabel')}>Số giấy phép</span>
+                                                <span className={cx('doctorDetailModalGridValue')}>{selectedDoctor.licenseNumber}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {selectedDoctor.doctorLevel !== undefined && selectedDoctor.doctorLevel !== null && (
+                                        <div className={cx('doctorDetailModalGridItem')}>
+                                            <div className={cx('doctorDetailModalGridIcon')}>
+                                                <FontAwesomeIcon icon={faStethoscope} />
+                                            </div>
+                                            <div>
+                                                <span className={cx('doctorDetailModalGridLabel')}>Trình độ</span>
+                                                <span className={cx('doctorDetailModalGridValue')}>
+                                                    {selectedDoctor.doctorLevel === 0 ? 'Y tá' : selectedDoctor.doctorLevel === 1 ? 'Bác sĩ' : 'Chuyên gia'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Contact Information */}
+                                <div className={cx('doctorDetailModalContactSection')}>
+                                    <h4 className={cx('doctorDetailModalContactTitle')}>Thông tin liên hệ</h4>
+                                    <div className={cx('doctorDetailModalContactGrid')}>
+                                        {selectedDoctor.phone && (
+                                            <div className={cx('doctorDetailModalContactItem')}>
+                                                <FontAwesomeIcon icon={faPhone} className={cx('contactIcon')} />
+                                                <div>
+                                                    <span className={cx('contactLabel')}>Điện thoại</span>
+                                                    <span className={cx('contactValue')}>{selectedDoctor.phone}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedDoctor.email && (
+                                            <div className={cx('doctorDetailModalContactItem')}>
+                                                <FontAwesomeIcon icon={faEnvelope} className={cx('contactIcon')} />
+                                                <div>
+                                                    <span className={cx('contactLabel')}>Email</span>
+                                                    <span className={cx('contactValue')}>{selectedDoctor.email}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedDoctor.address && (
+                                            <div className={cx('doctorDetailModalContactItem')}>
+                                                <FontAwesomeIcon icon={faMapMarkerAlt} className={cx('contactIcon')} />
+                                                <div>
+                                                    <span className={cx('contactLabel')}>Địa chỉ</span>
+                                                    <span className={cx('contactValue')}>{selectedDoctor.address}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedDoctor.sex && (
+                                            <div className={cx('doctorDetailModalContactItem')}>
+                                                <FontAwesomeIcon icon={selectedDoctor.sex === 'Nữ' ? faVenus : faMars} className={cx('contactIcon')} />
+                                                <div>
+                                                    <span className={cx('contactLabel')}>Giới tính</span>
+                                                    <span className={cx('contactValue')}>{selectedDoctor.sex}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Biography */}
+                                {selectedDoctor.biography && selectedDoctor.biography !== 'No problem' && (
+                                    <div className={cx('doctorDetailModalBio')}>
+                                        <h4>Giới thiệu</h4>
+                                        <p>{selectedDoctor.biography}</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

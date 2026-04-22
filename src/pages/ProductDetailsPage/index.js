@@ -30,6 +30,12 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
     const [deleteConfirmingCommentId, setDeleteConfirmingCommentId] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [imageChanged, setImageChanged] = useState(false);
+    const [showCreateCommentModal, setShowCreateCommentModal] = useState(false);
+    const [newCommentContent, setNewCommentContent] = useState('');
+    const [newCommentRating, setNewCommentRating] = useState(5);
+    const [newCommentImage, setNewCommentImage] = useState(null);
+    const [newCommentImagePreview, setNewCommentImagePreview] = useState('');
+    const [isCreatingComment, setIsCreatingComment] = useState(false);
 
     useEffect(() => {
         const customerId = localStorage.getItem('customerId');
@@ -483,6 +489,150 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
         }
     };
 
+    const handleCreateComment = async () => {
+        if (!currentCustomerId) {
+            setNotification({
+                type: 'error',
+                title: 'Thông báo',
+                message: 'Bạn cần đăng nhập để đánh giá sản phẩm'
+            });
+            return;
+        }
+
+        if (!newCommentContent.trim()) {
+            setNotification({
+                type: 'error',
+                title: 'Thông báo',
+                message: 'Vui lòng nhập nội dung bình luận'
+            });
+            return;
+        }
+
+        setIsCreatingComment(true);
+        const token = localStorage.getItem('token') || '';
+        const deviceName = localStorage.getItem('deviceName') || '';
+        const refreshToken = localStorage.getItem('refreshToken') || '';
+        const userID = localStorage.getItem('userID') || '';
+
+        const headers = {
+            'Content-Type': 'application/json',
+            DeviceName: deviceName,
+            RefreshToken: refreshToken,
+            Authorization: token ? `Bearer ${token}` : '',
+            UserID: userID,
+        };
+
+        try {
+            const requestBody = {
+                productId: product.id || product.productID,
+                serviceId: 0,
+                customerId: currentCustomerId,
+                commentContent: newCommentContent,
+                rating: newCommentRating,
+            };
+
+            // Add image if user selected one
+            if (newCommentImage && newCommentImage.trim()) {
+                requestBody.commentImage = newCommentImage;
+            }
+
+            const response = await fetch('http://localhost:5122/api/Comment/createcomment', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(requestBody),
+            });
+
+            const newAccessToken = response.headers.get('New-AccessToken');
+            const newRefreshToken = response.headers.get('New-RefreshToken');
+            if (newAccessToken) localStorage.setItem('token', newAccessToken);
+            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+            const data = await response.json();
+
+            if (data.success) {
+                setNotification({
+                    type: 'success',
+                    title: 'Thành công!',
+                    message: 'Đánh giá của bạn đã được thêm'
+                });
+                // Close modal and reset form
+                setShowCreateCommentModal(false);
+                setNewCommentContent('');
+                setNewCommentRating(5);
+                setNewCommentImage(null);
+                setNewCommentImagePreview('');
+                // Refresh comments
+                const response = await fetch('http://localhost:5122/api/Comment/getcommentlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pageNo: 1,
+                        pageSize: 10,
+                        productId: product.id || product.productID || 0,
+                        serviceId: 0,
+                    }),
+                });
+                const newData = await response.json();
+                if (newData.baseDatas && Array.isArray(newData.baseDatas)) {
+                    setComments(newData.baseDatas);
+                    setTotalComments(newData.totalRecordCount || 0);
+                }
+            } else {
+                setNotification({
+                    type: 'error',
+                    title: 'Lỗi',
+                    message: 'Có lỗi xảy ra khi thêm bình luận'
+                });
+            }
+        } catch (error) {
+            console.error('Lỗi khi tạo bình luận:', error);
+            setNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Lỗi khi tạo bình luận: ' + error.message
+            });
+        } finally {
+            setIsCreatingComment(false);
+        }
+    };
+
+    const handleNewCommentImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const MAX_SIZE = 5 * 1024 * 1024;
+            if (file.size > MAX_SIZE) {
+                setNotification({
+                    type: 'error',
+                    title: 'Lỗi',
+                    message: 'Ảnh quá lớn (tối đa 5MB)'
+                });
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const fullBase64 = reader.result;
+                const base64Data = fullBase64.includes(',') 
+                    ? fullBase64.split(',')[1] 
+                    : fullBase64;
+                
+                setNewCommentImage(base64Data);
+                setNewCommentImagePreview(fullBase64);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const closeCreateCommentModal = () => {
+        setShowCreateCommentModal(false);
+        setNewCommentContent('');
+        setNewCommentRating(5);
+        setNewCommentImage(null);
+        setNewCommentImagePreview('');
+    };
+
     return (
         <div className={cx('wrapper')}>
             {notification && (
@@ -607,9 +757,19 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
 
                 {/* Comments Section - Right Side */}
                 <div className={cx('comments-container')}>
+                    <div className={cx('comments-header')}>
+                        {totalComments > 0 && (
+                            <h2 className={cx('comments-title')}>Đánh giá từ khách hàng ({totalComments})</h2>
+                        )}
+                        <button 
+                            className={cx('rating-btn')}
+                            onClick={() => setShowCreateCommentModal(true)}
+                        >
+                            <FontAwesomeIcon icon={faStar} /> Đánh Giá Sản Phẩm
+                        </button>
+                    </div>
                     {!loadingComments && comments.length > 0 ? (
                         <>
-                            <h2 className={cx('comments-title')}>Đánh giá từ khách hàng ({totalComments})</h2>
                             <div className={cx('comment-list')}>
                                 {comments.slice(0, 5).map((comment, index) => (
                             <div key={index} className={cx('comment-item')}>
@@ -810,6 +970,88 @@ function ProductDetailsPage({ product, onBack, onSelectProduct }) {
                                 disabled={isDeleting}
                             >
                                 {isDeleting ? 'Đang xóa...' : 'Xóa bình luận'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Create Comment Modal */}
+            {showCreateCommentModal && (
+                <div className={cx('modal-overlay')} onClick={() => closeCreateCommentModal()}>
+                    <div className={cx('modal-content')} onClick={(e) => e.stopPropagation()}>
+                        <div className={cx('modal-header')}>
+                            <h3>Đánh Giá Sản Phẩm</h3>
+                            <button className={cx('close-btn')} onClick={() => closeCreateCommentModal()}>✕</button>
+                        </div>
+                        <div className={cx('modal-body')}>
+                            <div className={cx('form-group')}>
+                                <label>Đánh giá:</label>
+                                <div className={cx('rating-input')}>
+                                    {[...Array(5)].map((_, i) => (
+                                        <button 
+                                            key={i}
+                                            className={cx('star-btn', i < newCommentRating ? 'active' : '')}
+                                            onClick={() => setNewCommentRating(i + 1)}
+                                        >
+                                            <FontAwesomeIcon icon={faStar} />
+                                        </button>
+                                    ))}
+                                </div>
+                                <span className={cx('rating-text')}>{newCommentRating} / 5 sao</span>
+                            </div>
+                            <div className={cx('form-group')}>
+                                <label>Nội dung:</label>
+                                <textarea
+                                    className={cx('comment-textarea')}
+                                    value={newCommentContent}
+                                    onChange={(e) => setNewCommentContent(e.target.value)}
+                                    placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
+                                    rows="4"
+                                />
+                            </div>
+                            <div className={cx('form-group')}>
+                                <label>Hình ảnh (tùy chọn):</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleNewCommentImageChange}
+                                    className={cx('file-input')}
+                                />
+                                {newCommentImagePreview && (
+                                    <div className={cx('image-preview-container')}>
+                                        <img 
+                                            src={newCommentImagePreview} 
+                                            alt="Preview"
+                                            className={cx('image-preview')}
+                                        />
+                                        <button 
+                                            className={cx('remove-image-btn')}
+                                            onClick={() => {
+                                                setNewCommentImage(null);
+                                                setNewCommentImagePreview('');
+                                            }}
+                                        >
+                                            Xóa ảnh
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className={cx('modal-footer')}>
+                            <button 
+                                className={cx('cancel-btn')}
+                                onClick={() => closeCreateCommentModal()}
+                                disabled={isCreatingComment}
+                            >
+                                Hủy
+                            </button>
+                            <button 
+                                className={cx('submit-btn')}
+                                onClick={handleCreateComment}
+                                disabled={isCreatingComment}
+                            >
+                                {isCreatingComment ? 'Đang gửi...' : 'Gửi Đánh Giá'}
                             </button>
                         </div>
                     </div>

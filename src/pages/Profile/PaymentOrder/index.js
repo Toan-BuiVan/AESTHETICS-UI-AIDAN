@@ -28,6 +28,12 @@ function PaymentOrder() {
     const [refundImages, setRefundImages] = useState([]);
     const [refundMethod, setRefundMethod] = useState('TienMat');
     const [isProcessingRefund, setIsProcessingRefund] = useState(false);
+    const [reviewContent, setReviewContent] = useState('');
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewImage, setReviewImage] = useState(null);
+    const [reviewImagePreview, setReviewImagePreview] = useState('');
+    const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+    const [shippingFees, setShippingFees] = useState({});
     const pageSize = 6;
 
     // Debounce refund data (reason only) for auto-submission after 3 seconds
@@ -96,9 +102,77 @@ function PaymentOrder() {
         }
     };
 
+    // Hàm gọi API lấy phí giao hàng
+    const fetchShippingFees = async (invoiceList) => {
+        try {
+            // Filter invoices that have products
+            const invoicesWithProducts = invoiceList.filter(item => {
+                return item.invoiceDetails && item.invoiceDetails.some(
+                    detail => detail.productId && detail.type === 'BanHang'
+                );
+            });
+
+            console.log('Invoices with products:', invoicesWithProducts.length);
+            if (invoicesWithProducts.length === 0) {
+                console.log('No invoices with products found');
+                return;
+            }
+
+            const invoiceIds = invoicesWithProducts.map(item => item.invoice.id);
+            console.log('Invoice IDs to fetch shipping fees for:', invoiceIds);
+            
+            const token = localStorage.getItem('token') || '';
+            const refreshToken = localStorage.getItem('refreshToken') || '';
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+                'RefreshToken': refreshToken,
+            };
+
+            console.log('Calling shipping fee API with IDs:', invoiceIds);
+            const response = await fetch('http://localhost:5122/api/GHN/calculate-shipping-fee', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ invoiceIds: invoiceIds }),
+            });
+
+            console.log('Shipping fee response status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Lỗi API phí giao hàng - Status:', response.status, 'Error:', errorText);
+                return;
+            }
+
+            const result = await response.json();
+            console.log('Shipping fees response:', result);
+
+            if (result.data && Array.isArray(result.data)) {
+                const feesMap = {};
+                result.data.forEach(item => {
+                    if (item.shippingFee?.data?.total) {
+                        feesMap[item.invoiceId] = item.shippingFee.data.total;
+                    }
+                });
+                console.log('Fees map:', feesMap);
+                setShippingFees(feesMap);
+            }
+        } catch (err) {
+            console.error('Lỗi khi lấy phí giao hàng:', err);
+        }
+    };
+
     useEffect(() => {
         fetchInvoices(1);
     }, []);
+
+    // Gọi API phí giao hàng khi invoices thay đổi
+    useEffect(() => {
+        if (invoices.length > 0) {
+            fetchShippingFees(invoices);
+        }
+    }, [invoices]);
 
     // Xử lý toggle expand details
     const handleToggleDetails = (invoiceID) => {
@@ -128,7 +202,124 @@ function PaymentOrder() {
     // Xử lý đánh giá sản phẩm
     const handleEvaluateProduct = (invoice) => {
         setSelectedInvoiceForAction(invoice);
+        setReviewContent('');
+        setReviewRating(5);
+        setReviewImage(null);
+        setReviewImagePreview('');
         setShowReviewModal(true);
+    };
+
+    const handleReviewImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const MAX_SIZE = 5 * 1024 * 1024;
+            if (file.size > MAX_SIZE) {
+                setSuccessMessage('Ảnh quá lớn (tối đa 5MB)');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const fullBase64 = reader.result;
+                const base64Data = fullBase64.includes(',') 
+                    ? fullBase64.split(',')[1] 
+                    : fullBase64;
+                
+                setReviewImage(base64Data);
+                setReviewImagePreview(fullBase64);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSubmitReview = async () => {
+        if (!reviewContent.trim()) {
+            setSuccessMessage('Vui lòng nhập nội dung đánh giá');
+            return;
+        }
+
+        if (!selectedInvoiceForAction?.invoiceDetails || selectedInvoiceForAction.invoiceDetails.length === 0) {
+            setSuccessMessage('Không tìm thấy sản phẩm');
+            return;
+        }
+
+        // Filter for only product items (type === 'BanHang' and has productId)
+        const productItems = selectedInvoiceForAction.invoiceDetails.filter(
+            detail => detail.type === 'BanHang' && detail.productId
+        );
+
+        if (productItems.length === 0) {
+            setSuccessMessage('Không tìm thấy sản phẩm để đánh giá');
+            return;
+        }
+
+        setIsSubmittingReview(true);
+        const token = localStorage.getItem('token') || '';
+        const customerId = localStorage.getItem('customerId');
+        const refreshToken = localStorage.getItem('refreshToken') || '';
+        const userID = localStorage.getItem('userID') || '';
+
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : '',
+            RefreshToken: refreshToken,
+            UserID: userID,
+        };
+
+        try {
+            // Submit review for each product in the invoice
+            const promises = productItems.map(detail => {
+                const requestBody = {
+                    productId: detail.productId,
+                    serviceId: 0,
+                    customerId: parseInt(customerId),
+                    commentContent: reviewContent,
+                    rating: reviewRating,
+                };
+
+                if (reviewImage && reviewImage.trim()) {
+                    requestBody.commentImage = reviewImage;
+                }
+
+                console.log('Submitting review:', requestBody);
+                return fetch('http://localhost:5122/api/Comment/createcomment', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestBody),
+                });
+            });
+
+            const responses = await Promise.all(promises);
+            const allSuccess = responses.every(res => res.ok);
+
+            if (allSuccess) {
+                setSuccessMessage('Đánh giá sản phẩm thành công!');
+                setShowReviewModal(false);
+                setReviewContent('');
+                setReviewRating(5);
+                setReviewImage(null);
+                setReviewImagePreview('');
+                setSelectedInvoiceForAction(null);
+            } else {
+                const failedResponses = responses.filter(res => !res.ok);
+                console.error('Failed responses:', failedResponses);
+                setSuccessMessage('Có lỗi xảy ra khi gửi đánh giá');
+            }
+        } catch (error) {
+            console.error('Lỗi khi gửi đánh giá:', error);
+            setSuccessMessage('Lỗi khi gửi đánh giá: ' + error.message);
+        } finally {
+            setIsSubmittingReview(false);
+        }
+    };
+
+    const closeReviewModal = () => {
+        setShowReviewModal(false);
+        setReviewContent('');
+        setReviewRating(5);
+        setReviewImage(null);
+        setReviewImagePreview('');
+        setSelectedInvoiceForAction(null);
     };
 
     // Xử lý hoàn hàng tự động khi debounce data thay đổi
@@ -233,8 +424,9 @@ function PaymentOrder() {
     };
 
     const isRefundDisabled = (invoice) => {
-        // Disable button khi isRefund = true hoặc paidAmount <= 0
-        return invoice.isRefund === true || invoice.paidAmount <= 0;
+        // Disable button chỉ khi đã hoàn hàng rồi
+        // Cho phép Hoàn Hàng ngay cả khi chưa thanh toán (paidAmount = 0)
+        return invoice.isRefund === true;
     };
 
     // Xử lý chọn hình ảnh hoàn hàng
@@ -507,6 +699,12 @@ function PaymentOrder() {
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #FFCC99' }}>
                                                         <span style={{ fontSize: '13px', color: '#666' }}>Giảm giá</span>
                                                         <span style={{ fontSize: '13px', fontWeight: '600', color: '#FF9800' }}>-{formatCurrency(item.invoice.discountValue).split(' ')[0]}</span>
+                                                    </div>
+                                                )}
+                                                {shippingFees[item.invoice.id] && (
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #FFCC99' }}>
+                                                        <span style={{ fontSize: '13px', color: '#666' }}>Phí giao hàng</span>
+                                                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e1e1e' }}>+{formatCurrency(shippingFees[item.invoice.id]).split(' ')[0]}</span>
                                                     </div>
                                                 )}
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1121,6 +1319,92 @@ function PaymentOrder() {
                                     </>
                                 )}
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Review Modal */}
+            {showReviewModal && (
+                <div className={cx('modal-overlay')} onClick={closeReviewModal}>
+                    <div className={cx('modal-content')} onClick={(e) => e.stopPropagation()}>
+                        <div className={cx('modal-header')}>
+                            <h3>Đánh Giá Sản Phẩm</h3>
+                            <button className={cx('close-btn')} onClick={closeReviewModal}>✕</button>
+                        </div>
+                        <div className={cx('modal-body')}>
+                            <div className={cx('form-group')}>
+                                <label>Đánh giá (sao):</label>
+                                <div className={cx('rating-input')}>
+                                    {[...Array(5)].map((_, i) => (
+                                        <button 
+                                            key={i}
+                                            className={cx('star-btn', i < reviewRating ? 'active' : '')}
+                                            onClick={() => setReviewRating(i + 1)}
+                                            type="button"
+                                        >
+                                            <FontAwesomeIcon icon={faStar} />
+                                        </button>
+                                    ))}
+                                </div>
+                                <span className={cx('rating-text')}>{reviewRating} / 5 sao</span>
+                            </div>
+                            <div className={cx('form-group')}>
+                                <label>Nội dung đánh giá:</label>
+                                <textarea
+                                    className={cx('comment-textarea')}
+                                    value={reviewContent}
+                                    onChange={(e) => setReviewContent(e.target.value)}
+                                    placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm..."
+                                    rows="4"
+                                />
+                            </div>
+                            <div className={cx('form-group')}>
+                                <label>Hình ảnh (tùy chọn):</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleReviewImageChange}
+                                    className={cx('file-input')}
+                                />
+                                {reviewImagePreview && (
+                                    <div className={cx('image-preview-container')}>
+                                        <img 
+                                            src={reviewImagePreview} 
+                                            alt="Preview"
+                                            className={cx('image-preview')}
+                                        />
+                                        <button 
+                                            className={cx('remove-image-btn')}
+                                            onClick={() => {
+                                                setReviewImage(null);
+                                                setReviewImagePreview('');
+                                            }}
+                                            type="button"
+                                        >
+                                            Xóa
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className={cx('modal-footer')}>
+                            <button 
+                                className={cx('cancel-btn')}
+                                onClick={closeReviewModal}
+                                disabled={isSubmittingReview}
+                                type="button"
+                            >
+                                Hủy
+                            </button>
+                            <button 
+                                className={cx('submit-btn')}
+                                onClick={handleSubmitReview}
+                                disabled={isSubmittingReview}
+                                type="button"
+                            >
+                                {isSubmittingReview ? 'Đang gửi...' : 'Gửi Đánh Giá'}
+                            </button>
                         </div>
                     </div>
                 </div>
