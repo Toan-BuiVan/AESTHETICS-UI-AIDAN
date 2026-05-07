@@ -243,7 +243,7 @@
     position: relative;
     z-index: 2;
     margin: 0;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: var(--gray-600);
     font-weight: 500;
     letter-spacing: 2px;
@@ -309,7 +309,7 @@
     }
 
     span {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 400;
         color: var(--gray-600);
         font-family: 'Inter', sans-serif;
@@ -393,7 +393,7 @@
 }
 
 .invoiceTitle {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--gray-800);
     margin: 0;
@@ -410,7 +410,7 @@
     color: white;
     border-radius: 50%;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 1.4rem;
     box-shadow: 0 4px 12px rgba(28, 160, 125, 0.3);
     animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -519,7 +519,7 @@
 }
 
 .itemName {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--gray-800);
     margin: 0;
@@ -531,7 +531,7 @@
 }
 
 .itemDescription {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: var(--gray-600);
     margin: 0;
     display: -webkit-box;
@@ -548,7 +548,7 @@
 }
 
 .itemPrice {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 800;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -557,7 +557,7 @@
 }
 
 .itemQuantity {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: var(--gray-600);
     font-weight: 600;
 }
@@ -572,7 +572,7 @@
     border: none;
     border-radius: 10px;
     color: white;
-    font-size: 16px;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: var(--trans-smooth);
     opacity: 0.7;
@@ -604,7 +604,7 @@
 
 .vouchersTitle {
     font-family: 'Playfair Display', serif;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--gray-800);
     margin: 0 0 16px;
@@ -616,7 +616,7 @@
     background: linear-gradient(135deg, rgba(28, 160, 125, 0.1) 0%, rgba(28, 160, 125, 0.05) 100%);
     border: 2px solid rgba(28, 160, 125, 0.2);
     border-radius: 12px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--primary);
     cursor: pointer;
@@ -669,11 +669,11 @@
 .voucherName {
     font-weight: 700;
     color: var(--gray-800);
-    font-size: 12px;
+    font-size: 1.4rem;
 }
 
 .voucherDiscount {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: var(--accent-success);
     font-weight: 700;
 }
@@ -721,7 +721,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: var(--gray-600);
     font-weight: 500;
     
@@ -738,10 +738,10 @@
     }
 
     &.total {
-        font-size: 16px;
+        font-size: 1.4rem;
         margin-top: 8px;
         strong {
-            font-size: 20px;
+            font-size: 1.4rem;
             background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -760,7 +760,7 @@
     color: white;
     border: none;
     border-radius: 14px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -864,7 +864,7 @@
     padding: 16px 24px;
     border-radius: 12px;
     border: 2px solid transparent;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: var(--trans-smooth);
@@ -915,14 +915,14 @@
 }
 
 .emptyStateTitle {
-    font-size: 20px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--gray-800);
     margin: 0 0 8px;
 }
 
 .emptyStateSubtitle {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: var(--gray-600);
     margin: 0;
 }
@@ -934,7 +934,7 @@
     text-align: center;
     padding: 40px 0;
     margin-top: 80px;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: var(--gray-600);
     font-weight: 500;
     letter-spacing: 0.8px;
@@ -995,7 +995,7 @@
     }
 
     .pageSubtitle {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .content {
@@ -1030,11 +1030,11 @@
     }
 
     .itemName {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .itemPrice {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     .deleteBtn {
@@ -1076,7 +1076,7 @@
     }
 
     .productsTitle {
-        font-size: 20px;
+        font-size: 1.4rem;
     }
 
     .cart-items-container {
@@ -1103,7 +1103,7 @@
     }
 
     .itemName {
-        font-size: 11px;
+        font-size: 1.4rem;
     }
 
     .itemDescription {
@@ -1111,27 +1111,27 @@
     }
 
     .itemPrice {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .deleteBtn {
         width: 24px;
         height: 24px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .invoiceTitle {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .orderCount {
         width: 28px;
         height: 28px;
-        font-size: 11px;
+        font-size: 1.4rem;
     }
 
     .vouchersTitle {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     .paymentForm {
@@ -1140,23 +1140,24 @@
     }
 
     .paymentFormTitle {
-        font-size: 20px;
+        font-size: 1.4rem;
         margin-bottom: 24px;
     }
 
     .paymentFormBtn {
         padding: 14px 18px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .btnPayment {
         padding: 14px 18px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .footerProducts {
-        font-size: 11px;
+        font-size: 1.4rem;
         margin-top: 40px;
         padding: 24px 0;
     }
 }
+

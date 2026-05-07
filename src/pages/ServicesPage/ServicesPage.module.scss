@@ -52,7 +52,7 @@ $text-secondary: #999;
     }
 
     p {
-        font-size: 20px;
+        font-size: 1.4rem;
         margin: 0;
         opacity: 0.95;
         font-weight: 400;
@@ -161,7 +161,7 @@ $text-secondary: #999;
     align-items: flex-start;
 
     h3 {
-        font-size: 18px;
+        font-size: 1.4rem;
         font-weight: 950;
         color: #1a1a1a;
         margin: 0;
@@ -170,7 +170,7 @@ $text-secondary: #999;
 
     p {
         margin: 4px 0 0 0;
-        font-size: 11px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: #66b3a0;
         text-transform: uppercase;
@@ -187,7 +187,7 @@ $text-secondary: #999;
     background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
     border-radius: 10px;
     color: white;
-    font-size: 18px;
+    font-size: 1.4rem;
     flex-shrink: 0;
 }
 
@@ -197,7 +197,7 @@ $text-secondary: #999;
     font-weight: 800;
     padding: 8px 14px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 1.4rem;
     box-shadow: 0 4px 12px rgba(28, 160, 125, 0.3);
 }
 
@@ -320,7 +320,7 @@ $text-secondary: #999;
 }
 
 .doctorCardName {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 900;
     color: #1a1a1a;
     margin: 0;
@@ -384,7 +384,7 @@ $text-secondary: #999;
     justify-content: center;
     padding: 40px 20px;
     color: #999;
-    font-size: 12px;
+    font-size: 1.4rem;
 
     svg {
         font-size: 32px;
@@ -430,7 +430,7 @@ $text-secondary: #999;
     align-items: center;
     gap: 12px;
     margin-bottom: 20px;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1a1a1a;
 
@@ -457,7 +457,7 @@ $text-secondary: #999;
     margin-left: auto;
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 1.4rem;
     cursor: pointer;
     color: #999;
     transition: all 0.2s ease;
@@ -505,7 +505,7 @@ $text-secondary: #999;
     border: 2px solid #e0e0e0;
     background: white;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #666;
     cursor: pointer;
@@ -577,7 +577,7 @@ $text-secondary: #999;
 }
 
 .count {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #999;
     font-weight: 600;
     background: #f5f5f5;
@@ -608,7 +608,7 @@ $text-secondary: #999;
     border: 2px dashed rgba(28, 160, 125, 0.2);
 
     p {
-        font-size: 16px;
+        font-size: 1.4rem;
         margin: 0;
         font-weight: 500;
     }
@@ -635,7 +635,7 @@ $text-secondary: #999;
     animation: slideUp 0.6s ease-out;
 
     label {
-        font-size: 15px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         display: flex;
@@ -644,14 +644,14 @@ $text-secondary: #999;
 
         &::before {
             content: '📅';
-            font-size: 18px;
+            font-size: 1.4rem;
         }
     }
 
     :global(.MuiOutlinedInput-root) {
         border-radius: 12px;
         transition: all 0.3s ease;
-        font-size: 15px;
+        font-size: 1.4rem;
         font-weight: 500;
 
         &:hover fieldset {
@@ -671,7 +671,7 @@ $text-secondary: #999;
 
     :global(.MuiOutlinedInput-input) {
         padding: 14px 16px;
-        font-size: 15px;
+        font-size: 1.4rem;
     }
 
     :global(.MuiIconButton-root) {
@@ -690,7 +690,7 @@ $text-secondary: #999;
     animation: slideUp 0.6s ease-out 0.1s both;
 
     label {
-        font-size: 15px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         display: flex;
@@ -699,7 +699,7 @@ $text-secondary: #999;
 
         &::before {
             content: '🕐';
-            font-size: 18px;
+            font-size: 1.4rem;
         }
     }
 }
@@ -715,7 +715,7 @@ $text-secondary: #999;
     border: 2px solid #e8e8e8;
     background: white;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #666;
     cursor: pointer;
@@ -816,14 +816,14 @@ $text-secondary: #999;
 .bookingModalTitle {
     h2 {
         margin: 0 0 8px 0;
-        font-size: 18px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $text-primary;
     }
 
     p {
         margin: 0;
-        font-size: 13px;
+        font-size: 1.4rem;
         color: $text-secondary;
     }
 }
@@ -860,7 +860,7 @@ $text-secondary: #999;
     label {
         display: block;
         margin-bottom: 8px;
-        font-size: 13px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: $text-primary;
 
@@ -875,7 +875,7 @@ $text-secondary: #999;
         padding: 12px;
         border: 1px solid $gray-border;
         border-radius: 8px;
-        font-size: 13px;
+        font-size: 1.4rem;
         font-family: inherit;
         color: $text-primary;
         background: white;
@@ -930,7 +930,7 @@ $text-secondary: #999;
     color: $primary;
     padding: 3px 8px;
     border-radius: 5px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 8px;
 }
@@ -938,7 +938,7 @@ $text-secondary: #999;
 .sessionName {
     display: block;
     margin: 0 0 8px 0;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: $text-primary;
 }
@@ -948,7 +948,7 @@ $text-secondary: #999;
     padding: 10px 12px;
     border: 1px solid $gray-border;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-family: inherit;
     color: $text-primary;
     background: white;
@@ -980,7 +980,7 @@ $text-secondary: #999;
     color: $text-primary;
     border: 1px solid $gray-border;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1001,7 +1001,7 @@ $text-secondary: #999;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1042,7 +1042,7 @@ $text-secondary: #999;
 
     h3 {
         margin: 0;
-        font-size: 18px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $text-primary;
     }
@@ -1075,7 +1075,7 @@ $text-secondary: #999;
 
 .treatmentLabel {
     display: block;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: $text-primary;
     margin-bottom: 8px;
@@ -1090,7 +1090,7 @@ $text-secondary: #999;
     padding: 10px 12px;
     border: 1px solid $gray-border;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: $text-primary;
     background: white;
     cursor: pointer;
@@ -1130,7 +1130,7 @@ $text-secondary: #999;
 
     .treatmentSessionLabel {
         display: block;
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: $text-primary;
         margin-bottom: 8px;
@@ -1142,7 +1142,7 @@ $text-secondary: #999;
     padding: 8px 10px;
     border: 1px solid $gray-border;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: $text-primary;
     background: white;
     transition: all 0.2s ease;
@@ -1173,7 +1173,7 @@ $text-secondary: #999;
     color: $text-primary;
     border: 1px solid $gray-border;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1195,7 +1195,7 @@ $text-secondary: #999;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1248,7 +1248,7 @@ $text-secondary: #999;
         }
 
         p {
-            font-size: 18px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1273,7 +1273,7 @@ $text-secondary: #999;
         }
 
         p {
-            font-size: 16px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1299,12 +1299,12 @@ $text-secondary: #999;
         padding-bottom: 16px;
 
         h2 {
-            font-size: 20px;
+            font-size: 1.4rem;
         }
     }
 
     .count {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .filterSection {
@@ -1314,7 +1314,7 @@ $text-secondary: #999;
     .filterHeader {
         gap: 8px;
         margin-bottom: 16px;
-        font-size: 15px;
+        font-size: 1.4rem;
 
         svg {
             width: 18px;
@@ -1330,7 +1330,7 @@ $text-secondary: #999;
 
     .filterBtn {
         padding: 11px 16px;
-        font-size: 13px;
+        font-size: 1.4rem;
         white-space: nowrap;
         flex-shrink: 0;
     }
@@ -1352,7 +1352,7 @@ $text-secondary: #999;
 
     .timeSlot {
         padding: 12px 8px;
-        font-size: 12px;
+        font-size: 1.4rem;
         border-radius: 10px;
         min-height: 48px;
     }
@@ -1361,11 +1361,11 @@ $text-secondary: #999;
         gap: 10px;
 
         label {
-            font-size: 13px;
+            font-size: 1.4rem;
         }
 
         :global(.MuiOutlinedInput-input) {
-            font-size: 13px;
+            font-size: 1.4rem;
             padding: 12px 14px;
         }
     }
@@ -1374,7 +1374,7 @@ $text-secondary: #999;
         gap: 12px;
 
         label {
-            font-size: 13px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1382,7 +1382,7 @@ $text-secondary: #999;
         padding: 50px 15px;
 
         p {
-            font-size: 14px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1408,7 +1408,7 @@ $text-secondary: #999;
         }
 
         p {
-            font-size: 14px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1420,7 +1420,7 @@ $text-secondary: #999;
     .mainContent {
         gap: 16px;
     
-            font-size: 14px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1428,7 +1428,7 @@ $text-secondary: #999;
         gap: 10px;
 
         label {
-            font-size: 13px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1436,7 +1436,7 @@ $text-secondary: #999;
         padding: 40px 15px;
 
         p {
-            font-size: 14px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1459,7 +1459,7 @@ $text-secondary: #999;
     }
 
     .heroContent p {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .container {
@@ -1480,12 +1480,12 @@ $text-secondary: #999;
         padding-bottom: 10px;
 
         h2 {
-            font-size: 16px;
+            font-size: 1.4rem;
         }
     }
 
     .count {
-        font-size: 11px;
+        font-size: 1.4rem;
     }
 
     .filterSection {
@@ -1493,7 +1493,7 @@ $text-secondary: #999;
     }
 
     .filterHeader {
-        font-size: 13px;
+        font-size: 1.4rem;
         margin-bottom: 10px;
     }
 
@@ -1505,13 +1505,13 @@ $text-secondary: #999;
 
     .filterBtn {
         padding: 8px 12px;
-        font-size: 12px;
+        font-size: 1.4rem;
         white-space: nowrap;
         flex-shrink: 0;
     }
 
     .closeBtn {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     .servicesGrid {
@@ -1530,7 +1530,7 @@ $text-secondary: #999;
 
     .timeSlot {
         padding: 8px 6px;
-        font-size: 11px;
+        font-size: 1.4rem;
         border-radius: 5px;
     }
 
@@ -1542,11 +1542,11 @@ $text-secondary: #999;
         gap: 5px;
 
         label {
-            font-size: 12px;
+            font-size: 1.4rem;
         }
 
         :global(.MuiOutlinedInput-input) {
-            font-size: 13px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1554,7 +1554,7 @@ $text-secondary: #999;
         gap: 8px;
 
         label {
-            font-size: 12px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1567,7 +1567,7 @@ $text-secondary: #999;
     padding: 10px 12px;
     border: 2px solid $gray-border;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-family: inherit;
     color: $text-primary;
     background: white;
@@ -1613,7 +1613,7 @@ $text-secondary: #999;
 }
 
         p {
-            font-size: 13px;
+            font-size: 1.4rem;
         }
     }
 
@@ -1631,3 +1631,4 @@ $text-secondary: #999;
     border-top: 2px solid #e0e0e0;
     animation: slideDown 0.3s ease-out;
 }
+

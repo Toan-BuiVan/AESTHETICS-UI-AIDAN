@@ -50,7 +50,7 @@
 
 .result-name {
     font-weight: 700;
-    font-size: 14px;
+    font-size: 1.4rem;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -60,7 +60,7 @@
 }
 
 .result-desc {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     max-width: 100%;
     display: -webkit-box;
@@ -80,7 +80,7 @@
 }
 
 .duration {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 600;
     padding: 4px 8px;
@@ -92,12 +92,12 @@
 .result-price {
     font-weight: 800;
     color: #1ca07d;
-    font-size: 13px;
+    font-size: 1.4rem;
     margin: 0;
 }
 
 .arrow-icon {
-    font-size: 16px;
+    font-size: 1.4rem;
     color: #aaa;
     flex-shrink: 0;
     transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);

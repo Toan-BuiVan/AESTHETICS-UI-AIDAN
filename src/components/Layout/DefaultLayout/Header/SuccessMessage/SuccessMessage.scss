@@ -93,13 +93,13 @@
 }
 
 .success-icon {
-    font-size: 20px;
+    font-size: 1.4rem;
     flex-shrink: 0;
 }
 
 .message-text {
     font-weight: 500;
-    font-size: 14px;
+    font-size: 1.4rem;
     margin: 0;
     flex: 1;
     line-height: 1.4;
@@ -111,7 +111,7 @@
     color: inherit;
     opacity: 0.7;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.4rem;
     padding: 4px 8px;
     display: flex;
     align-items: center;
@@ -140,10 +140,11 @@
     }
 
     .message-text {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .success-icon {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 }
+

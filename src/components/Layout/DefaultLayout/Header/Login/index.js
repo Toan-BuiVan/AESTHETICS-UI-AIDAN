@@ -294,12 +294,12 @@ function Login({ onClose, setSuccessMessage }) {
                     </button>
                 </div>
                 {/* Thêm button Google login ở đây */}
-                <div className={cx('input-box')}>
+                {/* <div className={cx('input-box')}>
                     <button type="button" className={cx('btn-submit', 'btn-google')} onClick={handleGoogleLogin}>
                         Đăng nhập bằng Google
                         <FontAwesomeIcon icon={faGoogle} className={cx('google-icon')} />
                     </button>
-                </div>
+                </div> */}
                 <div className={cx('switch-form')}>
                     <span>
                         Chưa có tài khoản?{' '}

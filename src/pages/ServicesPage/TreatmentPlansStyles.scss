@@ -45,14 +45,14 @@
         color: white;
         padding: 4px 12px;
         border-radius: 20px;
-        font-size: 13px;
+        font-size: 1.4rem;
         font-weight: 800;
         box-shadow: 0 4px 12px rgba(28, 160, 125, 0.2);
     }
 }
 
 .headerSubtitle {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #888;
     margin: 0;
     font-weight: 500;
@@ -137,7 +137,7 @@
     }
 
     .planTitle {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 950;
         color: #1a1a1a;
         margin: 0;
@@ -148,7 +148,7 @@
     .statusBadge {
         padding: 6px 12px;
         border-radius: 8px;
-        font-size: 11px;
+        font-size: 1.4rem;
         font-weight:800;
         text-transform: uppercase;
         letter-spacing: 0.3px;
@@ -175,7 +175,7 @@
 }
 
 .serviceName {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 700;
     text-transform: uppercase;
@@ -193,7 +193,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 1.4rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
     margin-left: 8px;
@@ -237,7 +237,7 @@
 
     .statIcon {
         color: #1ca07d;
-        font-size: 16px;
+        font-size: 1.4rem;
         flex-shrink: 0;
     }
 
@@ -257,7 +257,7 @@
 }
 
 .statValue {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 850;
     color: #1a1a1a;
 }
@@ -282,7 +282,7 @@
     margin-bottom: 12px;
 
     .sessionsTitle {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #1a1a1a;
         text-transform: uppercase;
@@ -290,7 +290,7 @@
     }
 
     .completedCount {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 750;
         color: #1ca07d;
         background: rgba(28, 160, 125, 0.1);
@@ -364,7 +364,7 @@
         flex: 1;
 
         .sessionNumber {
-            font-size: 12px;
+            font-size: 1.4rem;
             font-weight: 800;
             color: #1ca07d;
             text-transform: uppercase;
@@ -372,7 +372,7 @@
         }
 
         .sessionName {
-            font-size: 13px;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #212121;
             white-space: nowrap;
@@ -389,7 +389,7 @@
     }
 
     .statusBadge {
-        font-size: 11px;
+        font-size: 1.4rem;
         font-weight: 750;
         padding: 5px 10px;
         border-radius: 6px;
@@ -440,7 +440,7 @@
         padding: 6px 10px;
         border: 1.5px solid #1ca07d;
         border-radius: 6px;
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: #333;
         background: white;
@@ -472,7 +472,7 @@
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-size: 12px;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -495,7 +495,7 @@
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-size: 12px;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -525,7 +525,7 @@
 }
 
 .moreSessionsIndicator {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 700;
     text-align: center;
@@ -575,13 +575,13 @@
 
     h3 {
         margin: 0;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 800;
     }
 }
 
 .detailsHeroStatus {
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 800;
     padding: 4px 10px;
     border-radius: 20px;
@@ -625,7 +625,7 @@
 
     h4 {
         margin: 0 0 6px 0;
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #1ca07d;
         text-transform: uppercase;
@@ -634,7 +634,7 @@
 
     p {
         margin: 0;
-        font-size: 13px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: #212121;
     }
@@ -657,13 +657,13 @@
 }
 
 .productItemName {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #212121;
 }
 
 .productItemQty {
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #1ca07d;
     background: rgba(28, 160, 125, 0.1);
@@ -679,7 +679,7 @@
 
     h4 {
         margin: 0 0 6px 0;
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #ff9800;
         text-transform: uppercase;
@@ -688,7 +688,7 @@
 
     p {
         margin: 0;
-        font-size: 12px;
+        font-size: 1.4rem;
         line-height: 1.6;
         color: #666;
     }
@@ -706,7 +706,7 @@
     margin-bottom: 12px;
 
     .priceLabel {
-        font-size: 11px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #888;
         text-transform: uppercase;
@@ -714,7 +714,7 @@
     }
 
     .price {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 950;
         background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
         -webkit-background-clip: text;
@@ -724,7 +724,7 @@
 }
 
 .description {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     line-height: 1.5;
     margin: 0;
@@ -744,7 +744,7 @@
     border: 1.5px solid rgba(28, 160, 125, 0.18);
     color: #1ca07d;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -848,7 +848,7 @@
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -926,7 +926,7 @@
     border-bottom: 1px solid #eee;
 
     h3 {
-        font-size: 18px;
+        font-size: 1.4rem;
         font-weight: 950;
         color: #1a1a1a;
         margin: 0;
@@ -961,7 +961,7 @@
 }
 
 .planInfo {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 20px 0;
     padding: 12px;
@@ -990,7 +990,7 @@
         display: flex;
         flex-direction: column;
         gap: 6px;
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #333;
     }
@@ -1001,14 +1001,14 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    font-size: 11px;
+    font-size: 1.4rem;
 }
 
 .dateInput {
     padding: 10px 12px;
     border: 1.5px solid #ddd;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-family: inherit;
     transition: all 0.2s ease;
 
@@ -1039,7 +1039,7 @@
     padding: 12px 16px;
     border: none;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1228,7 +1228,7 @@
     color: white;
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1252,7 +1252,7 @@
 
 .modernStatusBadge {
     display: inline-block;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 800;
     padding: 8px 18px;
     border-radius: 24px;
@@ -1352,7 +1352,7 @@
 
 .cardTitle {
     margin: 0 0 12px 0;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #1ca07d;
     text-transform: uppercase;
@@ -1361,13 +1361,13 @@
 
 .cardDescription {
     margin: 0;
-    font-size: 15px;
+    font-size: 1.4rem;
     line-height: 1.6;
     color: #2c3e50;
     font-weight: 600;
 
     &.fullDescription {
-        font-size: 14px;
+        font-size: 1.4rem;
         color: #555;
         line-height: 1.8;
         font-weight: 500;
@@ -1418,7 +1418,7 @@
     h3 {
         margin: 0;
         flex: 1;
-        font-size: 15px;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #1ca07d;
         text-transform: uppercase;
@@ -1432,7 +1432,7 @@
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 800;
 }
 
@@ -1487,7 +1487,7 @@
     color: white;
     padding: 4px 10px;
     border-radius: 8px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 900;
     margin-bottom: 10px;
     transition: all 0.3s ease;
@@ -1495,7 +1495,7 @@
 
 .productTitle {
     margin: 0 0 12px 0;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #212121;
     line-height: 1.4;
@@ -1515,7 +1515,7 @@
 }
 
 .quantityLabel {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #999;
     text-transform: uppercase;
@@ -1527,7 +1527,7 @@
     color: white;
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 900;
     box-shadow: 0 4px 12px rgba(28, 160, 125, 0.2);
 }
@@ -1570,7 +1570,7 @@
     background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
     border: none;
     color: white;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 800;
     border-radius: 18px;
     cursor: pointer;

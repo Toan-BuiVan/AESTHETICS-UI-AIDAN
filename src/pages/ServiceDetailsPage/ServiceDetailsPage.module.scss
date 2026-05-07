@@ -69,7 +69,7 @@
     color: white;
     border-radius: 12px;
     padding: 12px 20px;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -118,7 +118,7 @@
     display: inline-block;
     padding: 10px 20px;
     border-radius: 24px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 800;
     background: rgba(255, 255, 255, 0.15);
     color: white;
@@ -212,7 +212,7 @@
     border: 1.5px solid rgba(255, 255, 255, 0.15);
     color: white;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -252,7 +252,7 @@
     background: rgba(78, 205, 196, 0.12);
     border: 1px solid rgba(78, 205, 196, 0.25);
     border-radius: 50px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -304,7 +304,7 @@
     gap: 8px;
     
     .metaLabel {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.6);
         text-transform: uppercase;
@@ -312,13 +312,13 @@
     }
 
     .metaValue {
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: white;
         
         &.price {
             color: #4ECDC4;
-            font-size: 16px;
+            font-size: 1.4rem;
         }
     }
 }
@@ -336,19 +336,19 @@
     -webkit-backdrop-filter: blur(10px);
 
     .savingIcon {
-        font-size: 18px;
+        font-size: 1.4rem;
         flex-shrink: 0;
     }
 
     .savingText {
-        font-size: 13px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.9);
         line-height: 1.4;
 
         strong {
             color: #4ECDC4;
-            font-size: 14px;
+            font-size: 1.4rem;
         }
     }
 }
@@ -403,14 +403,14 @@
     }
 
     .statValue {
-        font-size: 20px;
+        font-size: 1.4rem;
         font-weight: 900;
         color: #4ECDC4;
         line-height: 1;
     }
 
     .statLabel {
-        font-size: 11px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: rgba(255, 255, 255, 0.75);
         text-transform: uppercase;
@@ -418,7 +418,7 @@
     }
 
     .stars {
-        font-size: 14px;
+        font-size: 1.4rem;
         color: #FFD700;
         letter-spacing: 1px;
     }
@@ -456,7 +456,7 @@
     background: rgba(78, 205, 196, 0.15);
     border: 1.2px solid rgba(78, 205, 196, 0.25);
     border-radius: 50px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #FFFFFF;
     backdrop-filter: blur(8px);
@@ -465,7 +465,7 @@
     white-space: nowrap;
 
     span:first-child {
-        font-size: 16px;
+        font-size: 1.4rem;
         flex-shrink: 0;
     }
 
@@ -478,7 +478,7 @@
 }
 
 .heroDescription {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: rgba(255, 255, 255, 0.85);
     line-height: 1.6;
     margin: 0;
@@ -546,7 +546,7 @@
 }
 
 .benefitTitle {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: white;
     text-transform: uppercase;
@@ -555,7 +555,7 @@
 }
 
 .benefitDesc {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: rgba(255, 255, 255, 0.7);
     line-height: 1.3;
 }
@@ -576,7 +576,7 @@
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -619,7 +619,7 @@
     color: white;
     border: 1.5px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -658,12 +658,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
 
     .trustIcon {
-        font-size: 18px;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -684,14 +684,14 @@
 
     .heroStats {
         padding: 16px 20px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .heroStat {
         padding: 0 16px;
 
         .statValue {
-            font-size: 20px;
+            font-size: 1.4rem;
         }
 
         .statLabel {
@@ -706,7 +706,7 @@
 
     .benefitChip {
         padding: 10px 14px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .heroCta {
@@ -716,12 +716,12 @@
     .ctaPrimary,
     .ctaSecondary {
         padding: 12px 20px;
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .heroTrust {
         gap: 16px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 }
 
@@ -774,7 +774,7 @@
     }
 
     .statLabel {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.8);
         text-transform: uppercase;
@@ -782,7 +782,7 @@
     }
 
     .stars {
-        font-size: 16px;
+        font-size: 1.4rem;
         color: #FFD700;
         letter-spacing: 2px;
     }
@@ -808,14 +808,14 @@
     background: linear-gradient(135deg, rgba(78, 205, 196, 0.2) 0%, rgba(78, 205, 196, 0.05) 100%);
     border: 1.5px solid rgba(78, 205, 196, 0.3);
     border-radius: 50px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #4ECDC4;
     backdrop-filter: blur(10px);
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 
     span:first-child {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     &:hover {
@@ -827,7 +827,7 @@
 }
 
 .heroDescription {
-    font-size: 16px;
+    font-size: 1.4rem;
     color: rgba(255, 255, 255, 0.85);
     line-height: 1.7;
     margin: 0;
@@ -849,7 +849,7 @@
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -892,7 +892,7 @@
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -929,12 +929,12 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
 
     .trustIcon {
-        font-size: 20px;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -963,7 +963,7 @@
     gap: 20px;
 
     p {
-        font-size: 16px;
+        font-size: 1.4rem;
         color: #666;
     }
 }
@@ -991,7 +991,7 @@
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 
     p {
-        font-size: 18px;
+        font-size: 1.4rem;
         color: #666;
         margin-bottom: 20px;
     }
@@ -1002,7 +1002,7 @@
         color: white;
         border: none;
         border-radius: 8px;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -1110,7 +1110,7 @@
 }
 
 .label {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #999;
     font-weight: 600;
     text-transform: uppercase;
@@ -1118,7 +1118,7 @@
 }
 
 .value {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #1a1a1a;
 }
@@ -1129,14 +1129,14 @@
     border-top: 2px solid #f0f0f0;
 
     h3 {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         margin: 0 0 12px 0;
     }
 
     p {
-        font-size: 14px;
+        font-size: 1.4rem;
         line-height: 1.6;
         color: #666;
         margin: 0;
@@ -1177,7 +1177,7 @@
     border: none;
     border-bottom: 3px solid transparent;
     padding: 16px 24px;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #999;
     cursor: pointer;
@@ -1295,7 +1295,7 @@
     flex-shrink: 0;
 
     h3 {
-        font-size: 18px;
+        font-size: 1.4rem;
         font-weight: 950;
         color: #1a1a1a;
         margin: 0;
@@ -1314,7 +1314,7 @@
         align-items: center;
         justify-content: center;
         color: #1ca07d;
-        font-size: 20px;
+        font-size: 1.4rem;
         flex-shrink: 0;
         border: 1px solid rgba(28, 160, 125, 0.15);
     }
@@ -1331,7 +1331,7 @@
     color: white;
     border-radius: 12px;
     padding: 6px 12px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 800;
     box-shadow: 0 4px 12px rgba(28, 160, 125, 0.3);
     letter-spacing: 0.3px;
@@ -1357,7 +1357,7 @@
 
     p {
         color: #888;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 600;
     }
 }
@@ -1500,7 +1500,7 @@
 }
 
 .doctorSidebarName {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 850;
     color: #1a1a1a;
     margin: 0;
@@ -1515,7 +1515,7 @@
 }
 
 .doctorSidebarSpecialty {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 800;
     margin: 0;
@@ -1544,7 +1544,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #555;
     font-weight: 600;
     letter-spacing: 0.2px;
@@ -1567,7 +1567,7 @@
     border: 1.5px solid rgba(28, 160, 125, 0.18);
     padding: 10px 12px;
     border-radius: 10px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 750;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1616,7 +1616,7 @@
         margin: 0;
         color: #888;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 }
 
@@ -1886,7 +1886,7 @@
     }
 
     .placeholderInitials {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         letter-spacing: 0.3px;
         min-width: 36px;
@@ -1933,7 +1933,7 @@
 
 .doctorDetailModalName {
     text-align: center;
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #0a0a0a;
     margin: 0 0 3px 0;
@@ -1943,7 +1943,7 @@
 
 .doctorDetailModalSpecialty {
     text-align: center;
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 600;
     margin: 0;
@@ -2001,7 +2001,7 @@
     align-items: center;
     justify-content: center;
     color: #1ca07d;
-    font-size: 16px;
+    font-size: 1.4rem;
     flex-shrink: 0;
     transition: all 0.2s ease;
 }
@@ -2023,7 +2023,7 @@
 
 .doctorDetailModalGridValue {
     display: block;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #0a0a0a;
     line-height: 1.5;
@@ -2053,7 +2053,7 @@
     }
 
     p {
-        font-size: 13px;
+        font-size: 1.4rem;
         color: #555;
         line-height: 1.5;
         margin: 0;
@@ -2121,7 +2121,7 @@
         align-items: center;
         justify-content: center;
         margin-top: 3px;
-        font-size: 14px;
+        font-size: 1.4rem;
         transition: transform 0.2s ease;
     }
 
@@ -2148,7 +2148,7 @@
 
     .contactValue {
         display: block;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 500;
         color: #0a0a0a;
         word-break: break-word;
@@ -2187,7 +2187,7 @@
     border: none;
     color: #1ca07d;
     padding: 12px 16px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -2243,7 +2243,7 @@
 }
 
 .doctorDetailSpecialty {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 700;
     margin: 0;
@@ -2293,13 +2293,13 @@
     align-items: center;
     justify-content: center;
     color: #1ca07d;
-    font-size: 16px;
+    font-size: 1.4rem;
     flex-shrink: 0;
 }
 
 .detailGridLabel {
     display: block;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #999;
     text-transform: uppercase;
@@ -2309,7 +2309,7 @@
 
 .detailGridValue {
     display: block;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #1a1a1a;
     line-height: 1.4;
@@ -2325,7 +2325,7 @@
     border-top: 1px solid #e8e8e8;
 
     h4 {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         margin: 0 0 12px 0;
@@ -2334,7 +2334,7 @@
     }
 
     p {
-        font-size: 13px;
+        font-size: 1.4rem;
         color: #666;
         line-height: 1.8;
         margin: 0;
@@ -2350,7 +2350,7 @@
     margin-top: 12px;
 
     h4 {
-        font-size: 13px;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #1a1a1a;
         margin: 0 0 16px 0;
@@ -2380,7 +2380,7 @@
     }
 
     .infoLabel {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: #666;
         text-transform: uppercase;
@@ -2388,13 +2388,13 @@
     }
 
     .infoValue {
-        font-size: 13px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
 
         &.price {
             color: #ff6b9d;
-            font-size: 14px;
+            font-size: 1.4rem;
         }
     }
 }
@@ -2403,7 +2403,7 @@
     margin-bottom: 12px;
 
     label {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #555;
         text-transform: uppercase;
@@ -2430,7 +2430,7 @@
 .noTimeSlots {
     padding: 12px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 1.4rem;
     text-align: center;
     font-weight: 600;
 }
@@ -2454,7 +2454,7 @@
 // Overview Tab
 .card {
     h3 {
-        font-size: 18px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         margin: 0 0 20px 0;
@@ -2478,7 +2478,7 @@
     border-left: 4px solid #1ca07d;
 
     span {
-        font-size: 14px;
+        font-size: 1.4rem;
 
         &.label {
             color: #999;
@@ -2491,7 +2491,7 @@
 
             &.price {
                 color: #1ca07d;
-                font-size: 16px;
+                font-size: 1.4rem;
             }
         }
     }
@@ -2503,7 +2503,7 @@
     border-top: 1px solid #f0f0f0;
 
     h4 {
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         margin: 0 0 12px 0;
@@ -2512,7 +2512,7 @@
     }
 
     p {
-        font-size: 14px;
+        font-size: 1.4rem;
         line-height: 1.6;
         color: #666;
         margin: 0;
@@ -2611,7 +2611,7 @@
     border-bottom: 2px solid rgba(28, 160, 125, 0.1);
 
     h3 {
-        font-size: 20px;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #1a1a1a;
         margin: 0 0 8px 0;
@@ -2621,7 +2621,7 @@
 
     p {
         margin: 0;
-        font-size: 13px;
+        font-size: 1.4rem;
         color: #1ca07d;
         font-weight: 700;
         text-transform: uppercase;
@@ -2667,7 +2667,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 15px;
+    font-size: 1.4rem;
     color: #1a1a1a;
     font-weight: 500;
 
@@ -2680,7 +2680,7 @@
 
 .planDescription {
     color: #666;
-    font-size: 14px;
+    font-size: 1.4rem;
     line-height: 1.6;
     padding: 12px;
     background: rgba(255, 255, 255, 0.5);
@@ -2749,7 +2749,7 @@
     border: none;
     border-radius: 12px;
     padding: 14px 16px;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2808,7 +2808,7 @@
     text-align: center;
     padding: 40px 20px;
     color: #999;
-    font-size: 16px;
+    font-size: 1.4rem;
     grid-column: 1 / -1;
 }
 
@@ -2862,7 +2862,7 @@
     }
 
     p {
-        font-size: 16px;
+        font-size: 1.4rem;
         color: #1a1a1a;
         margin: 0 0 16px 0;
         position: relative;
@@ -2887,7 +2887,7 @@
         background: rgba(255, 255, 255, 0.9);
         border: 2px solid rgba(28, 160, 125, 0.25);
         border-radius: 12px;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1ca07d;
         backdrop-filter: blur(10px);
@@ -2974,7 +2974,7 @@
 
     h4 {
         margin: 0;
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
     }
@@ -3008,7 +3008,7 @@
 
     span {
         color: white;
-        font-size: 18px;
+        font-size: 1.4rem;
         font-weight: 900;
         letter-spacing: -1px;
         position: relative;
@@ -3031,7 +3031,7 @@
 }
 
 .sessionDescription {
-    font-size: 15px;
+    font-size: 1.4rem;
     line-height: 1.7;
     color: #555;
     margin: 0;
@@ -3045,7 +3045,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 700;
     padding: 10px 16px;
@@ -3078,7 +3078,7 @@
     border-top: 2px solid rgba(28, 160, 125, 0.1);
 
     h5 {
-        font-size: 13px;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #1a1a1a;
         margin: 0 0 16px 0;
@@ -3113,7 +3113,7 @@
     background: linear-gradient(135deg, rgba(28, 160, 125, 0.08) 0%, rgba(22, 157, 114, 0.04) 100%);
     border: 1.5px solid rgba(28, 160, 125, 0.15);
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #1a1a1a;
     font-weight: 500;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3158,7 +3158,7 @@
 }
 
 .noProducts {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #999;
     font-style: italic;
     margin: 0;
@@ -3203,7 +3203,7 @@
     border-bottom: 1px solid #f0f0f0;
 
     h3 {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         margin: 0 0 6px 0;
@@ -3217,7 +3217,7 @@
     }
 
     p {
-        font-size: 13px;
+        font-size: 1.4rem;
         color: #999;
         margin: 0;
     }
@@ -3249,7 +3249,7 @@
     padding: 10px;
     background: #f9f9f9;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 1.4rem;
 
     span {
         &:first-child {
@@ -3267,7 +3267,7 @@
 .status {
     padding: 4px 12px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
 
     &.confirmed {
@@ -3281,7 +3281,7 @@
     padding: 60px 20px;
 
     p {
-        font-size: 16px;
+        font-size: 1.4rem;
         color: #999;
         margin: 0;
     }
@@ -3326,7 +3326,7 @@
 
     .tabBtn {
         padding: 8px 16px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 }
 
@@ -3425,7 +3425,7 @@
     color: white;
     padding: 8px 16px;
     border-radius: 50px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -3486,7 +3486,7 @@
     background: linear-gradient(135deg, #1ca07d 0%, #169d72 100%);
     border-radius: 50%;
     color: white;
-    font-size: 14px;
+    font-size: 1.4rem;
     box-shadow: 0 4px 12px rgba(28, 160, 125, 0.3);
     animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -3501,7 +3501,7 @@
 }
 
 .planCardDesc {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 20px 0;
     line-height: 1.6;
@@ -3534,7 +3534,7 @@
     background: white;
     border-radius: 10px;
     color: #1ca07d;
-    font-size: 16px;
+    font-size: 1.4rem;
     box-shadow: 0 2px 8px rgba(28, 160, 125, 0.12);
 }
 
@@ -3544,7 +3544,7 @@
 }
 
 .statLabel {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #888;
     font-weight: 600;
     text-transform: uppercase;
@@ -3552,7 +3552,7 @@
 }
 
 .statValue {
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #1ca07d;
 }
@@ -3568,7 +3568,7 @@
 }
 
 .priceLabel {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #888;
     text-transform: uppercase;
@@ -3585,7 +3585,7 @@
 }
 
 .currency {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 600;
 }
 
@@ -3594,7 +3594,7 @@
     color: white;
     border: none;
     padding: 14px 20px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     border-radius: 12px;
     cursor: pointer;
@@ -3801,7 +3801,7 @@
 }
 
 .headerContent p {
-    font-size: 15px;
+    font-size: 1.4rem;
     color: #555;
     margin: 0;
     line-height: 1.7;
@@ -3866,7 +3866,7 @@
 }
 
 .statText {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #888;
     text-transform: uppercase;
@@ -3928,7 +3928,7 @@
     flex: 1;
 
     h4 {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         margin: 0;
@@ -4021,7 +4021,7 @@
     color: #1ca07d;
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -4029,7 +4029,7 @@
 }
 
 .sessionCardHeader h4 {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1a1a1a;
     margin: 0;
@@ -4037,7 +4037,7 @@
 }
 
 .sessionDesc {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0;
     line-height: 1.6;
@@ -4053,7 +4053,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 600;
 
@@ -4074,7 +4074,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1ca07d;
     text-transform: uppercase;
@@ -4101,7 +4101,7 @@
     border: 1px solid rgba(28, 160, 125, 0.2);
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 600;
 
@@ -4124,7 +4124,7 @@
     color: white;
     border: none;
     padding: 16px 40px;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     border-radius: 14px;
     cursor: pointer;
@@ -4198,7 +4198,7 @@
     }
 
     p {
-        font-size: 15px;
+        font-size: 1.4rem;
         color: #888;
         margin: 0;
     }
@@ -4286,7 +4286,7 @@
 }
 
 .infoCardLabel {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1ca07d;
     text-transform: uppercase;
@@ -4303,13 +4303,13 @@
 }
 
 .infoCardUnit {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #888;
 }
 
 .infoCardDesc {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #999;
     margin-top: 2px;
 }
@@ -4332,19 +4332,19 @@
         background: #1ca07d;
         border-radius: 12px;
         color: white;
-        font-size: 20px;
+        font-size: 1.4rem;
         flex-shrink: 0;
     }
 
     h4 {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a1a1a;
         margin: 0 0 8px 0;
     }
 
     p {
-        font-size: 14px;
+        font-size: 1.4rem;
         color: #666;
         margin: 0;
         line-height: 1.6;
@@ -4370,7 +4370,7 @@
     height: 28px;
     cursor: pointer;
     color: rgba(28, 160, 125, 0.4);
-    font-size: 20px;
+    font-size: 1.4rem;
     transition: all 0.3s ease;
 
     &:hover {
@@ -4418,7 +4418,7 @@
     color: #1ca07d;
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -4451,7 +4451,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 600;
 
@@ -4472,7 +4472,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1ca07d;
     text-transform: uppercase;
@@ -4499,7 +4499,7 @@
     border: 1.5px solid rgba(28, 160, 125, 0.2);
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -4588,7 +4588,7 @@
 }
 
 .doctorsHeaderContent p {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #888;
     margin: 0;
     font-weight: 500;
@@ -4762,7 +4762,7 @@
     align-items: center;
     justify-content: center;
     color: #1ca07d;
-    font-size: 18px;
+    font-size: 1.4rem;
     flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(28, 160, 125, 0.1);
 }
@@ -4775,7 +4775,7 @@
 }
 
 .detailLabel {
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #888;
     text-transform: uppercase;
@@ -4783,14 +4783,14 @@
 }
 
 .detailValue {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #1a1a1a;
     line-height: 1.4;
 }
 
 .doctorBio {
-    font-size: 15px;
+    font-size: 1.4rem;
     color: #555;
     line-height: 1.7;
     margin: 0;
@@ -4831,7 +4831,7 @@
     text-align: center;
     padding: 80px 40px;
     color: #999;
-    font-size: 16px;
+    font-size: 1.4rem;
 
     svg {
         width: 64px;
@@ -4866,7 +4866,7 @@
 
     p {
         color: #999;
-        font-size: 15px;
+        font-size: 1.4rem;
         font-weight: 500;
     }
 }
@@ -4899,7 +4899,7 @@
         }
 
         .doctorSidebarName {
-            font-size: 14px;
+            font-size: 1.4rem;
         }
     }
 
@@ -4964,7 +4964,7 @@
     }
 
     .doctorSpecialty {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .doctorDetailsGrid {
@@ -4976,7 +4976,7 @@
     .detailIcon {
         width: 36px;
         height: 36px;
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .doctorImageContainer {
@@ -4998,7 +4998,7 @@
             padding-bottom: 12px;
 
             h3 {
-                font-size: 16px;
+                font-size: 1.4rem;
             }
         }
     }
@@ -5020,11 +5020,11 @@
         }
 
         .doctorSidebarName {
-            font-size: 13px;
+            font-size: 1.4rem;
         }
 
         .doctorSidebarSpecialty {
-            font-size: 11px;
+            font-size: 1.4rem;
         }
 
         .doctorSidebarDetails {
@@ -5033,7 +5033,7 @@
 
         .doctorSidebarBookBtn {
             padding: 10px 12px;
-            font-size: 11px;
+            font-size: 1.4rem;
             margin-top: 6px;
         }
     }
@@ -5051,7 +5051,7 @@
     }
 
     .doctorsHeaderContent h3 {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     .doctorsContainer {
@@ -5064,15 +5064,15 @@
     }
 
     .doctorFullName {
-        font-size: 20px;
+        font-size: 1.4rem;
     }
 
     .doctorSpecialty {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     .doctorBio {
-        font-size: 14px;
+        font-size: 1.4rem;
         padding: 12px 0;
     }
 
@@ -5081,7 +5081,7 @@
     }
 
     .detailValue {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .doctorBookBtn {
@@ -5089,3 +5089,4 @@
         align-self: stretch;
     }
 }
+

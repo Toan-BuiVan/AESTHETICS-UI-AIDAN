@@ -124,7 +124,7 @@
     align-self: center;
 
     .item-name {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a3a3a;
         margin: 0 0 4px 0;
@@ -133,7 +133,7 @@
     }
 
     .item-description {
-        font-size: 11px;
+        font-size: 1.4rem;
         color: #888;
         margin: 0;
         line-height: 1.4;
@@ -162,7 +162,7 @@
 }
 
 .label {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #999;
     font-weight: 600;
     text-transform: uppercase;
@@ -170,13 +170,13 @@
 }
 
 .currency {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 600;
 }
 
 .item-price {
-    font-size: 18px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -241,7 +241,7 @@
     border-radius: 8px;
     background: linear-gradient(135deg, #1ca07d 0%, #156953 100%);
     color: white;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -275,7 +275,7 @@
 }
 
 .total-price {
-    font-size: 15px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 700;
     margin-left: 12px;
@@ -297,7 +297,7 @@
     padding: 8px 14px;
     border: none;
     border-radius: 8px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -358,7 +358,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
-    font-size: 15px;
+    font-size: 1.4rem;
 
     &:last-of-type {
         margin-bottom: 0;
@@ -368,13 +368,13 @@
 .summary-row .label {
     color: #666;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 1.4rem;
     text-transform: none;
     letter-spacing: normal;
 }
 
 .summary-row .value {
-    font-size: 16px;
+    font-size: 1.4rem;
     color: #1a3a3a;
     font-weight: 700;
 }
@@ -393,7 +393,7 @@
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -433,13 +433,13 @@
     }
 
     .item-price {
-        font-size: 20px;
+        font-size: 1.4rem;
     }
 
     .delete-button,
     .payment-button {
         padding: 10px 16px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 }
 
@@ -476,13 +476,13 @@
         grid-row: 1;
 
         .item-name {
-            font-size: 15px;
+            font-size: 1.4rem;
             line-height: 1.3;
             margin-bottom: 4px;
         }
 
         .item-description {
-            font-size: 12px;
+            font-size: 1.4rem;
             -webkit-line-clamp: 1;
         }
     }
@@ -507,11 +507,11 @@
     }
 
     .currency {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .item-price {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     .spec-section {
@@ -535,15 +535,15 @@
     .quantity-btn {
         width: 32px;
         height: 32px;
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     .item-quantity {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     .total-price {
-        font-size: 13px;
+        font-size: 1.4rem;
         margin-left: 8px;
     }
 
@@ -558,7 +558,7 @@
     .payment-button {
         flex: 1;
         padding: 10px 12px;
-        font-size: 11px;
+        font-size: 1.4rem;
         justify-content: center;
     }
 
@@ -568,7 +568,7 @@
 
     .checkout-button {
         padding: 12px 16px;
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 }
 
@@ -602,13 +602,13 @@
         grid-column: 1;
 
         .item-name {
-            font-size: 13px;
+            font-size: 1.4rem;
             line-height: 1.2;
             margin-bottom: 3px;
         }
 
         .item-description {
-            font-size: 11px;
+            font-size: 1.4rem;
             -webkit-line-clamp: 1;
             line-height: 1.3;
         }
@@ -631,11 +631,11 @@
     }
 
     .currency {
-        font-size: 11px;
+        font-size: 1.4rem;
     }
 
     .item-price {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .spec-badge {
@@ -654,17 +654,17 @@
     .quantity-btn {
         width: 28px;
         height: 28px;
-        font-size: 12px;
+        font-size: 1.4rem;
         box-shadow: 0 2px 6px rgba(28, 160, 125, 0.15);
     }
 
     .item-quantity {
-        font-size: 12px;
+        font-size: 1.4rem;
         min-width: 24px;
     }
 
     .total-price {
-        font-size: 11px;
+        font-size: 1.4rem;
         margin-left: 4px;
         white-space: nowrap;
         font-weight: 600;
@@ -695,7 +695,7 @@
 
     .checkout-button {
         padding: 10px 12px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 }
 
@@ -706,7 +706,7 @@
     right: 10px;
     padding: 10px 16px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 500;
     animation: slideInRight 0.3s ease-out;
     z-index: 10;
@@ -734,3 +734,4 @@
         transform: translateX(0);
     }
 }
+

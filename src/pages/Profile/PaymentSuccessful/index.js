@@ -386,7 +386,7 @@ function PaymentSuccessful({ onCountChange }) {
                                             <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>
                                                 <div style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: '4px' }}>Trạng thái thanh toán</div>
                                                 <div style={{ fontSize: '13px', color: '#1e1e1e', fontWeight: '500' }}>
-                                                    {item.invoice.status === 'DaThanhToan' ? '✓ Đã thanh toán' : 'Chưa thanh toán'}
+                                                    {item.invoice.isRefund === true ? 'Đang chờ phê duyệt Hoàn Tiền' : (item.invoice.status === 'DaThanhToan' ? '✓ Đã thanh toán' : 'Chưa thanh toán')}
                                                 </div>
                                             </div>
                                             <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E8E8E8' }}>

@@ -379,18 +379,27 @@ function ContinuePayment({ onCountChange }) {
 
     // Hàm lấy statusBadge
     const getStatusBadge = (invoice) => {
+        if (invoice.isRefund === true) {
+            return '⏳ Đang chờ phê duyệt Hoàn Tiền';
+        }
         const isFullyPaid = invoice.status === 'ThanhToanToanBo';
         return isFullyPaid ? '✓ Thanh toán toàn bộ' : '⏳ Thanh toán một phần';
     };
 
     // Hàm lấy statusColor
     const getStatusColor = (invoice) => {
+        if (invoice.isRefund === true) {
+            return '#FFE8CC';
+        }
         const isFullyPaid = invoice.status === 'ThanhToanToanBo';
         return isFullyPaid ? '#FFF3E0' : '#FFF3E0';
     };
 
     // Hàm lấy statusTextColor
     const getStatusTextColor = (invoice) => {
+        if (invoice.isRefund === true) {
+            return '#E65100';
+        }
         const isFullyPaid = invoice.status === 'ThanhToanToanBo';
         return isFullyPaid ? '#4CAF50' : '#E65100';
     };

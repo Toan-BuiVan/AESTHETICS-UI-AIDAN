@@ -57,7 +57,7 @@
     max-width: 900px;
     margin: 0 auto;
     color: #535354;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     line-height: 1.8;
     animation: fadeIn 0.8s ease-out 0.2s both;
 }
@@ -194,14 +194,14 @@
 .feature-title {
     margin-bottom: 12px;
     color: #156953;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
 
 .feature-description {
     color: #535354;
-    font-size: 0.95rem;
+    font-size: 1.4rem;
     line-height: 1.7;
     font-weight: 500;
 }
@@ -354,7 +354,7 @@
 }
 
 .tech-card h3 {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     color: #156953;
     margin-bottom: 10px;
     font-weight: 700;
@@ -363,7 +363,7 @@
 }
 
 .tech-card p {
-    font-size: 0.9rem;
+    font-size: 1.4rem;
     color: #666;
     min-height: 70px;
     line-height: 1.6;
@@ -377,7 +377,7 @@
     margin-top: 8px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 4px 12px rgba(21, 105, 83, 0.3);
@@ -465,12 +465,12 @@
 }
 
 .story-content p {
-    font-size: 16px;
+    font-size: 1.4rem;
     line-height: 1.5;
 }
 
 .read-more {
-    font-size: 13px;
+    font-size: 1.4rem;
     text-decoration: none;
     font-weight: 400;
     background-color: #2d7865;
@@ -597,7 +597,7 @@
 }
 
 .story-content p {
-    font-size: 0.95rem;
+    font-size: 1.4rem;
     line-height: 1.8;
     margin: 0 0 16px 0;
     color: rgba(255, 255, 255, 0.97);
@@ -606,14 +606,14 @@
 }
 
 .story-content p:first-child {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 700;
     margin-bottom: 12px;
     letter-spacing: 0.3px;
 }
 
 .read-more {
-    font-size: 12px;
+    font-size: 1.4rem;
     text-decoration: none;
     font-weight: 700;
     background: linear-gradient(135deg, #99cc00 0%, #7ab300 100%);
@@ -824,7 +824,7 @@
         position: relative;
 
         .sales-title {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #156953;
             margin-bottom: 10px;
@@ -834,7 +834,7 @@
         }
 
         .sales-description {
-            font-size: 0.9rem;
+            font-size: 1.4rem;
             color: #666;
             margin-bottom: 16px;
             line-height: 1.6;
@@ -851,7 +851,7 @@
             padding: 10px 20px;
             border-radius: 8px;
             border: none;
-            font-size: 13px;
+            font-size: 1.4rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1012,7 +1012,7 @@
 }
 
 .right-article h4 {
-    font-size: 1.2em;
+    font-size: 1.4rem;
     color: #333;
     margin-bottom: 10px;
 }
@@ -1142,7 +1142,7 @@
 
 .video-item p {
     padding: 16px;
-    font-size: 0.95rem;
+    font-size: 1.4rem;
     font-weight: 600;
     line-height: 1.4;
     color: #156953;
@@ -1265,12 +1265,12 @@
 
 .reviewer-name {
     font-weight: bold;
-    font-size: 20px;
+    font-size: 1.4rem;
     color: #156953;
 }
 
 .review-text {
-    font-size: 18px;
+    font-size: 1.4rem;
     line-height: 1.6;
     color: #555;
 }
@@ -1286,7 +1286,7 @@
     width: 40px;
     height: 40px;
     color: #fff;
-    font-size: 18px;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: background 0.3s ease;
     display: none;
@@ -1401,7 +1401,7 @@
 }
 
 .description {
-    font-size: 1rem;
+    font-size: 1.4rem;
     color: #99cc00;
     font-weight: 500;
     animation: slideDown 0.6s ease-out 0.1s both;
@@ -1425,7 +1425,7 @@ input[type='email'] {
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.95);
     color: #333;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 500;
     transition: all 0.3s ease;
     outline: none;
@@ -1446,7 +1446,7 @@ input[type='email']:focus {
     cursor: pointer;
     margin-left: 10px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 1.4rem;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 6px 16px rgba(153, 204, 0, 0.3);
     position: relative;
@@ -1481,7 +1481,7 @@ input[type='email']:focus {
 
 .error-message {
     color: red;
-    font-size: 14px;
+    font-size: 1.4rem;
     display: none;
     margin-top: 10px;
 }
@@ -1564,7 +1564,7 @@ input[type='email']:focus {
 .cauhoi-icon-arrow {
     margin-right: 12px;
     color: #99cc00;
-    font-size: 18px;
+    font-size: 1.4rem;
     transition: transform 0.3s ease;
 }
 
@@ -1574,7 +1574,7 @@ input[type='email']:focus {
 
 .cauhoi-question-title {
     color: #fff;
-    font-size: 1rem;
+    font-size: 1.4rem;
     line-height: 1.6;
     text-align: left;
     font-weight: 600;
@@ -1585,7 +1585,7 @@ input[type='email']:focus {
     padding-top: 16px;
     padding-left: 30px;
     color: rgba(255, 255, 255, 0.9);
-    font-size: 0.95rem;
+    font-size: 1.4rem;
     text-align: left;
     line-height: 1.8;
     display: none;
@@ -1647,7 +1647,7 @@ input[type='email']:focus {
 .cauhoi-feature-content p {
     padding-top: 10px;
     text-align: left;
-    font-size: 15px;
+    font-size: 1.4rem;
 }
 
 .cauhoi-feature:hover {
@@ -1676,7 +1676,7 @@ input[type='email']:focus {
     }
 
     .title p {
-        font-size: 0.95rem;
+        font-size: 1.4rem;
         padding: 0 15px;
     }
 
@@ -1708,12 +1708,12 @@ input[type='email']:focus {
     }
 
     .feature-title {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         margin-bottom: 10px;
     }
 
     .feature-description {
-        font-size: 0.9rem;
+        font-size: 1.4rem;
     }
 
     /* Banner Image Section */
@@ -1744,11 +1744,11 @@ input[type='email']:focus {
     }
 
     .tech-card h3 {
-        font-size: 15px;
+        font-size: 1.4rem;
     }
 
     .tech-card p {
-        font-size: 13px;
+        font-size: 1.4rem;
         min-height: 60px;
     }
 
@@ -1767,7 +1767,7 @@ input[type='email']:focus {
     }
 
     .story-content p {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     /* Sales Section */
@@ -1799,12 +1799,12 @@ input[type='email']:focus {
     }
 
     .left-article p {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         line-height: 1.8;
     }
 
     .right-article h4 {
-        font-size: 1rem;
+        font-size: 1.4rem;
     }
 
     /* Video Section */
@@ -1838,11 +1838,11 @@ input[type='email']:focus {
     }
 
     .reviewer-name {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .review-text {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     /* Message Section */
@@ -1851,11 +1851,11 @@ input[type='email']:focus {
     }
 
     .section-titlee {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     .description {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     /* FAQ Section */
@@ -1869,11 +1869,11 @@ input[type='email']:focus {
     }
 
     .cauhoi-question-title {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     .cauhoi-content {
-        font-size: 15px;
+        font-size: 1.4rem;
     }
 
     .cauhoi-feature-content h3 {
@@ -1881,7 +1881,7 @@ input[type='email']:focus {
     }
 
     .cauhoi-feature-content p {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 }
 
@@ -1924,14 +1924,14 @@ input[type='email']:focus {
     }
 
     .title p {
-        font-size: 0.95rem;
+        font-size: 1.4rem;
         padding: 0 10px;
         line-height: 1.6;
     }
 
     .titlerts-container p {
         padding-top: 15px;
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         line-height: 1.5;
     }
 
@@ -1968,12 +1968,12 @@ input[type='email']:focus {
     }
 
     .feature-title {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         margin-bottom: 8px;
     }
 
     .feature-description {
-        font-size: 0.9rem;
+        font-size: 1.4rem;
         line-height: 1.5;
     }
 
@@ -2019,17 +2019,17 @@ input[type='email']:focus {
     }
 
     .tech-card h3 {
-        font-size: 15px;
+        font-size: 1.4rem;
         min-height: 40px;
     }
 
     .tech-card p {
-        font-size: 13px;
+        font-size: 1.4rem;
         min-height: 50px;
     }
 
     .btn-detail {
-        font-size: 12px;
+        font-size: 1.4rem;
         padding: 6px 12px;
     }
 
@@ -2064,12 +2064,12 @@ input[type='email']:focus {
     }
 
     .story-content p {
-        font-size: 13px;
+        font-size: 1.4rem;
         line-height: 1.5;
     }
 
     .read-more {
-        font-size: 12px;
+        font-size: 1.4rem;
         padding: 6px 12px;
         margin-left: 0;
     }
@@ -2095,15 +2095,15 @@ input[type='email']:focus {
     }
 
     .sales-title {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
     }
 
     .sales-description {
-        font-size: 0.9rem;
+        font-size: 1.4rem;
     }
 
     .btn-detail-seales {
-        font-size: 12px;
+        font-size: 1.4rem;
         padding: 8px 16px;
     }
 
@@ -2127,11 +2127,11 @@ input[type='email']:focus {
     }
 
     .left-article h3 {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
     }
 
     .left-article p {
-        font-size: 1rem;
+        font-size: 1.4rem;
         line-height: 1.6;
     }
 
@@ -2140,12 +2140,12 @@ input[type='email']:focus {
     }
 
     .right-article h4 {
-        font-size: 0.95rem;
+        font-size: 1.4rem;
         margin-bottom: 8px;
     }
 
     .right-article p {
-        font-size: 0.85rem;
+        font-size: 1.4rem;
     }
 
     /* Video Section */
@@ -2170,7 +2170,7 @@ input[type='email']:focus {
     }
 
     .video-item p {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     /* Review Section */
@@ -2189,11 +2189,11 @@ input[type='email']:focus {
     }
 
     .reviewer-name {
-        font-size: 15px;
+        font-size: 1.4rem;
     }
 
     .review-text {
-        font-size: 13px;
+        font-size: 1.4rem;
         line-height: 1.5;
     }
 
@@ -2210,7 +2210,7 @@ input[type='email']:focus {
     }
 
     .description {
-        font-size: 13px;
+        font-size: 1.4rem;
         line-height: 1.5;
     }
 
@@ -2226,7 +2226,7 @@ input[type='email']:focus {
     .btn-submit {
         width: 100%;
         padding: 12px 20px;
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     /* FAQ Section */
@@ -2252,11 +2252,11 @@ input[type='email']:focus {
     }
 
     .cauhoi-question-title {
-        font-size: 15px;
+        font-size: 1.4rem;
     }
 
     .cauhoi-content {
-        font-size: 14px;
+        font-size: 1.4rem;
         line-height: 1.5;
     }
 
@@ -2275,11 +2275,11 @@ input[type='email']:focus {
     }
 
     .cauhoi-feature-content h3 {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
     }
 
     .cauhoi-feature-content p {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 }
 
@@ -2309,14 +2309,14 @@ input[type='email']:focus {
     }
 
     .title p {
-        font-size: 0.85rem;
+        font-size: 1.4rem;
         padding: 0 8px;
         line-height: 1.5;
     }
 
     .titlerts-container p {
         padding-top: 12px;
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         line-height: 1.4;
     }
 
@@ -2350,12 +2350,12 @@ input[type='email']:focus {
     }
 
     .feature-title {
-        font-size: 1rem;
+        font-size: 1.4rem;
         margin-bottom: 6px;
     }
 
     .feature-description {
-        font-size: 0.8rem;
+        font-size: 1.4rem;
         line-height: 1.4;
     }
 
@@ -2386,12 +2386,12 @@ input[type='email']:focus {
     }
 
     .tech-card h3 {
-        font-size: 13px;
+        font-size: 1.4rem;
         min-height: 30px;
     }
 
     .tech-card p {
-        font-size: 11px;
+        font-size: 1.4rem;
         min-height: 35px;
         line-height: 1.4;
     }
@@ -2433,7 +2433,7 @@ input[type='email']:focus {
     }
 
     .story-content p {
-        font-size: 12px;
+        font-size: 1.4rem;
         line-height: 1.4;
     }
 
@@ -2460,16 +2460,16 @@ input[type='email']:focus {
     }
 
     .sales-title {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
     }
 
     .sales-description {
-        font-size: 0.8rem;
+        font-size: 1.4rem;
         line-height: 1.4;
     }
 
     .btn-detail-seales {
-        font-size: 11px;
+        font-size: 1.4rem;
         padding: 6px 12px;
     }
 
@@ -2493,11 +2493,11 @@ input[type='email']:focus {
     }
 
     .left-article h3 {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
     }
 
     .left-article p {
-        font-size: 0.85rem;
+        font-size: 1.4rem;
         line-height: 1.5;
     }
 
@@ -2507,7 +2507,7 @@ input[type='email']:focus {
     }
 
     .right-article h4 {
-        font-size: 0.85rem;
+        font-size: 1.4rem;
         margin-bottom: 5px;
     }
 
@@ -2540,7 +2540,7 @@ input[type='email']:focus {
     }
 
     .video-item p {
-        font-size: 11px;
+        font-size: 1.4rem;
     }
 
     /* Review Section */
@@ -2568,11 +2568,11 @@ input[type='email']:focus {
     }
 
     .reviewer-name {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .review-text {
-        font-size: 11px;
+        font-size: 1.4rem;
         line-height: 1.4;
     }
 
@@ -2584,12 +2584,12 @@ input[type='email']:focus {
     }
 
     .section-titlee {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         margin-bottom: 8px;
     }
 
     .description {
-        font-size: 12px;
+        font-size: 1.4rem;
         line-height: 1.4;
     }
 
@@ -2601,13 +2601,13 @@ input[type='email']:focus {
     .input-group input {
         width: 100%;
         padding: 10px;
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .btn-submit {
         width: 100%;
         padding: 10px 16px;
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     /* FAQ Section */
@@ -2626,16 +2626,16 @@ input[type='email']:focus {
     }
 
     .cauhoi-title {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         margin-bottom: 12px;
     }
 
     .cauhoi-question-title {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     .cauhoi-content {
-        font-size: 11px;
+        font-size: 1.4rem;
         line-height: 1.4;
     }
 
@@ -2658,14 +2658,15 @@ input[type='email']:focus {
     }
 
     .cauhoi-feature-content h3 {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
     }
 
     .cauhoi-feature-content p {
-        font-size: 11px;
+        font-size: 1.4rem;
     }
 
     .cauhoi-feature:hover {
         transform: scale(1.02);
     }
 }
+

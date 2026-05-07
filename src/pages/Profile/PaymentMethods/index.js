@@ -92,7 +92,7 @@ function PaymentMethods() {
         fetchPaymentMethods();
     }, []);
 
-    // Fetch danh sách phương thức thanh toán
+    // Fetch danh sách Tài Khoản thanh toán
     const fetchPaymentMethods = async () => {
         try {
             setLoading(true);
@@ -116,7 +116,7 @@ function PaymentMethods() {
                 setPaymentMethods(data.baseDatas || []);
                 setError(null);
             } else {
-                setError('Không thể tải danh sách phương thức thanh toán');
+                setError('Không thể tải danh sách Tài Khoản thanh toán');
             }
         } catch (err) {
             console.error('Error fetching payment methods:', err);
@@ -149,7 +149,7 @@ function PaymentMethods() {
         }
     };
 
-    // Tạo phương thức thanh toán mới
+    // Tạo Tài Khoản thanh toán mới
     const handleCreatePaymentMethod = async () => {
         if (!formData.bankAccountNumber.trim() || !formData.bankAccountName.trim() || !formData.bankName.trim() || !formData.bankCode.trim()) {
             setSuccessMessage('❌ Vui lòng điền đầy đủ thông tin');
@@ -179,11 +179,11 @@ function PaymentMethods() {
             const data = await response.json();
 
             if (data.success) {
-                setSuccessMessage('✓ Thêm phương thức thanh toán thành công');
+                setSuccessMessage('✓ Thêm Tài Khoản thanh toán thành công');
                 resetForm();
                 await fetchPaymentMethods();
             } else {
-                setSuccessMessage(`❌ ${data.message || 'Thêm phương thức thanh toán thất bại'}`);
+                setSuccessMessage(`❌ ${data.message || 'Thêm Tài Khoản thanh toán thất bại'}`);
             }
         } catch (err) {
             console.error('Error creating payment method:', err);
@@ -194,7 +194,7 @@ function PaymentMethods() {
         }
     };
 
-    // Cập nhật phương thức thanh toán
+    // Cập nhật Tài Khoản thanh toán
     const handleUpdatePaymentMethod = async () => {
         if (!formData.bankAccountNumber.trim() || !formData.bankAccountName.trim() || !formData.bankName.trim() || !formData.bankCode.trim()) {
             setSuccessMessage('❌ Vui lòng điền đầy đủ thông tin');
@@ -226,11 +226,11 @@ function PaymentMethods() {
             const data = await response.json();
 
             if (data.success) {
-                setSuccessMessage('✓ Cập nhật phương thức thanh toán thành công');
+                setSuccessMessage('✓ Cập nhật Tài Khoản thanh toán thành công');
                 resetForm();
                 await fetchPaymentMethods();
             } else {
-                setSuccessMessage(`❌ ${data.message || 'Cập nhật phương thức thanh toán thất bại'}`);
+                setSuccessMessage(`❌ ${data.message || 'Cập nhật Tài Khoản thanh toán thất bại'}`);
             }
         } catch (err) {
             console.error('Error updating payment method:', err);
@@ -241,13 +241,13 @@ function PaymentMethods() {
         }
     };
 
-    // Xóa phương thức thanh toán
+    // Xóa Tài Khoản thanh toán
     const handleDeletePaymentMethod = (id) => {
         setDeletePaymentMethodId(id);
         setShowDeleteModal(true);
     };
 
-    // Xác nhận xóa phương thức thanh toán
+    // Xác nhận xóa Tài Khoản thanh toán
     const confirmDelete = async () => {
         if (!deletePaymentMethodId) return;
 
@@ -267,12 +267,12 @@ function PaymentMethods() {
             const data = await response.json();
 
             if (data.success) {
-                setSuccessMessage('✓ Xóa phương thức thanh toán thành công');
+                setSuccessMessage('✓ Xóa Tài Khoản thanh toán thành công');
                 setShowDeleteModal(false);
                 setDeletePaymentMethodId(null);
                 await fetchPaymentMethods();
             } else {
-                setSuccessMessage(`❌ ${data.message || 'Xóa phương thức thanh toán thất bại'}`);
+                setSuccessMessage(`❌ ${data.message || 'Xóa Tài Khoản thanh toán thất bại'}`);
             }
         } catch (err) {
             console.error('Error deleting payment method:', err);
@@ -317,7 +317,7 @@ function PaymentMethods() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                 <FontAwesomeIcon icon={faBank} style={{ fontSize: '28px', color: '#667eea' }} />
                 <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '700', color: '#1e1e1e' }}>
-                    Phương Thức Thanh Toán
+                    Tài Khoản Thanh Toán
                 </h2>
             </div>
 
@@ -389,7 +389,7 @@ function PaymentMethods() {
                         }}
                     >
                         <FontAwesomeIcon icon={faPlus} />
-                        {showForm && !editingId ? 'Hủy Thêm Mới' : 'Thêm Phương Thức Thanh Toán'}
+                        {showForm && !editingId ? 'Hủy Thêm Mới' : 'Thêm Tài Khoản Thanh Toán'}
                     </button>
 
                     {/* Form */}
@@ -402,7 +402,7 @@ function PaymentMethods() {
                             marginBottom: '24px',
                         }}>
                             <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: '600', color: '#1e1e1e' }}>
-                                {editingId ? '✏️ Chỉnh Sửa Phương Thức Thanh Toán' : '➕ Thêm Phương Thức Thanh Toán Mới'}
+                                {editingId ? '✏️ Chỉnh Sửa Tài Khoản Thanh Toán' : '➕ Thêm Tài Khoản Thanh Toán Mới'}
                             </h3>
 
                             {/* Bank Name - Select Dropdown */}
@@ -543,7 +543,7 @@ function PaymentMethods() {
                                     }}
                                 />
                                 <label htmlFor="isDefault" style={{ fontSize: '14px', color: '#333', cursor: 'pointer', margin: 0 }}>
-                                    Đặt làm phương thức thanh toán mặc định
+                                    Đặt làm Tài Khoản thanh toán mặc định
                                 </label>
                             </div>
 
@@ -735,7 +735,7 @@ function PaymentMethods() {
                                                     e.currentTarget.style.color = '#C85A54';
                                                 }
                                             }}
-                                            title={method.isDefault ? 'Không thể xóa phương thức thanh toán mặc định' : ''}
+                                            title={method.isDefault ? 'Không thể xóa Tài Khoản thanh toán mặc định' : ''}
                                         >
                                             <FontAwesomeIcon icon={faTrash} />
                                             Xóa
@@ -754,10 +754,10 @@ function PaymentMethods() {
                         }}>
                             <FontAwesomeIcon icon={faBank} style={{ fontSize: '40px', color: '#D8D0E8', marginBottom: '12px' }} />
                             <p style={{ fontSize: '16px', fontWeight: '600', color: '#999', margin: '8px 0' }}>
-                                Chưa có phương thức thanh toán
+                                Chưa có Tài Khoản thanh toán
                             </p>
                             <p style={{ fontSize: '14px', color: '#BBB', margin: 0 }}>
-                                Hãy thêm phương thức thanh toán để có thể sử dụng các dịch vụ thanh toán
+                                Hãy thêm Tài Khoản thanh toán để có thể sử dụng các dịch vụ thanh toán
                             </p>
                         </div>
                     )}
@@ -815,7 +815,7 @@ function PaymentMethods() {
                             color: '#1e1e1e',
                             textAlign: 'center',
                         }}>
-                            Xóa Phương Thức Thanh Toán?
+                            Xóa Tài Khoản Thanh Toán?
                         </h3>
 
                         {/* Message */}
@@ -826,7 +826,7 @@ function PaymentMethods() {
                             textAlign: 'center',
                             lineHeight: '1.6',
                         }}>
-                            Bạn chắc chắn muốn xóa phương thức thanh toán này? Hành động này không thể hoàn tác.
+                            Bạn chắc chắn muốn xóa Tài Khoản thanh toán này? Hành động này không thể hoàn tác.
                         </p>
 
                         {/* Action Buttons */}

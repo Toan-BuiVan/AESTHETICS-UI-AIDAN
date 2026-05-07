@@ -64,7 +64,7 @@
 }
 
 .footer-column h2 {
-    font-size: 20px;
+    font-size: 1.4rem;
     margin-bottom: 15px;
     font-weight: 700;
     text-transform: uppercase;
@@ -82,7 +82,7 @@
 .footer-column p,
 .footer-services ul,
 .footer-info p {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .footer-social-icons {
@@ -153,7 +153,7 @@
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
     padding: 12px 14px;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 1.4rem;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 1px solid rgba(255, 255, 255, 0.1);
     font-weight: 500;
@@ -195,14 +195,14 @@
 }
 
 .footer-hotline p {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #99cc00;
     letter-spacing: 0.5px;
 }
 
 .footer-info p {
-    font-size: 13px;
+    font-size: 1.4rem;
     text-align: center;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
@@ -211,7 +211,7 @@
 .footer-info p:last-child {
     font-style: italic;
     color: rgba(255, 255, 255, 0.75);
-    font-size: 12px;
+    font-size: 1.4rem;
 }
 
 /* Responsive Design */
@@ -228,22 +228,22 @@
     }
 
     .footer-column h2 {
-        font-size: 20px; /* Slightly smaller heading */
+        font-size: 1.4rem; /* Slightly smaller heading */
     }
 
     .footer-column p,
     .footer-services ul,
     .footer-info p {
-        font-size: 13px; /* Smaller text */
+        font-size: 1.4rem; /* Smaller text */
     }
 
     .footer-services li {
-        font-size: 13px;
+        font-size: 1.4rem;
         padding: 6px 10px; /* Reduced padding for list items */
     }
 
     .footer-social-icons i {
-        font-size: 20px; /* Smaller icons */
+        font-size: 1.4rem; /* Smaller icons */
     }
 
     .footer-fanpage-content img {
@@ -255,11 +255,11 @@
     }
 
     .footer-hotline p {
-        font-size: 16px; /* Smaller hotline text */
+        font-size: 1.4rem; /* Smaller hotline text */
     }
 
     .footer-info p {
-        font-size: 12px; /* Smaller info text */
+        font-size: 1.4rem; /* Smaller info text */
     }
 }
 
@@ -281,7 +281,7 @@
     }
 
     .footer-column h2 {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     .footer-services {
@@ -294,7 +294,7 @@
 
     .footer-services li {
         width: 45%; /* Adjust width for better spacing */
-        font-size: 12px;
+        font-size: 1.4rem;
         padding: 5px 8px;
     }
 
@@ -303,7 +303,7 @@
     }
 
     .footer-social-icons i {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     .footer-fanpage-content img {
@@ -317,11 +317,11 @@
     }
 
     .footer-hotline p {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 
     .footer-info p {
-        font-size: 11px;
+        font-size: 1.4rem;
     }
 }
 
@@ -332,18 +332,18 @@
     }
 
     .footer-column h2 {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .footer-column p,
     .footer-services ul,
     .footer-info p {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .footer-services li {
         width: 100%;
-        font-size: 11px;
+        font-size: 1.4rem;
         padding: 4px 6px;
     }
 
@@ -352,7 +352,7 @@
     }
 
     .footer-social-icons i {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .footer-fanpage-content img {
@@ -364,10 +364,11 @@
     }
 
     .footer-hotline p {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .footer-info p {
         font-size: 10px;
     }
 }
+

@@ -168,6 +168,75 @@ function RefundedInvoice({ onCountChange }) {
                 </div>
             </div>
 
+            {/* Quy định hoàn tiền VNPay */}
+            <div style={{ 
+                backgroundColor: '#F0F9FF', 
+                border: '2px solid #4CAF50', 
+                borderRadius: '12px', 
+                padding: '20px', 
+                marginBottom: '24px',
+                color: '#1e1e1e'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <FontAwesomeIcon icon={faInfoCircle} style={{ fontSize: '20px', color: '#4CAF50', marginTop: '2px', flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: '700', color: '#1e1e1e' }}>
+                            2.3. Quy định về thời gian xử lý hoàn tiền
+                        </h4>
+                        <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#333' }}>
+                            <div style={{ marginBottom: '12px' }}>
+                                <strong>a. Thời gian xử lý:</strong>
+                                <p style={{ margin: '4px 0 0 0' }}>
+                                    Trong trường hợp đơn hàng đủ điều kiện hoàn tiền, thời gian xử lý hoàn tiền sẽ phụ thuộc vào phương thức thanh toán ban đầu của Khách hàng và quy trình của ngân hàng/tổ chức cung cấp dịch vụ thanh toán.
+                                </p>
+                            </div>
+                            <div style={{ marginBottom: '12px' }}>
+                                <strong>b. Thời gian hoàn tiền dự kiến:</strong>
+                                <ul style={{ margin: '6px 0 0 20px', paddingLeft: '0' }}>
+                                    <li style={{ marginBottom: '6px' }}>Thanh toán qua thẻ ngân hàng: <strong>5 – 15 ngày làm việc</strong> tùy vào ngân hàng phát hành thẻ.</li>
+                                    <li style={{ marginBottom: '6px' }}>Thanh toán qua ví điện tử: <strong>3 – 7 ngày làm việc</strong></li>
+                                    <li>Thanh toán bằng các phương thức khác: Theo thỏa thuận cụ thể với Khách hàng.</li>
+                                </ul>
+                            </div>
+                            <div style={{ marginBottom: '12px' }}>
+                                <strong>c. Trách nhiệm:</strong>
+                                <p style={{ margin: '4px 0 0 0' }}>
+                                    VNPay không chịu trách nhiệm đối với các khoản phí phát sinh từ phía ngân hàng hoặc tổ chức cung cấp dịch vụ thanh toán trong quá trình hoàn tiền (nếu có).
+                                </p>
+                            </div>
+                            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid #C8E6C9' }}>
+                                <a 
+                                    href="https://vnpay.vn/chinh-sach/chinh-sach-thanh-toan-va-hoan-huy-doi-tra-giao-dich.html" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        display: 'inline-block',
+                                        color: '#4CAF50',
+                                        textDecoration: 'none',
+                                        fontWeight: '600',
+                                        fontSize: '13px',
+                                        padding: '6px 12px',
+                                        borderRadius: '4px',
+                                        transition: 'all 0.3s ease',
+                                        backgroundColor: '#E8F5E9',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = '#4CAF50';
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = '#E8F5E9';
+                                        e.currentTarget.style.color = '#4CAF50';
+                                    }}
+                                >
+                                    Chính sách thanh toán và hoàn hủy VNPay →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Loading State */}
             {loading ? (
                 <div className={cx('loading')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', textAlign: 'center' }}>
@@ -217,7 +286,7 @@ function RefundedInvoice({ onCountChange }) {
                                                         {item.invoice.type === 'BanHang' ? 'Sản phẩm' : 'Dịch vụ'}
                                                     </span>
                                                     <span style={{ fontSize: '11px', fontWeight: '600', padding: '3px 8px', borderRadius: '4px', backgroundColor: '#E8F5E9', color: '#4CAF50', marginLeft: 'auto' }}>
-                                                        ✓ Hoàn tiền
+                                                        ✓ Đã Phê Duyệt
                                                     </span>
                                                 </div>
                                                 <div style={{ fontSize: '12px', color: '#999', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -601,43 +670,7 @@ function RefundedInvoice({ onCountChange }) {
                                                 </div>
                                             )}
 
-                                            {/* Hình ảnh hoàn tiền */}
-                                            {refund.refundImages && (
-                                                <div style={{
-                                                    backgroundColor: '#fff',
-                                                    border: '1px solid #E8E8E8',
-                                                    borderRadius: '6px',
-                                                    padding: '12px',
-                                                    marginBottom: '16px',
-                                                }}>
-                                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#333', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                        <FontAwesomeIcon icon={faImage} style={{ fontSize: '12px' }} />
-                                                        Hình ảnh minh chứng
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-                                                        {refund.refundImages.split(';').map((image, imgIdx) => (
-                                                            image.trim() && (
-                                                                <img
-                                                                    key={imgIdx}
-                                                                    src={`http://localhost:5122/api/file/get-file?filePath=${encodeURIComponent(image.trim())}`}
-                                                                    alt={`Hoàn tiền ${imgIdx + 1}`}
-                                                                    style={{
-                                                                        width: '120px',
-                                                                        height: '120px',
-                                                                        borderRadius: '6px',
-                                                                        objectFit: 'cover',
-                                                                        border: '1px solid #DDD',
-                                                                        cursor: 'pointer',
-                                                                        transition: 'transform 0.3s ease',
-                                                                    }}
-                                                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                                                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                                                />
-                                                            )
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
+                            
 
                                             {/* Timeline hoàn tiền */}
                                             <div style={{

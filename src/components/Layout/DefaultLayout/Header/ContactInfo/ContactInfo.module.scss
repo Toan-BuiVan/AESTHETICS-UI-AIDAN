@@ -117,7 +117,7 @@
 
 .header-info-h2 {
     margin: 0;
-    font-size: 18px;
+    font-size: 1.4rem;
     color: #fff;
     font-weight: 700;
     letter-spacing: 0.3px;
@@ -125,7 +125,7 @@
 
 .header-info-p {
     margin: 6px 0 0;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: rgba(255, 255, 255, 0.85);
     line-height: 1.5;
 }
@@ -134,7 +134,7 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    font-size: 20px;
+    font-size: 1.4rem;
     color: #fff;
     cursor: pointer;
     transition:
@@ -162,7 +162,7 @@
     max-width: 70%;
     padding: 12px 16px;
     border-radius: 20px;
-    font-size: 14px;
+    font-size: 1.4rem;
     line-height: 1.6;
     margin-bottom: 12px;
     animation: fadeInMessage 0.3s ease-out;
@@ -221,7 +221,7 @@
     padding: 11px 14px;
     border: 2px solid #e0e8e4;
     border-radius: 20px;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #333;
     box-sizing: border-box;
     resize: none;
@@ -249,7 +249,7 @@
 
 .error {
     color: red;
-    font-size: 12px;
+    font-size: 1.4rem;
     margin-top: 4px;
     position: absolute;
     bottom: -16px;
@@ -268,7 +268,7 @@
     min-width: 44px;
     height: 44px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 4px 12px rgba(21, 105, 83, 0.25);
@@ -318,7 +318,7 @@
     margin-right: 0;
     position: relative;
     z-index: 1;
-    font-size: 16px;
+    font-size: 1.4rem;
 }
 
 .product-item {
@@ -354,7 +354,7 @@
 
 .product-item p {
     margin: 5px 0;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #555;
     line-height: 1.5;
 }
@@ -362,7 +362,7 @@
 .product-item p:first-child {
     font-weight: 700;
     color: #156953;
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .product-item img {
@@ -380,7 +380,7 @@
     border-radius: 20px;
     padding: 9px 18px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     margin-top: 10px;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -415,7 +415,7 @@
 
 .service-item p {
     margin: 5px 0;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #555;
     line-height: 1.5;
 }
@@ -423,7 +423,7 @@
 .service-item p:first-child {
     font-weight: 700;
     color: #156953;
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .booking-icon {
@@ -446,7 +446,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #156953;
     font-weight: 500;
 }
@@ -511,7 +511,7 @@
     min-width: 55px;
     text-align: center;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 1.4rem;
     box-shadow: 0 2px 6px rgba(21, 105, 83, 0.2);
 }
 
@@ -523,21 +523,21 @@
 }
 
 .staff-name {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #156953;
     margin: 0;
 }
 
 .slot-status {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #156953;
     margin: 0;
 }
 
 .slot-date {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #999;
     margin: 0;
 }
@@ -549,7 +549,7 @@
     border-radius: 10px;
     padding: 6px 10px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 600;
     transition: all 0.2s ease;
     display: flex;
@@ -586,14 +586,14 @@
 
 .doctor-name {
     margin: 0 0 4px;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
 }
 
 .doctor-spec {
     margin: 0;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     font-style: italic;
 }
@@ -612,7 +612,7 @@
     border-radius: 12px;
     padding: 8px 12px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     transition: all 0.2s ease;
     min-width: 50px;
@@ -639,7 +639,7 @@
 }
 
 .doctor-info {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0;
     padding-top: 8px;
@@ -665,7 +665,7 @@
 }
 
 .doctor-name-luxury {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 6px 0;
@@ -673,7 +673,7 @@
 }
 
 .doctor-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0;
     font-style: italic;
@@ -703,14 +703,14 @@
 }
 
 .slot-date {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #156953;
     font-weight: 700;
     margin-bottom: 4px;
 }
 
 .slot-time-display {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #0d4a3e;
     margin-bottom: 8px;
@@ -723,7 +723,7 @@
     border: none;
     border-radius: 8px;
     padding: 6px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -741,7 +741,7 @@
 }
 
 .treatment-title {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 10px 0;
@@ -764,21 +764,21 @@
 }
 
 .plan-name {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #333;
     margin: 0 0 4px 0;
 }
 
 .plan-desc {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 6px 0;
     line-height: 1.4;
 }
 
 .plan-price {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ffc107;
     margin: 0;
@@ -800,21 +800,21 @@
 }
 
 .service-name-luxury {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 6px 0;
 }
 
 .service-desc {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 4px 0;
     font-style: italic;
 }
 
 .service-message {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #999;
     margin: 4px 0 0 0;
 }
@@ -847,7 +847,7 @@
 }
 
 .doctor-card-name {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0;
@@ -858,7 +858,7 @@
     color: white;
     padding: 4px 8px;
     border-radius: 12px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 600;
 }
 
@@ -870,7 +870,7 @@
 }
 
 .doctor-card-info p {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #555;
     margin: 0;
 }
@@ -887,7 +887,7 @@
     border: none;
     border-radius: 8px;
     padding: 8px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -908,7 +908,7 @@
 }
 
 .popular-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -923,7 +923,7 @@
 }
 
 .service-rank-title {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ff9800;
     margin: 0 0 6px 0;
@@ -932,7 +932,7 @@
 }
 
 .service-rank-name {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #333;
     margin: 0 0 12px 0;
@@ -955,13 +955,13 @@
 }
 
 .stat-label {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #666;
 }
 
 .stat-value {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ff9800;
 }
@@ -973,7 +973,7 @@
     border: none;
     border-radius: 8px;
     padding: 10px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -994,7 +994,7 @@
 }
 
 .best-doctor-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -1012,7 +1012,7 @@
     color: white;
     padding: 8px 12px;
     border-radius: 12px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     margin-bottom: 12px;
     text-align: center;
@@ -1063,20 +1063,20 @@
 }
 
 .profile-name {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 4px 0;
 }
 
 .profile-spec {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 2px 0;
 }
 
 .profile-degree {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #999;
     margin: 0;
     font-weight: 600;
@@ -1099,12 +1099,12 @@
 
 .stat-icon {
     display: block;
-    font-size: 20px;
+    font-size: 1.4rem;
     margin-bottom: 4px;
 }
 
 .stat-box p {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0;
     line-height: 1.4;
@@ -1122,7 +1122,7 @@
     border: none;
     border-radius: 8px;
     padding: 12px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1159,7 +1159,7 @@
 }
 
 .services-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -1186,14 +1186,14 @@
 }
 
 .service-price-name {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 6px 0;
 }
 
 .service-price-desc {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 10px 0;
     line-height: 1.4;
@@ -1211,7 +1211,7 @@
 }
 
 .service-price-tag {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ff9800;
 }
@@ -1222,7 +1222,7 @@
     border: none;
     border-radius: 6px;
     padding: 6px 10px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1243,7 +1243,7 @@
 }
 
 .top-selling-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -1282,7 +1282,7 @@
 }
 
 .product-top-name {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #333;
     margin: 0 0 6px 0;
@@ -1295,13 +1295,13 @@
 }
 
 .sales-count {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #666;
     font-weight: 600;
 }
 
 .product-top-price {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ff9800;
     margin: 0 0 10px 0;
@@ -1314,7 +1314,7 @@
     border: none;
     border-radius: 8px;
     padding: 8px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1335,7 +1335,7 @@
 }
 
 .recommended-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -1373,14 +1373,14 @@
 }
 
 .product-rec-name {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #333;
     margin: 0 0 6px 0;
 }
 
 .product-rec-desc {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 8px 0;
     line-height: 1.4;
@@ -1398,13 +1398,13 @@
 }
 
 .stock-info {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #666;
     font-weight: 600;
 }
 
 .product-rec-price {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #e91e63;
     margin: 0 0 10px 0;
@@ -1417,7 +1417,7 @@
     border: none;
     border-radius: 8px;
     padding: 8px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1466,14 +1466,14 @@
 }
 
 .success-title {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #2e7d32;
     margin: 0 0 8px 0;
 }
 
 .success-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #555;
     margin: 0 0 12px 0;
     line-height: 1.5;
@@ -1484,7 +1484,7 @@
     border: 2px solid rgba(76, 175, 80, 0.2);
     border-radius: 10px;
     padding: 10px;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #333;
     margin-bottom: 12px;
 }
@@ -1492,7 +1492,7 @@
 .appointment-id strong {
     color: #2e7d32;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .success-action-btn {
@@ -1502,7 +1502,7 @@
     border: none;
     border-radius: 10px;
     padding: 12px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1528,7 +1528,7 @@
 }
 
 .treatment-msg {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 14px 0;
     font-weight: 500;
@@ -1543,14 +1543,14 @@
 }
 
 .service-title {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1976d2;
     margin: 0 0 6px 0;
 }
 
 .service-description {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 10px 0;
     line-height: 1.4;
@@ -1564,7 +1564,7 @@
 
 .service-price,
 .service-duration {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #1976d2;
     background: rgba(33, 150, 243, 0.1);
@@ -1588,7 +1588,7 @@
 }
 
 .package-name {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1565c0;
     margin: 0;
@@ -1604,7 +1604,7 @@
 }
 
 .package-description {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #555;
     margin: 0 0 10px 0;
 }
@@ -1612,7 +1612,7 @@
 .package-details {
     display: flex;
     gap: 10px;
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #666;
     margin-bottom: 12px;
     flex-wrap: wrap;
@@ -1633,7 +1633,7 @@
 }
 
 .sessions-title {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1565c0;
     margin: 0 0 10px 0;
@@ -1661,7 +1661,7 @@
     color: white;
     padding: 6px 10px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     white-space: nowrap;
     min-width: 60px;
@@ -1676,14 +1676,14 @@
 }
 
 .session-name {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #333;
     margin: 0;
 }
 
 .session-desc {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0;
     line-height: 1.3;
@@ -1705,7 +1705,7 @@
 }
 
 .no-packages-msg {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 14px 0;
     font-weight: 500;
@@ -1725,14 +1725,14 @@
 }
 
 .service-name-empty {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #333;
     margin: 0 0 6px 0;
 }
 
 .service-desc-empty {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     line-height: 1.4;
@@ -1748,7 +1748,7 @@
 
 .price-empty,
 .duration-empty {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #333;
     background: rgba(0, 0, 0, 0.05);
@@ -1765,7 +1765,7 @@
 }
 
 .no-packages-notice p {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #e65100;
     margin: 0;
     font-weight: 600;
@@ -1827,14 +1827,14 @@
 }
 
 .product-detail-name {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 8px 0;
 }
 
 .product-detail-description {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     line-height: 1.6;
     margin: 0 0 14px 0;
@@ -1858,7 +1858,7 @@
 }
 
 .spec-label {
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #666;
     text-transform: uppercase;
@@ -1866,7 +1866,7 @@
 }
 
 .spec-value {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
 }
@@ -1880,14 +1880,14 @@
 }
 
 .product-benefits h4 {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 8px 0;
 }
 
 .product-benefits p {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     line-height: 1.6;
     margin: 0;
@@ -1902,7 +1902,7 @@
 }
 
 .product-approval p {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0;
     line-height: 1.5;
@@ -1918,7 +1918,7 @@
 }
 
 .price-range-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -1950,20 +1950,20 @@
     color: white;
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     margin-bottom: 8px;
 }
 
 .product-price-name {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 6px 0;
 }
 
 .product-price-desc {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 10px 0;
     line-height: 1.4;
@@ -1982,7 +1982,7 @@
 }
 
 .stock-info {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #666;
     background: rgba(21, 105, 83, 0.08);
     padding: 4px 8px;
@@ -1990,7 +1990,7 @@
 }
 
 .product-price-value {
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ff9800;
     margin: 0;
@@ -2021,14 +2021,14 @@
 }
 
 .cart-success-title {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #156953;
     margin: 0 0 8px 0;
 }
 
 .cart-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -2049,7 +2049,7 @@
 }
 
 .cart-item-name {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #156953;
     flex: 1;
@@ -2062,7 +2062,7 @@
 }
 
 .cart-item-qty {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ff9800;
     background: rgba(255, 152, 0, 0.1);
@@ -2073,7 +2073,7 @@
 }
 
 .cart-item-price {
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ff9800;
     text-align: right;
@@ -2104,14 +2104,14 @@
 }
 
 .cart-remove-title {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #f44336;
     margin: 0 0 8px 0;
 }
 
 .cart-remove-message {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 12px 0;
     font-weight: 500;
@@ -2128,7 +2128,7 @@
 }
 
 .remove-item-name {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #f44336;
     flex: 1;
@@ -2141,7 +2141,7 @@
 }
 
 .remove-status {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #f44336;
     background: rgba(244, 67, 54, 0.1);
@@ -2172,3 +2172,4 @@
         transform: translateY(0);
     }
 }
+

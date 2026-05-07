@@ -95,7 +95,7 @@ $color-orange: #FF9800;
 }
 
 .subtitle {
-    font-size: 16px;
+    font-size: 1.4rem;
     color: $color-text-light;
     text-align: center;
     margin: 0 0 32px 0;
@@ -120,7 +120,7 @@ $color-orange: #FF9800;
         border-bottom: 1px solid $color-border;
 
         .label {
-            font-size: 13px;
+            font-size: 1.4rem;
             font-weight: 600;
             color: $color-text-lighter;
             text-transform: uppercase;
@@ -133,12 +133,12 @@ $color-orange: #FF9800;
             border-radius: 6px;
             font-family: monospace;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 1.4rem;
         }
     }
 
     .error-message {
-        font-size: 14px;
+        font-size: 1.4rem;
         color: $color-text;
         line-height: 1.6;
         margin: 0;
@@ -154,7 +154,7 @@ $color-orange: #FF9800;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
     .details-title {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $color-text;
         margin: 0 0 20px 0;
@@ -179,7 +179,7 @@ $color-orange: #FF9800;
     }
 
     .detail-label {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: $color-text-lighter;
         text-transform: uppercase;
@@ -187,7 +187,7 @@ $color-orange: #FF9800;
     }
 
     .detail-value {
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: $color-text;
         word-break: break-all;
@@ -199,7 +199,7 @@ $color-orange: #FF9800;
 
         &.amount {
             color: $color-danger;
-            font-size: 16px;
+            font-size: 1.4rem;
         }
     }
 }
@@ -213,7 +213,7 @@ $color-orange: #FF9800;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
     .reasons-title {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $color-text;
         margin: 0 0 20px 0;
@@ -246,14 +246,14 @@ $color-orange: #FF9800;
             }
 
             strong {
-                font-size: 14px;
+                font-size: 1.4rem;
                 color: $color-text;
                 display: block;
                 margin-bottom: 4px;
             }
 
             p {
-                font-size: 13px;
+                font-size: 1.4rem;
                 color: $color-text-lighter;
                 margin: 0;
                 line-height: 1.4;
@@ -271,7 +271,7 @@ $color-orange: #FF9800;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
     h3 {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $color-text;
         margin: 0 0 16px 0;
@@ -304,7 +304,7 @@ $color-orange: #FF9800;
         }
 
         .support-label {
-            font-size: 12px;
+            font-size: 1.4rem;
             font-weight: 600;
             color: $color-text-lighter;
             margin: 0;
@@ -313,7 +313,7 @@ $color-orange: #FF9800;
         }
 
         .support-value {
-            font-size: 14px;
+            font-size: 1.4rem;
             font-weight: 600;
             color: $color-text;
             margin: 4px 0 0 0;
@@ -336,7 +336,7 @@ $color-orange: #FF9800;
         padding: 14px 32px;
         border: none;
         border-radius: 8px;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -390,7 +390,7 @@ $color-orange: #FF9800;
     border-top: 2px solid $color-border;
 
     p {
-        font-size: 13px;
+        font-size: 1.4rem;
         color: $color-text-lighter;
         margin: 0 0 12px 0;
     }
@@ -399,7 +399,7 @@ $color-orange: #FF9800;
         background: none;
         border: none;
         color: $color-blue;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 600;
         cursor: pointer;
         text-decoration: underline;
@@ -426,6 +426,7 @@ $color-orange: #FF9800;
     }
 
     .subtitle {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 }
+

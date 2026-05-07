@@ -22,7 +22,7 @@
         }
 
         p {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             color: #718096;
             margin: 0;
         }
@@ -64,7 +64,7 @@
             }
 
             .stat-label {
-                font-size: 0.9rem;
+                font-size: 1.4rem;
                 color: #a0aec0;
                 margin: 5px 0 0 0;
                 text-transform: uppercase;
@@ -110,7 +110,7 @@
         flex-direction: column;
 
         label {
-            font-size: 0.95rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #2d3748;
             margin-bottom: 10px;
@@ -120,7 +120,7 @@
 
             svg {
                 color: #667eea;
-                font-size: 1.1rem;
+                font-size: 1.4rem;
             }
 
             .required {
@@ -134,7 +134,7 @@
             padding: 12px 16px;
             border: 2px solid #e2e8f0;
             border-radius: 10px;
-            font-size: 1rem;
+            font-size: 1.4rem;
             transition: all 0.3s ease;
             font-family: inherit;
             background: #f7fafc;
@@ -168,7 +168,7 @@
         margin-bottom: 25px;
 
         h3 {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             color: #1a202c;
             margin: 0 0 15px 0;
             font-weight: 700;
@@ -184,7 +184,7 @@
 
             p {
                 flex: 1;
-                font-size: 1.1rem;
+                font-size: 1.4rem;
                 font-weight: 700;
                 color: #667eea;
                 margin: 0;
@@ -232,7 +232,7 @@
             }
 
             h4 {
-                font-size: 1rem;
+                font-size: 1.4rem;
                 color: #1a202c;
                 margin: 0 0 10px 0;
                 font-weight: 700;
@@ -241,7 +241,7 @@
             }
 
             p {
-                font-size: 1rem;
+                font-size: 1.4rem;
                 color: #2d3748;
                 margin: 0;
                 line-height: 1.6;
@@ -256,7 +256,7 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1.4rem;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -265,7 +265,7 @@
             box-shadow: 0 4px 15px rgba(31, 202, 125, 0.3);
 
             svg {
-                font-size: 1.1rem;
+                font-size: 1.4rem;
             }
 
             &:hover:not(:disabled) {
@@ -288,7 +288,7 @@
     .empty-text {
         text-align: center;
         color: #718096;
-        font-size: 1rem;
+        font-size: 1.4rem;
         margin: 20px 0;
     }
 
@@ -334,7 +334,7 @@
                     }
 
                     .address-title {
-                        font-size: 1rem;
+                        font-size: 1.4rem;
                         font-weight: 600;
                         color: #1a202c;
                         line-height: 1.4;
@@ -346,7 +346,7 @@
                     color: white;
                     padding: 4px 12px;
                     border-radius: 20px;
-                    font-size: 0.8rem;
+                    font-size: 1.4rem;
                     font-weight: 600;
                     white-space: nowrap;
                 }
@@ -363,7 +363,7 @@
                 flex-wrap: wrap;
 
                 p {
-                    font-size: 0.95rem;
+                    font-size: 1.4rem;
                     color: #4a5568;
                     margin: 0;
 
@@ -386,7 +386,7 @@
                     border-radius: 8px;
                     cursor: pointer;
                     font-weight: 600;
-                    font-size: 0.9rem;
+                    font-size: 1.4rem;
                     transition: all 0.3s ease;
                     display: flex;
                     align-items: center;
@@ -394,7 +394,7 @@
                     gap: 8px;
 
                     svg {
-                        font-size: 0.9rem;
+                        font-size: 1.4rem;
                     }
                 }
 
@@ -437,14 +437,14 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 1.4rem;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
 
             svg {
-                font-size: 0.95rem;
+                font-size: 1.4rem;
             }
 
             &:hover:not(:disabled) {
@@ -479,7 +479,7 @@
         color: white;
         border: none;
         border-radius: 12px;
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -533,7 +533,7 @@
         gap: 15px;
         padding: 35px 25px;
         border-radius: 15px;
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         font-weight: 800;
         transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -606,7 +606,7 @@
             }
 
             .meta-label {
-                font-size: 0.85rem;
+                font-size: 1.4rem;
                 color: #718096;
                 font-weight: 600;
                 text-transform: uppercase;
@@ -614,7 +614,7 @@
             }
 
             .meta-value {
-                font-size: 1.1rem;
+                font-size: 1.4rem;
                 color: #2d3748;
                 font-weight: 700;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -707,7 +707,7 @@
                 gap: 10px;
 
                 label {
-                    font-size: 0.95rem;
+                    font-size: 1.4rem;
                     font-weight: 600;
                     color: #2d3748;
                     display: flex;
@@ -716,7 +716,7 @@
 
                     svg {
                         color: #667eea;
-                        font-size: 1.1rem;
+                        font-size: 1.4rem;
                     }
                 }
 
@@ -725,7 +725,7 @@
                     padding: 14px 16px;
                     border: 2px solid #e2e8f0;
                     border-radius: 12px;
-                    font-size: 0.95rem;
+                    font-size: 1.4rem;
                     transition: all 0.3s ease;
                     font-family: inherit;
                     background: #f8f9fa;
@@ -780,7 +780,7 @@
                         span {
                             font-weight: 500;
                             color: #2d3748;
-                            font-size: 0.95rem;
+                            font-size: 1.4rem;
                         }
                     }
                 }
@@ -803,7 +803,7 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1.4rem;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -866,7 +866,7 @@
             }
 
             p {
-                font-size: 0.95rem;
+                font-size: 1.4rem;
             }
         }
 
@@ -891,7 +891,7 @@
             }
 
             h3 {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
             }
         }
 
@@ -956,7 +956,7 @@
                 padding: 20px;
 
                 h3 {
-                    font-size: 1.1rem;
+                    font-size: 1.4rem;
                 }
 
                 .modal-close {
@@ -987,9 +987,10 @@
                 .save-btn {
                     flex: 1;
                     padding: 12px 16px;
-                    font-size: 0.9rem;
+                    font-size: 1.4rem;
                 }
             }
         }
     }
 }
+

@@ -106,7 +106,7 @@
     color: white;
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
     animation: slideDown 0.5s ease-out;
@@ -130,7 +130,7 @@
 }
 
 .serviceName {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #1a1a1a;
     margin: 0 0 14px 0;
@@ -163,18 +163,18 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     font-weight: 600;
 
     .icon {
         color: #1ca07d;
-        font-size: 15px;
+        font-size: 1.4rem;
     }
 }
 
 .description {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #666;
     margin: 0 0 14px 0;
     line-height: 1.5;
@@ -185,7 +185,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 700;
     margin-bottom: 16px;
@@ -195,7 +195,7 @@
 }
 
 .starIcon {
-    font-size: 13px;
+    font-size: 1.4rem;
 }
 
 .selectBtn {
@@ -204,7 +204,7 @@
     border: none;
     border-radius: 12px;
     padding: 12px 14px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -243,12 +243,12 @@
     }
 
     svg {
-        font-size: 15px;
+        font-size: 1.4rem;
     }
 
     align-items: center;
     gap: 6px;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #666;
 
     svg {
@@ -259,7 +259,7 @@
 }
 
 .description {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #666;
     line-height: 1.5;
     margin: 0 0 12px 0;
@@ -272,7 +272,7 @@
     border: none;
     border-radius: 8px;
     padding: 10px 16px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -287,3 +287,4 @@
         background: linear-gradient(135deg, #169d72 0%, #128c68 100%);
     }
 }
+

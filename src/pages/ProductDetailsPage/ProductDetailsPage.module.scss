@@ -136,7 +136,7 @@
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -342,7 +342,7 @@
     background: rgba(255, 255, 255, 0.95);
     color: #667eea;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     backdrop-filter: blur(8px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15),
@@ -413,7 +413,7 @@
 }
 
 .star-icon {
-    font-size: 16px;
+    font-size: 1.4rem;
     color: #cbd5e0;
     transition: color 0.2s ease;
 
@@ -423,7 +423,7 @@
 }
 
 .reviews {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #718096;
     font-weight: 500;
 }
@@ -441,7 +441,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 1.4rem;
 
     &:hover {
         background: rgba(102, 126, 234, 0.2);
@@ -482,7 +482,7 @@
 /* Description */
 .product-description {
     margin: 0;
-    font-size: 15px;
+    font-size: 1.4rem;
     color: #4a5568;
     line-height: 1.6;
     padding: 0;
@@ -511,13 +511,13 @@
     gap: 8px;
     color: #667eea;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 1.4rem;
     min-width: 120px;
 }
 
 .detail-value {
     color: #2d3748;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 500;
 }
 
@@ -529,7 +529,7 @@
     padding: 14px 16px;
     border-radius: 10px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 1.4rem;
     animation: slideUp 0.4s ease;
 
     &.in-stock {
@@ -555,7 +555,7 @@
 .quantity-label {
     font-weight: 600;
     color: #2d3748;
-    font-size: 15px;
+    font-size: 1.4rem;
 }
 
 .quantity-selector {
@@ -574,7 +574,7 @@
     background: white;
     color: #667eea;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: bold;
     transition: all 0.2s ease;
 
@@ -594,7 +594,7 @@
     border-left: 1px solid #e2e8f0;
     border-right: 1px solid #e2e8f0;
     text-align: center;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #2d3748;
     background: white;
@@ -628,7 +628,7 @@
     border-radius: 12px;
     background: white;
     color: #667eea;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -654,7 +654,7 @@
     border-radius: 12px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -679,7 +679,7 @@
     color: #9b2c2c;
     font-weight: 600;
     text-align: center;
-    font-size: 15px;
+    font-size: 1.4rem;
 }
 
 /* ĐIỀU KIỆN ĐẶC BIỆT / Special Conditions Section */
@@ -748,7 +748,7 @@
 }
 
 .voucher-count {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: white;
     background: linear-gradient(135deg, #fe2c55 0%, #d92049 100%);
@@ -884,7 +884,7 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     padding: 6px 12px;
     border-radius: 20px;
@@ -924,7 +924,7 @@
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
     white-space: nowrap;
@@ -932,7 +932,7 @@
 }
 
 .voucher-description {
-    font-size: 13px;
+    font-size: 1.4rem;
     line-height: 1.5;
     color: #666;
     margin: 0;
@@ -959,19 +959,19 @@
 }
 
 .detail-label {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #999;
     font-weight: 600;
 }
 
 .detail-value {
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #fe2c55;
 }
 
 .voucher-dates {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #d92049;
     background: rgba(217, 32, 73, 0.08);
     padding: 8px 12px;
@@ -991,7 +991,7 @@
     border: none;
     border-radius: 12px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     text-transform: uppercase;
@@ -1110,7 +1110,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 1.4rem;
     flex-shrink: 0;
     box-shadow: 0 2px 10px rgba(102, 126, 234, 0.35);
     position: relative;
@@ -1140,7 +1140,7 @@
 .user-name {
     font-weight: 700;
     color: #1a202c;
-    font-size: 15px;
+    font-size: 1.4rem;
     letter-spacing: 0.3px;
 }
 
@@ -1151,7 +1151,7 @@
     padding: 2px 8px;
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
-    font-size: 11px;
+    font-size: 1.4rem;
     font-weight: 700;
     border-radius: 12px;
     letter-spacing: 0.2px;
@@ -1159,7 +1159,7 @@
 }
 
 .comment-date {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #718096;
     font-weight: 500;
     display: none;
@@ -1178,7 +1178,7 @@
 }
 
 .star-icon {
-    font-size: 15px;
+    font-size: 1.4rem;
     color: #cbd5e0;
     transition: all 0.2s ease;
 
@@ -1199,7 +1199,7 @@
 .image-label {
     display: flex;
     align-items: center;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #667eea;
     text-transform: uppercase;
@@ -1291,7 +1291,7 @@
 .comment-content {
     margin: 0;
     color: #2d3748;
-    font-size: 14px;
+    font-size: 1.4rem;
     line-height: 1.6;
     font-weight: 500;
     flex: 1;
@@ -1316,7 +1316,7 @@
     border: 1px solid #d6dff5;
     border-radius: 8px;
     color: #667eea;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1335,7 +1335,7 @@
     }
 
     svg {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 }
 
@@ -1365,7 +1365,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 500;
     white-space: nowrap;
 
@@ -1375,7 +1375,7 @@
     }
 
     svg {
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 
     span {
@@ -1476,7 +1476,7 @@
 
 .related-name {
     margin: 0;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #2d3748;
     line-height: 1.4;
@@ -1488,7 +1488,7 @@
 
 .related-price {
     margin: 0;
-    font-size: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
@@ -1502,7 +1502,7 @@
     border-radius: 8px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1573,7 +1573,7 @@
 
     h3 {
         margin: 0;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         color: #2d3748;
         font-weight: 600;
     }
@@ -1618,7 +1618,7 @@
         margin-bottom: 8px;
         font-weight: 600;
         color: #2d3748;
-        font-size: 0.95rem;
+        font-size: 1.4rem;
     }
 }
 
@@ -1627,7 +1627,7 @@
     padding: 12px;
     border: 1px solid #cbd5e0;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-family: inherit;
     resize: vertical;
     min-height: 100px;
@@ -1679,7 +1679,7 @@
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .btn-save {
@@ -1717,7 +1717,7 @@
     margin-bottom: 24px;
 
     .comments-title {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1a202c;
         margin: 0;
@@ -1732,7 +1732,7 @@
     border: 2px solid #ffd700;
     background-color: #fffaf0;
     color: #ffd700;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1754,7 +1754,7 @@
     }
 
     svg {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 }
 
@@ -1787,7 +1787,7 @@
 }
 
 .rating-text {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #718096;
     font-weight: 500;
     margin-top: 8px;
@@ -1890,7 +1890,7 @@
 
 .delete-modal-message {
     margin: 0 0 30px 0;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #718096;
     line-height: 1.6;
     font-weight: 500;
@@ -1936,7 +1936,7 @@
     padding: 12px 20px;
     border: none;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2071,7 +2071,7 @@
 
 .product-title {
     margin: 0;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1a202c;
     line-height: 1.4;
@@ -2083,7 +2083,7 @@
 
 .product-description {
     margin: 0;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #718096;
     line-height: 1.4;
     display: -webkit-box;
@@ -2093,7 +2093,7 @@
 }
 
 .product-meta {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: #a0aec0;
     font-weight: 600;
     text-transform: uppercase;
@@ -2119,7 +2119,7 @@
 }
 
 .price {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 800;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
@@ -2133,7 +2133,7 @@
     border: 1px solid #e2e8f0;
     background: white;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #667eea;
     cursor: pointer;
@@ -2161,7 +2161,7 @@
 
     .back-button {
         padding: 10px 16px;
-        font-size: 13px;
+        font-size: 1.4rem;
     }
 }
 
@@ -2178,15 +2178,15 @@
     .favorite-btn {
         width: 40px;
         height: 40px;
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 
     .product-name {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
     }
 
     .current-price {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
     }
 
     .related-products {
@@ -2197,7 +2197,7 @@
 /* Comments Title */
 .comments-title {
     margin: 0 0 20px 0;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #1a202c;
     padding-bottom: 15px;
@@ -2214,8 +2214,9 @@
 
     p {
         margin: 0;
-        font-size: 16px;
+        font-size: 1.4rem;
         color: #718096;
         font-weight: 500;
     }
 }
+

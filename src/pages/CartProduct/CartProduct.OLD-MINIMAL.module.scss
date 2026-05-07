@@ -150,7 +150,7 @@ body {
 
 .pageSubtitle {
     margin: 0;
-    font-size: 14px;
+    font-size: 1.4rem;
     color: $text-light;
     font-weight: 400;
     letter-spacing: 3px;
@@ -203,7 +203,7 @@ body {
 
     span {
         font-family: 'Inter', sans-serif;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 500;
         color: $text-light;
         text-transform: uppercase;
@@ -271,7 +271,7 @@ body {
 }
 
 .cartItemName {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $primary-color;
     margin: 0;
@@ -284,14 +284,14 @@ body {
 }
 
 .cartItemPrice {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $accent-color;
     white-space: nowrap;
 }
 
 .cartItemDesc {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: $text-light;
     margin: 0;
     line-height: 1.5;
@@ -311,7 +311,7 @@ body {
 }
 
 .cartItemQty {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: $text-secondary;
     font-weight: 600;
 }
@@ -323,7 +323,7 @@ body {
 
 .cartItemBtn {
     padding: $space-sm $space-md;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     border: none;
     border-radius: 3px;
@@ -393,7 +393,7 @@ body {
 
 .invoiceTitle {
     font-family: 'Playfair Display', serif;
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $primary-color;
     margin: 0;
@@ -409,7 +409,7 @@ body {
     color: $background-primary;
     border-radius: 50%;
     font-weight: 700;
-    font-size: 12px;
+    font-size: 1.4rem;
 }
 
 .invoiceItems {
@@ -476,7 +476,7 @@ body {
 }
 
 .invoiceItemName {
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $primary-color;
     margin: 0;
@@ -488,13 +488,13 @@ body {
 }
 
 .invoiceItemQty {
-    font-size: 11px;
+    font-size: 1.4rem;
     color: $text-light;
     margin: 0;
 }
 
 .invoiceItemPrice {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $accent-color;
     text-align: right;
@@ -511,7 +511,7 @@ body {
     border: none;
     color: $error-color;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.4rem;
     transition: $trans;
 
     &:hover {
@@ -532,7 +532,7 @@ body {
 
 .vouchersTitle {
     font-family: 'Playfair Display', serif;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $primary-color;
     margin: 0 0 $space-lg;
@@ -546,7 +546,7 @@ body {
     background: $background-secondary;
     border: 1px solid $border-color;
     border-radius: 3px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $accent-color;
     cursor: pointer;
@@ -598,11 +598,11 @@ body {
 .voucherName {
     font-weight: 700;
     color: $primary-color;
-    font-size: 12px;
+    font-size: 1.4rem;
 }
 
 .voucherDiscount {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: $accent-color;
     font-weight: 700;
 }
@@ -631,12 +631,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: 1.4rem;
     color: $text-secondary;
     font-weight: 500;
 
     &.total {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $primary-color;
         margin-top: $space-md;
@@ -667,7 +667,7 @@ body {
     color: $background-primary;
     border: none;
     border-radius: 3px;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -734,7 +734,7 @@ body {
     padding: $space-lg;
     border-radius: 3px;
     border: 2px solid transparent;
-    font-size: 13px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: $trans;
@@ -771,7 +771,7 @@ body {
     text-align: center;
     padding: $space-3xl 0;
     margin-top: $space-3xl;
-    font-size: 12px;
+    font-size: 1.4rem;
     color: $text-light;
     letter-spacing: 1px;
     border-top: 1px solid $border-color;
@@ -799,14 +799,14 @@ body {
 }
 
 .emptyStateTitle {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: $primary-color;
     margin: 0 0 $space-md;
 }
 
 .emptyStateSubtitle {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: $text-light;
     margin: 0;
 }
@@ -951,12 +951,12 @@ body {
     }
 
     .invoiceItemPrice {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .btnPayment {
         padding: $space-md;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
 
     .paymentForm {
@@ -969,8 +969,9 @@ body {
     }
 
     .footerProducts {
-        font-size: 11px;
+        font-size: 1.4rem;
         padding: $space-xl 0;
         margin-top: $space-2xl;
     }
 }
+

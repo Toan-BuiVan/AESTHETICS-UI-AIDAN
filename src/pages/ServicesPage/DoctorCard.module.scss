@@ -65,14 +65,14 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-weight: 700;
     box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
     animation: slideDown 0.5s ease-out;
 }
 
 .starIcon {
-    font-size: 13px;
+    font-size: 1.4rem;
 }
 
 @keyframes slideDown {
@@ -130,7 +130,7 @@
 }
 
 .specialty {
-    font-size: 13px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 700;
     margin: 0 0 12px 0;
@@ -140,7 +140,7 @@
 }
 
 .specialtyIcon {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .ratingFull {
@@ -167,7 +167,7 @@
 }
 
 .ratingText {
-    font-size: 12px;
+    font-size: 1.4rem;
     color: #666;
     font-weight: 600;
 }
@@ -180,7 +180,7 @@
     background: #f8f8f8;
     border-radius: 8px;
     align-items: center;
-    font-size: 13px;
+    font-size: 1.4rem;
 }
 
 .experienceLabel {
@@ -199,7 +199,7 @@
     border: none;
     border-radius: 12px;
     padding: 12px 14px;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -238,6 +238,7 @@
     }
 
     svg {
-        font-size: 16px;
+        font-size: 1.4rem;
     }
 }
+

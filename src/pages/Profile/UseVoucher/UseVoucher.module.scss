@@ -94,7 +94,7 @@ $color-border: #e2e8f0;
             flex-wrap: wrap;
 
             .header-icon {
-                font-size: clamp(1.2rem, 5vw, 2.4rem);
+                font-size: clamp(1.4rem, 5vw, 2.4rem);
                 color: #667eea;
                 filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.3));
                 flex-shrink: 0;
@@ -102,7 +102,7 @@ $color-border: #e2e8f0;
         }
 
         .header-subtitle {
-            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            font-size: clamp(1.4rem, 2.5vw, 1rem);
             color: #718096;
             font-weight: 500;
             line-height: 1.5;
@@ -119,12 +119,12 @@ $color-border: #e2e8f0;
         border-radius: 12px;
         font-weight: 700;
         color: $color-text;
-        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        font-size: clamp(1.4rem, 2.5vw, 0.95rem);
         line-height: 1.4;
         white-space: nowrap;
 
         .count-number {
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-size: clamp(1.4rem, 4vw, 1.5rem);
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -133,7 +133,7 @@ $color-border: #e2e8f0;
 
         .count-label {
             color: $color-text-light;
-            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            font-size: clamp(1.4rem, 2vw, 0.9rem);
         }
     }
 }
@@ -197,7 +197,7 @@ $color-border: #e2e8f0;
         flex-shrink: 0;
 
         .discount-percent {
-            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-size: clamp(1.4rem, 4vw, 2rem);
             font-weight: 900;
             line-height: 1;
             letter-spacing: -1px;
@@ -211,7 +211,7 @@ $color-border: #e2e8f0;
         min-width: 0;
 
         .code-text {
-            font-size: clamp(0.85rem, 2.5vw, 1.2rem);
+            font-size: clamp(1.4rem, 2.5vw, 1.2rem);
             font-weight: 900;
             color: $color-text;
             margin: 0;
@@ -226,7 +226,7 @@ $color-border: #e2e8f0;
         }
 
         .code-desc {
-            font-size: clamp(0.65rem, 2vw, 0.75rem);
+            font-size: clamp(1.4rem, 2vw, 1.4rem);
             color: $color-text-light;
             font-weight: 500;
             overflow: hidden;
@@ -246,7 +246,7 @@ $color-border: #e2e8f0;
             display: flex;
             gap: clamp(3px, 1vw, 5px);
             align-items: center;
-            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            font-size: clamp(1.4rem, 2vw, 1.4rem);
             color: $color-text;
             white-space: nowrap;
             line-height: 1.4;
@@ -264,7 +264,7 @@ $color-border: #e2e8f0;
         gap: clamp(1px, 0.5vw, 2px);
 
         .expiry-label {
-            font-size: clamp(0.65rem, 1.5vw, 0.7rem);
+            font-size: clamp(1.4rem, 1.5vw, 1.4rem);
             font-weight: 600;
             color: $color-text-light;
             text-transform: uppercase;
@@ -272,7 +272,7 @@ $color-border: #e2e8f0;
         }
 
         .expiry-date {
-            font-size: clamp(0.85rem, 2vw, 0.9rem);
+            font-size: clamp(1.4rem, 2vw, 1.4rem);
             font-weight: 700;
             color: $color-text;
             line-height: 1.3;
@@ -287,7 +287,7 @@ $color-border: #e2e8f0;
         background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(102, 126, 234, 0.05));
         border: 1px solid rgba(102, 126, 234, 0.3);
         border-radius: 8px;
-        font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+        font-size: clamp(1.4rem, 1.8vw, 1.4rem);
         font-weight: 700;
         color: #667eea;
         white-space: nowrap;
@@ -308,7 +308,7 @@ $color-border: #e2e8f0;
         .status-badge {
             padding: clamp(5px, 1.5vw, 6px) clamp(10px, 2vw, 12px);
             border-radius: 8px;
-            font-size: clamp(0.65rem, 1.8vw, 0.75rem);
+            font-size: clamp(1.4rem, 1.8vw, 1.4rem);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -355,7 +355,7 @@ $color-border: #e2e8f0;
     }
 
     p {
-        font-size: clamp(0.95rem, 3vw, 1.1rem);
+        font-size: clamp(1.4rem, 3vw, 1.1rem);
         color: $color-text-light;
         line-height: 1.5;
     }
@@ -378,7 +378,7 @@ $color-border: #e2e8f0;
     }
 
     p {
-        font-size: clamp(0.95rem, 3vw, 1.1rem);
+        font-size: clamp(1.4rem, 3vw, 1.1rem);
         color: $color-text;
         text-align: center;
         line-height: 1.5;
@@ -400,7 +400,7 @@ $color-border: #e2e8f0;
         }
 
         .row-details, .row-rank {
-            font-size: 0.8rem;
+            font-size: 1.4rem;
         }
     }
 }
@@ -421,11 +421,11 @@ $color-border: #e2e8f0;
         }
 
         .row-code .code-text {
-            font-size: 1rem;
+            font-size: 1.4rem;
         }
 
         .row-details .detail-item {
-            font-size: 0.8rem;
+            font-size: 1.4rem;
         }
     }
 }
@@ -451,7 +451,7 @@ $color-border: #e2e8f0;
         }
 
         .row-code .code-text {
-            font-size: 0.95rem;
+            font-size: 1.4rem;
         }
 
         .row-details .detail-item {
@@ -459,7 +459,7 @@ $color-border: #e2e8f0;
         }
 
         .row-expiry .expiry-date {
-            font-size: 0.85rem;
+            font-size: 1.4rem;
         }
 
         .row-rank {
@@ -503,7 +503,7 @@ $color-border: #e2e8f0;
         }
 
         .row-code .code-text {
-            font-size: 0.9rem;
+            font-size: 1.4rem;
         }
 
         .row-details {
@@ -511,7 +511,7 @@ $color-border: #e2e8f0;
         }
 
         .row-expiry .expiry-date {
-            font-size: 0.8rem;
+            font-size: 1.4rem;
         }
 
         .row-rank {
@@ -545,11 +545,11 @@ $color-border: #e2e8f0;
         }
 
         .header-subtitle {
-            font-size: 0.9rem;
+            font-size: 1.4rem;
         }
 
         .voucher-count {
-            font-size: 0.85rem;
+            font-size: 1.4rem;
             padding: 10px 14px;
             min-width: auto;
         }
@@ -566,12 +566,12 @@ $color-border: #e2e8f0;
             height: 45px;
 
             .discount-percent {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
             }
         }
 
         .row-code .code-text {
-            font-size: 0.85rem;
+            font-size: 1.4rem;
         }
 
         .row-expiry .expiry-date {
@@ -600,12 +600,12 @@ $color-border: #e2e8f0;
             height: 40px;
 
             .discount-percent {
-                font-size: 1rem;
+                font-size: 1.4rem;
             }
         }
 
         .row-code .code-text {
-            font-size: 0.8rem;
+            font-size: 1.4rem;
         }
 
         .row-code .code-desc {
@@ -630,4 +630,6 @@ $color-border: #e2e8f0;
         }
     }
 }
+
+
 

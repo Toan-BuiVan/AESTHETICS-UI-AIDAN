@@ -159,7 +159,7 @@
 }
 
 .voucher-details h3 {
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: bold;
     margin-bottom: 5px;
 }
@@ -177,18 +177,18 @@
 }
 
 .selected-voucher h3 {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
 .selected-voucher p {
-    font-size: 14px;
+    font-size: 1.4rem;
     margin: 5px 0;
 }
 
 .vouchersTital {
-    font-size: 15px;
+    font-size: 1.4rem;
     margin-bottom: 0;
     color: #1b8e6f;
 }
@@ -208,7 +208,7 @@
 }
 
 .totalmoney {
-    font-size: 20px;
+    font-size: 1.4rem;
     color: #329c80;
     margin-bottom: 10px;
 }
@@ -242,24 +242,24 @@
     .invoice-item-name,
     .invoice-item-price,
     .invoice-item-quantity {
-        font-size: 12px;
+        font-size: 1.4rem;
         margin-bottom: 5px;
     }
     .invoice-delete-button,
     .invoice-checkout-button {
         width: 100%;
         padding: 8px 12px;
-        font-size: 12px;
+        font-size: 1.4rem;
     }
     .totalmoney {
-        font-size: 18px;
+        font-size: 1.4rem;
     }
     .btnPayment {
         width: 100%;
         padding: 15px;
     }
     .vouchersTital {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 }
 
@@ -276,11 +276,12 @@
     .invoice-item-name,
     .invoice-item-price,
     .invoice-item-quantity {
-        font-size: 12px;
+        font-size: 1.4rem;
     }
     .invoice-delete-button,
     .invoice-checkout-button {
-        font-size: 12px;
+        font-size: 1.4rem;
         padding: 5px 10px;
     }
 }
+

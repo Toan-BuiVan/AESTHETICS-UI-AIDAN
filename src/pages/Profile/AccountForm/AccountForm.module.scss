@@ -13,7 +13,7 @@
 }
 
 .account-form h2 {
-    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    font-size: clamp(1.4rem, 5vw, 1.8rem);
     font-weight: 700;
     color: #1a202c;
     margin: 0 0 clamp(8px, 3vw, 12px) 0;
@@ -21,7 +21,7 @@
 }
 
 .account-form p {
-    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+    font-size: clamp(1.4rem, 2.5vw, 0.9rem);
     color: #e53e3e;
     margin-bottom: clamp(12px, 4vw, 20px);
     line-height: 1.5;
@@ -35,7 +35,7 @@
     display: block;
     font-weight: 600;
     color: #2d3748;
-    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    font-size: clamp(1.4rem, 2.5vw, 0.95rem);
     margin-bottom: clamp(6px, 2vw, 8px);
     line-height: 1.4;
 }
@@ -46,7 +46,7 @@
     padding: clamp(8px, 2.5vw, 12px) clamp(10px, 3vw, 14px);
     border: 2px solid #e2e8f0;
     border-radius: 8px;
-    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    font-size: clamp(1.4rem, 2.5vw, 0.95rem);
     color: #1a202c;
     background-color: #fff;
     transition: all 0.3s ease;
@@ -67,7 +67,7 @@
 }
 
 .form-group p {
-    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+    font-size: clamp(1.4rem, 2.5vw, 0.95rem);
     color: #4a5568;
     margin: 0;
     line-height: 1.5;
@@ -79,7 +79,7 @@
     padding: clamp(10px, 2.5vw, 14px) clamp(16px, 4vw, 28px);
     border: none;
     border-radius: 8px;
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    font-size: clamp(1.4rem, 2.5vw, 1rem);
     font-weight: 600;
     cursor: pointer;
     display: block;
@@ -121,12 +121,12 @@
 .fromName-tile label {
     font-weight: 700;
     color: #2d3748;
-    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    font-size: clamp(1.4rem, 2.5vw, 0.95rem);
     line-height: 1.4;
 }
 
 .fromName-tile p {
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    font-size: clamp(1.4rem, 2.5vw, 1rem);
     color: #156953;
     margin: 0;
     font-weight: 700;
@@ -139,7 +139,7 @@
 
 .update-info {
     color: #e53e3e;
-    font-size: clamp(0.7rem, 2vw, 0.85rem);
+    font-size: clamp(1.4rem, 2vw, 0.85rem);
     margin-top: clamp(4px, 1vw, 6px);
     line-height: 1.4;
 }
@@ -183,3 +183,4 @@
         padding: 12px 40px;
     }
 }
+

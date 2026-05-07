@@ -305,12 +305,12 @@ function CartProduct() {
 
                     if (method === 'now') {
                         // Điều hướng đến Profile với section AwaitingPayment
-                        setSuccessMessage(`✓ Tạo hóa đơn thành công! Phương thức: ${paymentMethodText[method]}`);
+                        setSuccessMessage(`✓ Tạo hóa đơn thành công!`);
                         setTimeout(() => {
                             navigate('/profile', { state: { section: 'awaitingPayment' } });
                         }, 2000);
                     } else if (method === 'later') {
-                        setSuccessMessage(`✓ Tạo hóa đơn thành công! Phương thức: ${paymentMethodText[method]}`);
+                        setSuccessMessage(`✓ Tạo hóa đơn thành công!`);
                         setTimeout(() => {
                             setSuccessMessage(null);
                         }, 2000);

@@ -482,14 +482,17 @@ function PaymentOrder() {
     };
 
     // Hàm lấy màu và icon cho status
-    const getStatusStyle = (status) => {
+    const getStatusStyle = (invoice) => {
+        if (invoice.isRefund === true) {
+            return { color: '#E65100', icon: faUndo, text: '⏳ Đang chờ phê duyệt Hoàn Tiền' };
+        }
         const statusMap = {
             'DangXuLy': { color: '#FF9800', icon: faClock, text: '⏳ Đang Xử Lý' },
             'DangGiao': { color: '#2196F3', icon: faTruck, text: '🚚 Đang Giao' },
             'DaGiao': { color: '#4CAF50', icon: faCheckCircle, text: '✓ Đã Giao' },
             'DaHuy': { color: '#F44336', icon: faTimesCircle, text: '✕ Đã Hủy' },
         };
-        return statusMap[status] || { color: '#999', icon: faTasks, text: status };
+        return statusMap[invoice.orderStatus] || { color: '#999', icon: faTasks, text: invoice.orderStatus };
     };
 
     if (loading && invoices.length === 0) {
@@ -543,7 +546,7 @@ function PaymentOrder() {
                     {/* Invoice List */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100%, 1fr))', gap: '16px', marginBottom: '24px' }}>
                         {invoices.map((item) => {
-                            const statusStyle = getStatusStyle(item.invoice.orderStatus);
+                            const statusStyle = getStatusStyle(item.invoice);
                             return (
                                 <div key={item.invoice.id} style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.3s ease', backgroundColor: '#fff' }}>
                                     {/* Invoice Header */}

@@ -771,9 +771,9 @@ function AwaitingPayment({ onCountChange }) {
                                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px 0', borderTop: '1px solid #E8E8E8', borderBottom: '1px solid #E8E8E8', marginBottom: '16px' }}>
                                             <div>
                                                 <span style={{ fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase', marginRight: '8px' }}>Trạng thái</span>
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', padding: '4px 10px', borderRadius: '6px', backgroundColor: '#FFE8E8', color: '#CC0000' }}>
-                                                    <FontAwesomeIcon icon={faClock} style={{ fontSize: '12px' }} />
-                                                    Chưa thanh toán
+                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', padding: '4px 10px', borderRadius: '6px', backgroundColor: item.invoice.isRefund ? '#FFE8CC' : '#FFE8E8', color: item.invoice.isRefund ? '#E65100' : '#CC0000' }}>
+                                                    <FontAwesomeIcon icon={item.invoice.isRefund ? faUndo : faClock} style={{ fontSize: '12px' }} />
+                                                    {item.invoice.isRefund ? 'Đang chờ phê duyệt Hoàn Tiền' : 'Chưa thanh toán'}
                                                 </span>
                                             </div>
                                             <div style={{ marginLeft: 'auto' }}>

@@ -88,7 +88,7 @@ $color-purple: #9b59b6;
 }
 
 .subtitle {
-    font-size: 16px;
+    font-size: 1.4rem;
     color: $color-text-light;
     text-align: center;
     margin: 0 0 32px 0;
@@ -105,7 +105,7 @@ $color-purple: #9b59b6;
     border-left: 4px solid $color-success;
 
     .details-title {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $color-text;
         margin: 0 0 20px 0;
@@ -130,7 +130,7 @@ $color-purple: #9b59b6;
     }
 
     .detail-label {
-        font-size: 12px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: $color-text-lighter;
         text-transform: uppercase;
@@ -138,7 +138,7 @@ $color-purple: #9b59b6;
     }
 
     .detail-value {
-        font-size: 15px;
+        font-size: 1.4rem;
         font-weight: 600;
         color: $color-text;
         word-break: break-all;
@@ -150,12 +150,12 @@ $color-purple: #9b59b6;
 
         &.amount {
             color: $color-success;
-            font-size: 18px;
+            font-size: 1.4rem;
         }
 
         &.transaction-id {
             font-family: monospace;
-            font-size: 13px;
+            font-size: 1.4rem;
             color: $color-text-lighter;
         }
     }
@@ -170,7 +170,7 @@ $color-purple: #9b59b6;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
     .steps-title {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $color-text;
         margin: 0 0 16px 0;
@@ -210,18 +210,18 @@ $color-purple: #9b59b6;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 18px;
+        font-size: 1.4rem;
     }
 
     .step-title {
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $color-text;
         margin: 0 0 4px 0;
     }
 
     .step-title + p {
-        font-size: 13px;
+        font-size: 1.4rem;
         color: $color-text-lighter;
         margin: 0;
         line-height: 1.4;
@@ -237,7 +237,7 @@ $color-purple: #9b59b6;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
     h3 {
-        font-size: 16px;
+        font-size: 1.4rem;
         font-weight: 700;
         color: $color-text;
         margin: 0 0 16px 0;
@@ -270,7 +270,7 @@ $color-purple: #9b59b6;
         }
 
         .support-label {
-            font-size: 12px;
+            font-size: 1.4rem;
             font-weight: 600;
             color: $color-text-lighter;
             margin: 0;
@@ -279,7 +279,7 @@ $color-purple: #9b59b6;
         }
 
         .support-value {
-            font-size: 14px;
+            font-size: 1.4rem;
             font-weight: 600;
             color: $color-text;
             margin: 4px 0 0 0;
@@ -301,7 +301,7 @@ $color-purple: #9b59b6;
         padding: 14px 32px;
         border: none;
         border-radius: 8px;
-        font-size: 14px;
+        font-size: 1.4rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -362,6 +362,7 @@ $color-purple: #9b59b6;
     }
 
     .subtitle {
-        font-size: 14px;
+        font-size: 1.4rem;
     }
 }
+

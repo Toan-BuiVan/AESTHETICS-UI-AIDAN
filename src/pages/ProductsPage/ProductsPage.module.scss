@@ -57,14 +57,14 @@
 .searchIcon {
     color: #1ca07d;
     margin-right: 12px;
-    font-size: 16px;
+    font-size: 1.4rem;
 }
 
 .searchInput {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 16px;
+    font-size: 1.4rem;
     color: #2d3748;
     background: transparent;
     padding: 0;
@@ -79,7 +79,7 @@
     border: none;
     color: #cbd5e0;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.4rem;
     padding: 4px 8px;
     display: flex;
     align-items: center;
@@ -109,7 +109,7 @@
     border-radius: 12px;
     background-color: rgba(255, 255, 255, 0.95);
     color: #2d3748;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -144,7 +144,7 @@
     border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 12px;
     color: #ffffff;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -208,7 +208,7 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 60px 20px;
-    font-size: 18px;
+    font-size: 1.4rem;
     color: #1ca07d;
     font-weight: 500;
     background: rgba(255, 255, 255, 0.5);
@@ -240,7 +240,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 1.4rem;
 
     &:hover {
         border-color: #1ca07d;
@@ -284,7 +284,7 @@
 .sectionTitle {
     margin: 0 0 14px 0;
     color: #1ca07d;
-    font-size: 16px;
+    font-size: 1.4rem;
     font-weight: 700;
     border-bottom: 2px solid #1ca07d;
     padding-bottom: 10px;
@@ -348,7 +348,7 @@
 }
 
 .text {
-    font-size: 14px;
+    font-size: 1.4rem;
     color: #2d3748;
     font-weight: 500;
 }
@@ -356,3 +356,4 @@
 .contentProducts {
     display: none;
 }
+
